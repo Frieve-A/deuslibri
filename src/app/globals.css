@@ -1,0 +1,415 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light mode (default) - warm paper-like background */
+body {
+  background-color: #f8f6f1;
+  color: #1f2937;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Dark mode - controlled by .dark class on html element */
+.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slideInLeft {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  .animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.2s ease-out;
+  }
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Vertical writing mode fixes */
+.prose[style*="writing-mode: vertical-rl"],
+.prose[style*="writing-mode:vertical-rl"] {
+  height: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Image paragraphs: When a <p> contains an <img>, use flex to stack elements horizontally (in vertical-rl, flex-direction: column stacks left-to-right) */
+.prose[style*="writing-mode: vertical-rl"] p:has(img),
+.prose[style*="writing-mode:vertical-rl"] p:has(img) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  margin-left: 1.5rem !important;
+  margin-right: 1.5rem !important;
+}
+
+.prose[style*="writing-mode: vertical-rl"] img,
+.prose[style*="writing-mode:vertical-rl"] img {
+  max-height: 70vh !important;
+  max-width: 400px !important;
+  height: auto !important;
+  width: auto !important;
+  object-fit: contain;
+}
+
+/* Constrain all prose images to viewport height */
+.prose img {
+  max-height: 70vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+/* In vertical-rl mode, logical margin-block (top/bottom in horizontal) becomes margin-left/right */
+/* Add horizontal margins between paragraphs for proper spacing */
+/* In vertical mode, all p elements should have consistent margin-top to align at the same y position */
+.prose[style*="writing-mode: vertical-rl"] p,
+.prose[style*="writing-mode:vertical-rl"] p {
+  max-height: none;
+  height: auto;
+  margin-left: 1.25em !important;
+  margin-right: 0 !important;
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
+}
+
+/* Override typography plugin's h + p { margin-top: 0 } rule in vertical mode */
+/* In vertical-rl, paragraphs after headings should have same margin-top as other paragraphs */
+.prose[style*="writing-mode: vertical-rl"] :is(h1, h2, h3, h4, h5, h6) + p,
+.prose[style*="writing-mode:vertical-rl"] :is(h1, h2, h3, h4, h5, h6) + p {
+  margin-top: 1.25em !important;
+}
+
+.prose[style*="writing-mode: vertical-rl"] h1,
+.prose[style*="writing-mode:vertical-rl"] h1,
+.prose[style*="writing-mode: vertical-rl"] h2,
+.prose[style*="writing-mode:vertical-rl"] h2,
+.prose[style*="writing-mode: vertical-rl"] h3,
+.prose[style*="writing-mode:vertical-rl"] h3,
+.prose[style*="writing-mode: vertical-rl"] h4,
+.prose[style*="writing-mode:vertical-rl"] h4,
+.prose[style*="writing-mode: vertical-rl"] h5,
+.prose[style*="writing-mode:vertical-rl"] h5,
+.prose[style*="writing-mode: vertical-rl"] h6,
+.prose[style*="writing-mode:vertical-rl"] h6 {
+  max-height: none;
+  height: auto;
+  margin-left: 1.5em !important;
+  margin-right: 0.5em !important;
+}
+
+/* Vertical mode: pre, ol, ul, blockquote margins */
+.prose[style*="writing-mode: vertical-rl"] pre,
+.prose[style*="writing-mode:vertical-rl"] pre,
+.prose[style*="writing-mode: vertical-rl"] ol,
+.prose[style*="writing-mode:vertical-rl"] ol,
+.prose[style*="writing-mode: vertical-rl"] ul,
+.prose[style*="writing-mode:vertical-rl"] ul,
+.prose[style*="writing-mode: vertical-rl"] blockquote,
+.prose[style*="writing-mode:vertical-rl"] blockquote {
+  margin-left: 1.25em !important;
+  margin-right: 0.5em !important;
+}
+
+/* Spacer elements for preserving multiple blank lines from markdown */
+.prose .spacer {
+  display: block;
+  height: 1em;
+}
+
+/* In vertical mode, spacer needs width instead of height */
+.prose[style*="writing-mode: vertical-rl"] .spacer,
+.prose[style*="writing-mode:vertical-rl"] .spacer {
+  height: auto;
+  width: 1em;
+  min-width: 1em;
+}
+
+/* Horizontal mode: ensure proper margins for all block elements */
+.prose[style*="writing-mode: horizontal-tb"] p,
+.prose[style*="writing-mode:horizontal-tb"] p {
+  margin-top: 1.25em !important;
+  margin-bottom: 0 !important;
+}
+
+.prose[style*="writing-mode: horizontal-tb"] h1,
+.prose[style*="writing-mode:horizontal-tb"] h1,
+.prose[style*="writing-mode: horizontal-tb"] h2,
+.prose[style*="writing-mode:horizontal-tb"] h2,
+.prose[style*="writing-mode: horizontal-tb"] h3,
+.prose[style*="writing-mode:horizontal-tb"] h3,
+.prose[style*="writing-mode: horizontal-tb"] h4,
+.prose[style*="writing-mode:horizontal-tb"] h4,
+.prose[style*="writing-mode: horizontal-tb"] h5,
+.prose[style*="writing-mode:horizontal-tb"] h5,
+.prose[style*="writing-mode: horizontal-tb"] h6,
+.prose[style*="writing-mode:horizontal-tb"] h6 {
+  margin-top: 1.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.prose[style*="writing-mode: horizontal-tb"] pre,
+.prose[style*="writing-mode:horizontal-tb"] pre,
+.prose[style*="writing-mode: horizontal-tb"] ol,
+.prose[style*="writing-mode:horizontal-tb"] ol,
+.prose[style*="writing-mode: horizontal-tb"] ul,
+.prose[style*="writing-mode:horizontal-tb"] ul,
+.prose[style*="writing-mode: horizontal-tb"] blockquote,
+.prose[style*="writing-mode:horizontal-tb"] blockquote {
+  margin-top: 1.25em !important;
+  margin-bottom: 0.5em !important;
+}
+
+/* KaTeX math: Always render horizontally even in vertical writing mode */
+/* Display math block container */
+.prose[style*="writing-mode: vertical-rl"] .katex-display,
+.prose[style*="writing-mode:vertical-rl"] .katex-display {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  display: block !important;
+  margin-left: 1.5em !important;
+  margin-right: 1.5em !important;
+  padding: 0.5em 0 !important;
+}
+
+/* All elements inside katex-display must inherit horizontal writing mode */
+.prose[style*="writing-mode: vertical-rl"] .katex-display *,
+.prose[style*="writing-mode:vertical-rl"] .katex-display * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* Inline math: .katex not inside .katex-display */
+.prose[style*="writing-mode: vertical-rl"] .katex,
+.prose[style*="writing-mode:vertical-rl"] .katex {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+.prose[style*="writing-mode: vertical-rl"] .katex *,
+.prose[style*="writing-mode:vertical-rl"] .katex * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* Inline math in vertical mode - proper positioning */
+.prose[style*="writing-mode: vertical-rl"] p > .katex,
+.prose[style*="writing-mode:vertical-rl"] p > .katex {
+  display: inline-block !important;
+}
+
+/* ======================================= */
+/* Typography: Bold text styling */
+/* ======================================= */
+.prose strong,
+.prose b {
+  font-weight: 700;
+}
+
+/* ======================================= */
+/* Typography: Headings with clear size hierarchy */
+/* ======================================= */
+.prose h1 {
+  font-size: 2.25em;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0.8em;
+}
+
+.prose h2 {
+  font-size: 1.875em;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.4em;
+  margin-bottom: 0.6em;
+}
+
+.prose h4 {
+  font-size: 1.25em;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.3em;
+  margin-bottom: 0.5em;
+}
+
+.prose h5 {
+  font-size: 1.125em;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+}
+
+.prose h6 {
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 1.1em;
+  margin-bottom: 0.4em;
+}
+
+/* ======================================= */
+/* Typography: Table styling with borders */
+/* ======================================= */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose thead {
+  border-bottom: 2px solid #374151;
+}
+
+:where(.dark, .dark *) .prose thead {
+  border-bottom-color: #9ca3af;
+}
+
+.prose th {
+  font-weight: 600;
+  padding: 0.75em 1em;
+  text-align: left;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+}
+
+:where(.dark, .dark *) .prose th {
+  border-color: #4b5563;
+  background-color: #1f2937;
+}
+
+.prose td {
+  padding: 0.75em 1em;
+  border: 1px solid #d1d5db;
+  vertical-align: top;
+}
+
+:where(.dark, .dark *) .prose td {
+  border-color: #4b5563;
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+:where(.dark, .dark *) .prose tbody tr:nth-child(even) {
+  background-color: #111827;
+}
+
+/* Table outer margin for spacing from surrounding content */
+.prose table {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Table responsive wrapper - prevent overflow */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .prose table {
+    display: table;
+    white-space: normal;
+  }
+}
+
+/* Vertical mode table adjustments */
+.prose[style*="writing-mode: vertical-rl"] table,
+.prose[style*="writing-mode:vertical-rl"] table {
+  writing-mode: horizontal-tb;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+}

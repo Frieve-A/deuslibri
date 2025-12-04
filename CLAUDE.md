@@ -1,0 +1,55 @@
+# Claude Code Instructions for This Project
+
+## CRITICAL: Debugging and Bug Fix Policy
+
+### Strictly Prohibited: Ad-hoc Fixes Based on Speculation
+
+When debugging issues, the following workflow is **MANDATORY**:
+
+1. **NEVER attempt fixes based on speculation or possibility**
+   - Do not make changes based on "this might be the cause" or "possibly"
+   - Do not propose multiple potential fixes hoping one will work
+
+2. **Root cause identification MUST come first**
+   - Add logging/debugging code to trace actual execution flow
+   - Verify assumptions with concrete evidence
+   - Identify the exact line(s) where behavior diverges from expectation
+
+3. **Only after confirmed root cause, propose a fix**
+   - The fix must directly address the identified root cause
+   - Explain why the fix resolves the issue based on the evidence gathered
+
+### Debugging Steps (Required Order)
+
+1. **Reproduce**: Understand the exact steps to reproduce the issue
+2. **Hypothesize**: Form a hypothesis about what might be wrong
+3. **Verify**: Add logging or use debugging tools to verify the hypothesis
+4. **Confirm**: Only proceed with a fix when you have concrete evidence
+5. **Fix**: Apply a targeted fix that addresses the confirmed root cause
+6. **Validate**: Confirm the fix resolves the issue
+
+### Example of What NOT to Do
+
+```
+❌ "The issue might be caused by X, let me try changing Y"
+❌ "This could be a timing issue, let me add a setTimeout"
+❌ "Perhaps the state isn't updating correctly, let me switch to useRef"
+```
+
+### Example of Correct Approach
+
+```
+✅ "Let me add console.log to trace the value of X at points A, B, and C"
+✅ "The logs show X is 'foo' at point A but 'bar' at point B, which confirms the issue is in function Z"
+✅ "Based on this evidence, the fix is to..."
+```
+
+## Project-Specific Notes
+
+- This is a Next.js project with Japanese vertical text (縦書き) support
+- The BookReader functionality is modularized into:
+  - `src/components/BookReader.tsx` - Main component
+  - `src/components/reader/` - Sub-components (ReaderHeader, ReaderContent, PageNavigation)
+  - `src/hooks/` - Custom hooks (useBookProgress, useTouchNavigation, useMouseNavigation, etc.)
+  - `src/lib/reader/` - Utilities and constants
+- See `docs/VERTICAL_MODE_SPEC.md` for vertical mode scroll behavior specification
