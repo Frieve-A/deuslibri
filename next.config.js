@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+
 const nextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/deuslibri' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/deuslibri/' : '',
+  basePath: basePath,
+  assetPrefix: basePath ? `${basePath}/` : '',
 }
 
 module.exports = nextConfig

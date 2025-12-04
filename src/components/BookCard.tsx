@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { BookCatalogItem } from '@/types/book'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import { useI18n } from '@/lib/i18n'
+import { getContentImagePath } from '@/lib/utils/basePath'
 
 interface BookCardProps {
   book: BookCatalogItem
@@ -34,7 +35,7 @@ export default function BookCard({ book }: BookCardProps) {
 
   // Generate cover image path
   const coverImagePath = book.coverImage
-    ? `/content/books/${book.folderPath.replace(/\\/g, '/').split('content/books/')[1]}/${book.coverImage.replace(/^\.\//, '')}`
+    ? getContentImagePath(book.folderPath, book.coverImage)
     : null
 
   return (

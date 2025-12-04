@@ -5,6 +5,7 @@ import remarkMath from 'remark-math'
 import remarkRehype from 'remark-rehype'
 import rehypeKatex from 'rehype-katex'
 import rehypeStringify from 'rehype-stringify'
+import { withBasePath } from '@/lib/utils/basePath'
 
 /**
  * Convert markdown to HTML and fix image paths
@@ -59,9 +60,10 @@ export async function markdownToHtml(markdown: string, bookFolderPath?: string):
     if (relativePath) {
       // Replace relative image paths with absolute paths
       // Match both "./images/" and "images/"
+      const basePath = withBasePath(`/content/books/${relativePath}/images/`)
       html = html.replace(
         /src="(?:\.\/)?images\/([^"]+)"/g,
-        `src="/content/books/${relativePath}/images/$1"`
+        `src="${basePath}$1"`
       )
     }
   }

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { findBookByIdAndLang, getAllBooks } from '@/lib/books/loader'
 import BookReader from '@/components/BookReader'
+import { getContentImagePath } from '@/lib/utils/basePath'
 
 interface BookPageProps {
   params: Promise<{
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: BookPageProps) {
   }
 
   const coverImagePath = book.coverImage
-    ? `/content/books/${book.folderPath.replace(/\\/g, '/').split('content/books/')[1]}/${book.coverImage.replace(/^\.\//, '')}`
+    ? getContentImagePath(book.folderPath, book.coverImage)
     : null
 
   return {
