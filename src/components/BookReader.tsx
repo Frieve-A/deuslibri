@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Book } from '@/types/book'
+import { Book, BookCatalogItem } from '@/types/book'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import { markdownToHtml } from '@/lib/books/markdown'
 import { generateTableOfContents } from '@/lib/books/toc'
 import { useI18n } from '@/lib/i18n'
 import TableOfContents from './TableOfContents'
+import BookDetailsModal from './BookDetailsModal'
 import { ReaderHeader, ReaderContent, PageNavigation } from './reader'
 import {
   useBookProgress,
@@ -26,6 +27,7 @@ export default function BookReader({ book }: BookReaderProps) {
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [isTocOpen, setIsTocOpen] = useState(false)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
   // Flag to suppress scroll position saving during programmatic scrolls
@@ -176,6 +178,24 @@ export default function BookReader({ book }: BookReaderProps) {
     }
   }
 
+  // Convert Book to BookCatalogItem for the modal
+  const bookCatalogItem: BookCatalogItem = {
+    id: book.id,
+    title: book.title,
+    author: book.author,
+    description: book.description,
+    summary: book.summary,
+    tags: book.tags,
+    language: book.language,
+    publishDate: book.publishDate,
+    coverImage: book.coverImage,
+    folderPath: book.folderPath,
+  }
+
+  const handleTitleClick = () => {
+    setIsDetailsModalOpen(true)
+  }
+
   // Handle page change from Table of Contents
   // In scroll mode, scroll to the page section instead of changing page
   const handleTocPageChange = (pageIndex: number) => {
@@ -256,6 +276,7 @@ export default function BookReader({ book }: BookReaderProps) {
         toggleBookmark={toggleBookmark}
         isPagination={isPagination}
         t={t}
+        onTitleClick={handleTitleClick}
       />
 
       {/* Reader Content */}
@@ -291,6 +312,13 @@ export default function BookReader({ book }: BookReaderProps) {
           t={t}
         />
       )}
+
+      {/* Book Details Modal */}
+      <BookDetailsModal
+        book={bookCatalogItem}
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+      />
     </div>
   )
 }

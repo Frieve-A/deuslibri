@@ -73,7 +73,7 @@ The `metadata.yml` file contains information about your book.
 id: "mystery-novel-001"
 title: "Midnight Mystery"
 author: "John Smith"
-publishDate: "2025-12"
+publishDate: "2025-12-04"
 language: "en"
 tags:
   - "Mystery"
@@ -102,7 +102,7 @@ seriesNumber: 1             # Series number
 | `id` | ✓ | Unique book identifier (alphanumeric and hyphens) | `"mystery-novel-001"` |
 | `title` | ✓ | Book title | `"Midnight Mystery"` |
 | `author` | ✓ | Author name | `"John Smith"` |
-| `publishDate` | ✓ | Publication year-month (YYYY-MM format) | `"2025-12"` |
+| `publishDate` | ✓ | Publication date (YYYY-MM-DD format) | `"2025-12-04"` |
 | `language` | ✓ | Language code (en, ja, zh, etc.) | `"en"` |
 | `tags` | ✓ | Genre/tags (array format) | `["Mystery", "Suspense"]` |
 | `summary` | ✓ | Short summary (1-2 sentences) | `"A series of murders..."` |
@@ -479,4 +479,4 @@ Share your stories with readers worldwide through DeusLibri.
 
 ---
 
-Last updated: 2025-12-04
+Last updated: 2025-12-05

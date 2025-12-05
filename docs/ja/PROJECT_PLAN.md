@@ -125,7 +125,7 @@ deuslibri/
 id: "example-book-001"
 title: "サンプル書籍タイトル"
 author: "著者名"
-publishDate: "2025-12"
+publishDate: "2025-12-04"
 language: "ja"
 tags:
   - "ファンタジー"
@@ -384,10 +384,13 @@ jobs:
 
 ## 9. 分析・監視
 
-- Google Analytics 4統合
+- Google Analytics 4統合 ✅（トラッキングID: G-FW9YWVLT8E）
 - 読書時間トラッキング
 - 人気ページ分析
 - エラー監視（Sentry等）
+
+### Google Analytics設定（実装済み）
+Google Analyticsは`src/app/layout.tsx`にNext.jsの`next/script`コンポーネントを使用して設定されています。`strategy="afterInteractive"`により、パフォーマンスへの影響を最小限に抑えています。
 
 ## 10. コンテンツ管理フロー
 
@@ -510,4 +513,4 @@ jobs:
 
 ---
 
-最終更新: 2025-12-03
+最終更新: 2025-12-05

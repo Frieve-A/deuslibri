@@ -73,7 +73,7 @@ content/books/
 id: "mystery-novel-001"
 title: "真夜中の謎"
 author: "山田太郎"
-publishDate: "2025-12"
+publishDate: "2025-12-04"
 language: "ja"
 tags:
   - "ミステリー"
@@ -102,7 +102,7 @@ seriesNumber: 1             # シリーズ番号
 | `id` | ✓ | 書籍の一意な識別子（半角英数字とハイフン） | `"mystery-novel-001"` |
 | `title` | ✓ | 書籍のタイトル | `"真夜中の謎"` |
 | `author` | ✓ | 著者名 | `"山田太郎"` |
-| `publishDate` | ✓ | 出版年月（YYYY-MM形式） | `"2025-12"` |
+| `publishDate` | ✓ | 出版日（YYYY-MM-DD形式） | `"2025-12-04"` |
 | `language` | ✓ | 言語コード（ja, en, zh等） | `"ja"` |
 | `tags` | ✓ | ジャンル・タグ（配列形式） | `["ミステリー", "サスペンス"]` |
 | `summary` | ✓ | 短い要約（1-2文） | `"静かな田舎町で..."` |
@@ -479,4 +479,4 @@ DeusLibriであなたの作品を世界中の読者に届けましょう。
 
 ---
 
-最終更新: 2025-12-04
+最終更新: 2025-12-05

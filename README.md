@@ -46,7 +46,17 @@ npm run dev
 
 Access http://localhost:3000 in your browser
 
-### 4. Write Your Book
+### 4. Configure Google Analytics (Optional)
+
+To enable Google Analytics tracking, edit the tracking ID in `src/app/layout.tsx`:
+
+```tsx
+const gaId = 'G-XXXXXXXXXX'  // Replace with your Google Analytics 4 Measurement ID
+```
+
+You can find your Measurement ID in [Google Analytics](https://analytics.google.com/) under Admin > Data Streams > your web stream.
+
+### 5. Write Your Book
 
 See the [Writing Guide](./docs/WRITING_GUIDE.md) for details.
 
@@ -58,7 +68,7 @@ content/books/YYYY-MM/{book-id}/{lang}/
     └── cover.jpg   # Cover image
 ```
 
-### 5. Push to GitHub and Publish
+### 6. Push to GitHub and Publish
 
 ```bash
 git add .
@@ -116,6 +126,7 @@ deuslibri/
 - [x] Settings page
 - [x] LocalStorage integration
 - [x] GitHub Actions configuration
+- [x] Google Analytics integration
 - [ ] Google AdSense integration
 - [ ] UI/UX refinement
 

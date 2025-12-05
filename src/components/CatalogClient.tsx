@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { BookCatalogItem } from '@/types/book'
 import BookCard from '@/components/BookCard'
+import BookDetailsModal from '@/components/BookDetailsModal'
 import CatalogFilters from '@/components/CatalogFilters'
 import { createBookSearch, filterByTags, getAllTags } from '@/lib/utils/search'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
@@ -17,9 +18,21 @@ export default function CatalogClient({ books }: CatalogClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [viewMode, setViewMode] = useState<'all' | 'favorites' | 'recent'>('all')
+  const [selectedBook, setSelectedBook] = useState<BookCatalogItem | null>(null)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   const { favorites, recentlyRead } = useReadingStore()
   const { t } = useI18n()
+
+  const handleDetailsClick = (book: BookCatalogItem) => {
+    setSelectedBook(book)
+    setIsDetailsModalOpen(true)
+  }
+
+  const handleCloseDetails = () => {
+    setIsDetailsModalOpen(false)
+    setSelectedBook(null)
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -144,11 +157,22 @@ export default function CatalogClient({ books }: CatalogClientProps) {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {filteredBooks.map((book) => (
-              <BookCard key={`${book.id}-${book.language}`} book={book} />
+              <BookCard
+                key={`${book.id}-${book.language}`}
+                book={book}
+                onDetailsClick={handleDetailsClick}
+              />
             ))}
           </div>
         )}
       </div>
+
+      {/* Book Details Modal */}
+      <BookDetailsModal
+        book={selectedBook}
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetails}
+      />
     </div>
   )
 }

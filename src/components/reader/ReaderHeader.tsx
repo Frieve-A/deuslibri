@@ -21,6 +21,7 @@ interface ReaderHeaderProps {
   toggleBookmark: () => void
   isPagination: boolean
   t: TranslationMessages
+  onTitleClick?: () => void
 }
 
 export function ReaderHeader({
@@ -35,6 +36,7 @@ export function ReaderHeader({
   toggleBookmark,
   isPagination,
   t,
+  onTitleClick,
 }: ReaderHeaderProps) {
   const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
 
@@ -80,7 +82,16 @@ export function ReaderHeader({
             </button>
           )}
           <div className="min-w-0">
-            <h1 className="text-xl font-bold truncate text-gray-900 dark:text-white">{book.title}</h1>
+            {onTitleClick ? (
+              <button
+                onClick={onTitleClick}
+                className="text-xl font-bold truncate text-gray-900 dark:text-white hover:text-amber-700 dark:hover:text-sky-400 transition-colors text-left w-full"
+              >
+                {book.title}
+              </button>
+            ) : (
+              <h1 className="text-xl font-bold truncate text-gray-900 dark:text-white">{book.title}</h1>
+            )}
             <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
               {book.author}
             </p>

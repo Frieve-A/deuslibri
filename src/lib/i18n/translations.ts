@@ -122,6 +122,19 @@ export interface TranslationMessages {
     prev: string
     next: string
   }
+  // Book details modal
+  bookDetails: {
+    title: string
+    details: string
+    author: string
+    description: string
+    summary: string
+    tags: string
+    language: string
+    publishDate: string
+    close: string
+    readBook: string
+  }
 }
 
 // English translations
@@ -233,6 +246,18 @@ const en: TranslationMessages = {
     prev: 'Prev',
     next: 'Next',
   },
+  bookDetails: {
+    title: 'Book Details',
+    details: 'Details',
+    author: 'Author',
+    description: 'Description',
+    summary: 'Summary',
+    tags: 'Tags',
+    language: 'Language',
+    publishDate: 'Published',
+    close: 'Close',
+    readBook: 'Read Book',
+  },
 }
 
 // Japanese translations
@@ -343,6 +368,18 @@ const ja: TranslationMessages = {
     tweet: 'ツイート',
     prev: '前へ',
     next: '次へ',
+  },
+  bookDetails: {
+    title: '書籍詳細',
+    details: '詳細',
+    author: '著者',
+    description: '説明',
+    summary: '概要',
+    tags: 'タグ',
+    language: '言語',
+    publishDate: '出版日',
+    close: '閉じる',
+    readBook: '読む',
   },
 }
 

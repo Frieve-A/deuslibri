@@ -9,9 +9,10 @@ import { getContentImagePath } from '@/lib/utils/basePath'
 
 interface BookCardProps {
   book: BookCatalogItem
+  onDetailsClick?: (book: BookCatalogItem) => void
 }
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book, onDetailsClick }: BookCardProps) {
   const [mounted, setMounted] = useState(false)
   const { isFavorite, addFavorite, removeFavorite, getProgress, settings } =
     useReadingStore()
@@ -31,6 +32,11 @@ export default function BookCard({ book }: BookCardProps) {
     } else {
       addFavorite(book.id, book.language)
     }
+  }
+
+  const handleDetailsClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    onDetailsClick?.(book)
   }
 
   // Generate cover image path
@@ -101,6 +107,16 @@ export default function BookCard({ book }: BookCardProps) {
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             {t.catalog.progress}: {t.catalog.reading}
           </div>
+        )}
+
+        {/* Details Link */}
+        {onDetailsClick && (
+          <button
+            onClick={handleDetailsClick}
+            className="mt-3 text-sm text-amber-700 dark:text-sky-400 hover:underline"
+          >
+            {t.bookDetails.details} →
+          </button>
         )}
       </div>
     </Link>

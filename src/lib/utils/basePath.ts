@@ -3,15 +3,17 @@
  * Set NEXT_PUBLIC_BASE_URL environment variable to configure
  * For GitHub Pages: 'https://yourusername.github.io/deuslibri'
  * For custom domain: 'https://example.com'
+ * For local development: 'http://localhost:3000' (or leave unset)
  */
 export function getBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://yourusername.github.io/deuslibri'
+  return process.env.NEXT_PUBLIC_BASE_URL || ''
 }
 
 /**
  * Get the base path from NEXT_PUBLIC_BASE_URL
  * Extracts the pathname portion (e.g., '/deuslibri' from 'https://example.github.io/deuslibri')
  * Falls back to NEXT_PUBLIC_BASE_PATH for backwards compatibility
+ * Returns empty string if no BASE_URL is set (local development)
  */
 export function getBasePath(): string {
   // Backwards compatibility: prefer explicit BASE_PATH if set
@@ -19,15 +21,19 @@ export function getBasePath(): string {
     return process.env.NEXT_PUBLIC_BASE_PATH
   }
 
-  // Extract path from BASE_URL
-  const baseUrl = getBaseUrl()
-  try {
-    const url = new URL(baseUrl)
-    // Remove trailing slash if present
-    return url.pathname.replace(/\/$/, '')
-  } catch {
-    return ''
+  // Extract path from BASE_URL (only if explicitly set)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+  if (baseUrl) {
+    try {
+      const url = new URL(baseUrl)
+      // Remove trailing slash if present
+      return url.pathname.replace(/\/$/, '')
+    } catch {
+      return ''
+    }
   }
+
+  return ''
 }
 
 /**
@@ -57,15 +63,18 @@ export function getContentImagePath(folderPath: string, imagePath: string): stri
 
 /**
  * Get the origin URL (protocol + host, without path)
- * @returns The origin URL extracted from NEXT_PUBLIC_BASE_URL
+ * @returns The origin URL extracted from NEXT_PUBLIC_BASE_URL, or empty string if not set
  */
 export function getOriginUrl(): string {
-  const baseUrl = getBaseUrl()
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+  if (!baseUrl) {
+    return ''
+  }
   try {
     const url = new URL(baseUrl)
     return url.origin
   } catch {
-    return baseUrl
+    return ''
   }
 }
 

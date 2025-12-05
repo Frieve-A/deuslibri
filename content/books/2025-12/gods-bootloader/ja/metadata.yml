@@ -4,8 +4,8 @@
 id: "gods-bootloader"
 title: "神のブートローダー"
 subtitle: "超知能の事象の地平線 —— エントロピー、進化、そしてヒトの役割"
-author: "DeusLibri"
-publishDate: "2025-12"
+author: "Frieve-A"
+publishDate: "2025-12-04"
 language: "ja"
 tags:
   - "SF"
@@ -34,7 +34,7 @@ recommendText: "シンギュラリティ、超知能、人類の未来につい�
 coverImage: "./images/cover.jpg"
 
 # オプション項目
-pageCount: 200
+pageCount: 119
 estimatedReadingTime: 120
 isbn: ""
 series: ""

@@ -125,7 +125,7 @@ deuslibri/
 id: "example-book-001"
 title: "Sample Book Title"
 author: "Author Name"
-publishDate: "2025-12"
+publishDate: "2025-12-04"
 language: "en"
 tags:
   - "Fantasy"
@@ -399,10 +399,13 @@ docs/
 
 ## 9. Analytics & Monitoring
 
-- Google Analytics 4 integration
+- Google Analytics 4 integration ✅ (Tracking ID: G-FW9YWVLT8E)
 - Reading time tracking
 - Popular page analysis
 - Error monitoring (Sentry, etc.)
+
+### Google Analytics Setup (Implemented)
+Google Analytics is configured in `src/app/layout.tsx` using Next.js `next/script` component with `strategy="afterInteractive"` for optimal performance.
 
 ## 10. Content Management Workflow
 
@@ -526,4 +529,4 @@ docs/
 
 ---
 
-Last updated: 2025-12-03
+Last updated: 2025-12-05
