@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { findBookByIdAndLang, getAllBooks } from '@/lib/books/loader'
 import BookReader from '@/components/BookReader'
-import { getContentImagePath } from '@/lib/utils/basePath'
+import { getContentImagePath, getAbsoluteUrl } from '@/lib/utils/basePath'
 
 interface BookPageProps {
   params: Promise<{
@@ -44,6 +44,9 @@ export async function generateMetadata({ params }: BookPageProps) {
     ? getContentImagePath(book.folderPath, book.coverImage)
     : null
 
+  // OGP requires absolute URLs for images
+  const ogImageUrl = coverImagePath ? getAbsoluteUrl(coverImagePath) : null
+
   return {
     title: `${book.title} - ${book.author} | DeusLibri`,
     description: book.description,
@@ -53,14 +56,14 @@ export async function generateMetadata({ params }: BookPageProps) {
       title: book.title,
       description: book.summary || book.description,
       type: 'book',
-      images: coverImagePath ? [coverImagePath] : [],
+      images: ogImageUrl ? [ogImageUrl] : [],
       locale: lang,
     },
     twitter: {
       card: 'summary_large_image',
       title: book.title,
       description: book.summary || book.description,
-      images: coverImagePath ? [coverImagePath] : [],
+      images: ogImageUrl ? [ogImageUrl] : [],
     },
   }
 }
