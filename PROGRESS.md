@@ -230,6 +230,8 @@ src/components/AdSense.tsx           # Google AdSense広告コンポーネント
 src/components/TableOfContents.tsx   # 目次・ブックマーク表示
 src/components/ThemeProvider.tsx     # テーマ管理プロバイダー
 src/components/HomeClient.tsx        # ホームページクライアントコンポーネント（i18n対応）
+src/components/Header.tsx            # 統一ヘッダーナビゲーション
+src/app/about/page.tsx               # 「当サイトについて」ページ
 src/lib/books/toc.ts                 # 目次生成ユーティリティ
 src/lib/hooks/useTheme.ts            # テーマ切り替えフック
 src/lib/i18n/translations.ts         # 翻訳メッセージと型定義
@@ -546,10 +548,36 @@ src/
   - `src/app/globals.css` - Typography、表、見出しスタイル追加
   - `package.json` - `@tailwindcss/typography`追加
 
+### 19. サイト構造・ナビゲーション改善 ✅
+- **実装内容**:
+  - スマートフォンの画面回転設定を端末設定に従うよう修正（manifest.tsからorientation設定を削除）
+  - トップページの見出しを「無料の書籍」→「無料のオリジナル書籍」に変更
+  - 「当サイトについて」ページを新規作成（サイト説明、機能紹介、運営者情報）
+  - 全ページにヘッダーナビゲーション追加（ホーム、カタログ、設定、当サイトについて）
+  - リーダーから設定を開いた場合のブラウザバック機能実装
+  - リーダーの閉じるボタン（×）実装
+  - 設定画面の「文字の方向」を最下部に移動
+  - ヘッダーにアプリアイコン追加
+- **技術的詳細**:
+  - `src/app/manifest.ts` - `orientation: 'any'` 削除
+  - `src/app/about/page.tsx` - 新規作成
+  - `src/components/Header.tsx` - 統一ナビゲーション実装、アイコン表示
+  - `src/components/HomeClient.tsx` - Headerコンポーネント追加
+  - `src/components/CatalogClient.tsx` - Headerコンポーネント追加
+  - `src/app/settings/page.tsx` - Headerコンポーネント追加、戻るボタン実装（router.back()）
+  - `src/components/reader/ReaderHeader.tsx` - 閉じるボタン（×）実装
+  - `src/components/TableOfContents.tsx` - bookIdとlanguageをpropsに追加、設定ページへのリンクにクエリパラメータ追加
+  - `src/lib/i18n/translations.ts` - about, catalog, backの翻訳追加
+- **ユーザー体験の向上**:
+  - 全ページで一貫したナビゲーション
+  - リーダーからスムーズに設定変更→戻る
+  - サイト情報へのアクセス改善
+  - ブランド認識の向上（ヘッダーアイコン）
+
 ---
 
-**最終更新**: 2025-12-04
-**ステータス**: Phase 2 実装完了 + UI/UX改善完了 + 縦書き無限スクロール実装 + UI多言語対応 + 数式レンダリング対応 + Typographyスタイリング改善 - ビルド成功
+**最終更新**: 2025-12-07
+**ステータス**: Phase 2 実装完了 + UI/UX改善完了 + 縦書き無限スクロール実装 + UI多言語対応 + 数式レンダリング対応 + Typographyスタイリング改善 + サイト構造・ナビゲーション改善 - ビルド成功
 **次のステップ**: Phase 3 - パフォーマンス最適化とアクセシビリティ改善
 
 ## Phase 2 追加機能まとめ
@@ -573,6 +601,10 @@ src/
 - ✅ UI多言語対応（英語・日本語、拡張可能な設計）
 - ✅ 数式レンダリング対応（LaTeX記法、KaTeX使用）
 - ✅ Typographyスタイリング改善（Bold、見出し階層、表罫線）
+- ✅ 統一ヘッダーナビゲーション（全ページで共通のナビゲーション）
+- ✅ 「当サイトについて」ページ（サイト説明、機能紹介）
+- ✅ リーダーからの設定アクセス改善（ブラウザバック対応）
+- ✅ ヘッダーアイコン表示（ブランド認識向上）
 
 ### AdSense設定手順
 1. `NEXT_PUBLIC_ADSENSE_ID` 環境変数に自分のAdSense IDを設定

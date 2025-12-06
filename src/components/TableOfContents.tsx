@@ -15,6 +15,8 @@ interface TableOfContentsProps {
   isOpen: boolean
   onToggle: () => void
   isScrollMode?: boolean
+  bookId?: string
+  language?: string
 }
 
 export default function TableOfContents({
@@ -25,10 +27,17 @@ export default function TableOfContents({
   isOpen,
   onToggle,
   isScrollMode = false,
+  bookId,
+  language,
 }: TableOfContentsProps) {
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const { t } = useI18n()
+
+  // Build settings URL with return path
+  const settingsUrl = bookId && language
+    ? `/settings?returnTo=/read/${bookId}/${language}`
+    : '/settings'
 
   if (toc.length === 0 && bookmarks.length === 0) {
     return null
@@ -47,7 +56,7 @@ export default function TableOfContents({
           <div className="flex justify-between items-center mb-4 pb-4 border-b border-amber-200 dark:border-slate-700">
             <div className="flex items-center gap-1">
               <Link
-                href="/settings"
+                href={settingsUrl}
                 className="flex items-center gap-2 px-3 py-2 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors"
                 onClick={onToggle}
               >

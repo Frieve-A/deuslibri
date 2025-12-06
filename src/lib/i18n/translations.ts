@@ -17,6 +17,8 @@ export interface TranslationMessages {
     back: string
     settings: string
     loading: string
+    catalog: string
+    about: string
   }
   // Home page
   home: {
@@ -213,6 +215,18 @@ export interface TranslationMessages {
       }
     }
   }
+  // About page
+  about: {
+    title: string
+    description: string
+    features: {
+      title: string
+      items: string[]
+    }
+    operator: string
+    operatorName: string
+    contact: string
+  }
 }
 
 // English translations
@@ -222,6 +236,8 @@ const en: TranslationMessages = {
     back: 'Back',
     settings: 'Settings',
     loading: 'Loading...',
+    catalog: 'Catalog',
+    about: 'About',
   },
   home: {
     title: 'DeusLibri',
@@ -231,7 +247,7 @@ const en: TranslationMessages = {
     browseCatalog: 'Browse Catalog',
     features: {
       freeBooks: {
-        title: 'Free Books',
+        title: 'Free Original Books',
         description: 'Access a growing collection of books completely free',
       },
       saveProgress: {
@@ -432,6 +448,26 @@ const en: TranslationMessages = {
       },
     },
   },
+  about: {
+    title: 'About This Site',
+    description:
+      'DeusLibri is a site operated by Frieve that publishes the best original books for free. More books will be added regularly.',
+    features: {
+      title: 'Useful Features',
+      items: [
+        'Vertical and horizontal writing mode support (Japanese)',
+        'Pagination and infinite scroll modes',
+        'Customizable font size, line height, and margins',
+        'Dark mode and sepia theme support',
+        'Auto-save reading progress',
+        'Bookmark and table of contents',
+        'Auto-scroll feature for hands-free reading',
+      ],
+    },
+    operator: 'Operated by',
+    operatorName: 'Frieve',
+    contact: 'Contact Form',
+  },
 }
 
 // Japanese translations
@@ -441,6 +477,8 @@ const ja: TranslationMessages = {
     back: '戻る',
     settings: '設定',
     loading: '読み込み中...',
+    catalog: 'カタログ',
+    about: '当サイトについて',
   },
   home: {
     title: 'DeusLibri',
@@ -450,7 +488,7 @@ const ja: TranslationMessages = {
     browseCatalog: 'カタログを見る',
     features: {
       freeBooks: {
-        title: '無料の書籍',
+        title: '無料のオリジナル書籍',
         description: '増え続ける書籍コレクションに無料でアクセス',
       },
       saveProgress: {
@@ -650,6 +688,26 @@ const ja: TranslationMessages = {
         ],
       },
     },
+  },
+  about: {
+    title: '当サイトについて',
+    description:
+      'DeusLibriはFrieveの運営する、最高のオリジナル書籍を無料で公開するサイトです。書籍は今後も随時追加予定です。',
+    features: {
+      title: 'サイトの便利な機能',
+      items: [
+        '縦書き・横書きモード対応(日本語)',
+        'ページ送りと無限スクロールモード',
+        'フォントサイズ、行間、余白のカスタマイズ',
+        'ダークモードとセピアテーマ対応',
+        '読書進捗の自動保存',
+        'ブックマークと目次機能',
+        'ハンズフリー読書のための自動スクロール機能',
+      ],
+    },
+    operator: '運営',
+    operatorName: 'Frieve',
+    contact: 'お問い合わせフォーム',
   },
 }
 

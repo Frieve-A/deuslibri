@@ -95,7 +95,8 @@ function loadContent(folderPath: string): { content: string; pages: string[] } {
     const { content } = matter(fileContents)
 
     // Split content by page breaks (---)
-    const pages = content.split(/\n---\n/).filter((page) => page.trim().length > 0)
+    // Use \r?\n to handle both Unix (LF) and Windows (CRLF) line endings
+    const pages = content.split(/\r?\n---\r?\n/).filter((page) => page.trim().length > 0)
 
     return { content, pages }
   } catch (error) {

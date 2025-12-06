@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'DeusLibri' }],
   icons: {
     icon: [
+      { url: `${basePath}/favicon.ico`, sizes: 'any' },
       { url: `${basePath}/icons/icon-64x64.png`, sizes: '64x64', type: 'image/png' },
       { url: `${basePath}/icons/icon-192x192.png`, sizes: '192x192', type: 'image/png' },
       { url: `${basePath}/icons/icon-512x512.png`, sizes: '512x512', type: 'image/png' },

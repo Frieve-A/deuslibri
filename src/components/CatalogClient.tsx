@@ -5,6 +5,7 @@ import { BookCatalogItem } from '@/types/book'
 import BookCard from '@/components/BookCard'
 import BookDetailsModal from '@/components/BookDetailsModal'
 import CatalogFilters from '@/components/CatalogFilters'
+import Header from '@/components/Header'
 import { createBookSearch, filterByTags, getAllTags } from '@/lib/utils/search'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import { useI18n } from '@/lib/i18n'
@@ -73,34 +74,31 @@ export default function CatalogClient({ books }: CatalogClientProps) {
   // Show loading state until hydration is complete
   if (!mounted) {
     return (
-      <div className="min-h-screen p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6"></div>
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded mb-6"></div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="aspect-[3/4] bg-gray-200 dark:bg-gray-700 rounded"></div>
-              ))}
+      <>
+        <Header />
+        <div className="min-h-screen p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6"></div>
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded mb-6"></div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="aspect-[3/4] bg-gray-200 dark:bg-gray-700 rounded"></div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen p-8 bg-stone-100 dark:bg-slate-900">
+    <>
+      <Header />
+      <div className="min-h-screen p-8 bg-stone-100 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t.catalog.title}</h1>
-          <a
-            href="/"
-            className="text-amber-700 dark:text-sky-400 hover:underline"
-          >
-            ← {t.common.home}
-          </a>
-        </div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{t.catalog.title}</h1>
 
         {/* View Mode Tabs */}
         <div className="flex gap-2 mb-6">
@@ -174,5 +172,6 @@ export default function CatalogClient({ books }: CatalogClientProps) {
         onClose={handleCloseDetails}
       />
     </div>
+    </>
   )
 }

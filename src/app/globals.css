@@ -4,6 +4,13 @@
 /* Enable class-based dark mode for Tailwind v4 */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Define responsive breakpoints for Tailwind v4 */
+@custom-media --sm (width >= 640px);
+@custom-media --md (width >= 768px);
+@custom-media --lg (width >= 1024px);
+@custom-media --xl (width >= 1280px);
+@custom-media --2xl (width >= 1536px);
+
 /* Light mode (default) - warm paper-like background */
 body {
   background-color: #f8f6f1;

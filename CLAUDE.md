@@ -53,3 +53,9 @@ When debugging issues, the following workflow is **MANDATORY**:
   - `src/hooks/` - Custom hooks (useBookProgress, useTouchNavigation, useMouseNavigation, etc.)
   - `src/lib/reader/` - Utilities and constants
 - See `docs/VERTICAL_MODE_SPEC.md` for vertical mode scroll behavior specification
+
+## Development Environment
+
+- The development server is managed by the user and runs at http://localhost:3000
+- DO NOT attempt to start, stop, or restart the development server
+- The user will handle all development server operations

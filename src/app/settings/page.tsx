@@ -1,12 +1,15 @@
 'use client'
 
 import { useReadingStore, type FontFamily, type UserInteractionBehavior, type AutoScrollSettings } from '@/lib/stores/useReadingStore'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useI18n, SUPPORTED_LANGUAGES, LANGUAGE_NAMES, type SupportedLanguage } from '@/lib/i18n'
+import Header from '@/components/Header'
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const returnTo = searchParams.get('returnTo')
   const { settings, updateSettings, exportData, importData } = useReadingStore()
   const { language, setLanguage, t } = useI18n()
   const [importText, setImportText] = useState('')
@@ -42,29 +45,49 @@ export default function SettingsPage() {
   // Show loading state until hydration is complete
   if (!mounted) {
     return (
-      <div className="min-h-screen p-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-6"></div>
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          </div>
+      <>
+        <Header />
+        <div className="min-h-screen p-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-6"></div>
+              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
         </div>
       </div>
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen p-8 bg-stone-100 dark:bg-slate-900">
+    <>
+      <Header />
+      <div className="min-h-screen p-8 bg-stone-100 dark:bg-slate-900">
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t.settings.title}</h1>
-          <button
-            onClick={() => router.back()}
-            className="text-amber-700 dark:text-sky-400 hover:underline"
-          >
-            ← {t.common.back}
-          </button>
-        </div>
+        {returnTo && (
+          <div className="mb-4">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center text-amber-700 dark:text-sky-400 hover:text-amber-900 dark:hover:text-sky-300 transition"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              {t.common.back}
+            </button>
+          </div>
+        )}
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{t.settings.title}</h1>
 
         <div className="space-y-6">
           {/* Display Settings */}
@@ -72,28 +95,6 @@ export default function SettingsPage() {
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t.settings.displaySettings}</h2>
 
             <div className="space-y-4">
-              {/* Writing Mode */}
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  {t.settings.writingMode.label}
-                </label>
-                <select
-                  value={settings.writingMode}
-                  onChange={(e) =>
-                    updateSettings({
-                      writingMode: e.target.value as 'horizontal' | 'vertical',
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="horizontal">{t.settings.writingMode.horizontal}</option>
-                  <option value="vertical">{t.settings.writingMode.vertical}</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  {t.settings.writingMode.note}
-                </p>
-              </div>
-
               {/* Display Mode */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -238,6 +239,28 @@ export default function SettingsPage() {
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
                   {t.settings.fontFamily.note}
+                </p>
+              </div>
+
+              {/* Writing Mode */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.writingMode.label}
+                </label>
+                <select
+                  value={settings.writingMode}
+                  onChange={(e) =>
+                    updateSettings({
+                      writingMode: e.target.value as 'horizontal' | 'vertical',
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  <option value="horizontal">{t.settings.writingMode.horizontal}</option>
+                  <option value="vertical">{t.settings.writingMode.vertical}</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t.settings.writingMode.note}
                 </p>
               </div>
             </div>
@@ -455,5 +478,26 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+    </>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Header />
+        <div className="min-h-screen p-8 bg-stone-100 dark:bg-slate-900">
+          <div className="max-w-2xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-6"></div>
+              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </>
+    }>
+      <SettingsContent />
+    </Suspense>
   )
 }

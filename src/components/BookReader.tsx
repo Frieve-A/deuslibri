@@ -334,6 +334,8 @@ export default function BookReader({ book }: BookReaderProps) {
         isOpen={isTocOpen}
         onToggle={() => setIsTocOpen(!isTocOpen)}
         isScrollMode={!isPagination}
+        bookId={book.id}
+        language={book.language}
       />
 
       {/* Header */}

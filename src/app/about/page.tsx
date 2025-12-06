@@ -37,7 +37,7 @@ export default function AboutPage() {
           </div>
 
           <div className="pt-6 border-t border-amber-300 dark:border-slate-700">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               {t.about.operator}:{' '}
               <a
                 href="https://frieve.com"
@@ -46,6 +46,16 @@ export default function AboutPage() {
                 className="text-amber-700 dark:text-sky-400 hover:text-amber-900 dark:hover:text-sky-300 font-semibold underline transition"
               >
                 {t.about.operatorName}
+              </a>
+            </p>
+            <p className="text-gray-700 dark:text-gray-300">
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdQt9JNUrFAB-UajTlN6kKEJXSFIFRGSEl6YxY7LtNxR2mL7g/viewform?usp=dialog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-700 dark:text-sky-400 hover:text-amber-900 dark:hover:text-sky-300 font-semibold underline transition"
+              >
+                {t.about.contact}
               </a>
             </p>
           </div>

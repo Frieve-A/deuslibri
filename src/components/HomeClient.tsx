@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
 import HelpModal from './HelpModal'
+import Header from './Header'
 
 export default function HomeClient() {
   const { t } = useI18n()
@@ -17,22 +18,27 @@ export default function HomeClient() {
   // Show loading state until hydration is complete
   if (!mounted) {
     return (
-      <main className="min-h-screen p-8 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center py-20">
-            <div className="animate-pulse">
-              <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded w-64 mx-auto mb-4"></div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-8"></div>
-              <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded w-96 mx-auto mb-12"></div>
+      <>
+        <Header />
+        <main className="min-h-screen p-8 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center py-20">
+              <div className="animate-pulse">
+                <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded w-64 mx-auto mb-4"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-8"></div>
+                <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded w-96 mx-auto mb-12"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </>
     )
   }
 
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
+    <>
+      <Header />
+      <main className="min-h-screen p-8 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
       <div className="max-w-6xl mx-auto">
         <div className="text-center py-20">
           <h1 className="text-6xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -51,6 +57,25 @@ export default function HomeClient() {
             >
               {t.home.browseCatalog}
             </Link>
+            <button
+              onClick={() => setIsHelpOpen(true)}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {t.help.title}
+            </button>
             <Link
               href="/settings"
               className="inline-flex items-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600"
@@ -76,25 +101,6 @@ export default function HomeClient() {
               </svg>
               {t.common.settings}
             </Link>
-            <button
-              onClick={() => setIsHelpOpen(true)}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              {t.help.title}
-            </button>
           </div>
         </div>
 
@@ -134,5 +140,6 @@ export default function HomeClient() {
       {/* Help Modal */}
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </main>
+    </>
   )
 }
