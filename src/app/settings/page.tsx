@@ -1,6 +1,6 @@
 'use client'
 
-import { useReadingStore, type FontFamily } from '@/lib/stores/useReadingStore'
+import { useReadingStore, type FontFamily, type UserInteractionBehavior, type AutoScrollSettings } from '@/lib/stores/useReadingStore'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n, SUPPORTED_LANGUAGES, LANGUAGE_NAMES, type SupportedLanguage } from '@/lib/i18n'
@@ -239,6 +239,152 @@ export default function SettingsPage() {
                 <p className="text-xs text-gray-500 mt-1">
                   {t.settings.fontFamily.note}
                 </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Auto Scroll Settings */}
+          <section className="border border-amber-200 dark:border-gray-700 rounded-lg p-6 bg-amber-50 dark:bg-slate-800 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t.settings.autoScroll.title}</h2>
+
+            <div className="space-y-4">
+              {/* Enable Auto Scroll */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="autoScrollEnabled"
+                  checked={settings.autoScroll?.enabled ?? false}
+                  onChange={(e) =>
+                    updateSettings({
+                      autoScroll: { ...settings.autoScroll, enabled: e.target.checked } as AutoScrollSettings,
+                    })
+                  }
+                  className="w-5 h-5 rounded border-gray-300 dark:border-gray-600"
+                />
+                <label htmlFor="autoScrollEnabled" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t.settings.autoScroll.enabled}
+                </label>
+              </div>
+              <p className="text-xs text-gray-500">
+                {t.settings.autoScroll.enabledNote}
+              </p>
+
+              {/* Scroll Speed */}
+              <div className={settings.autoScroll?.enabled ? '' : 'opacity-50 pointer-events-none'}>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.autoScroll.speed.label}: {settings.autoScroll?.speed ?? 30}
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={settings.autoScroll?.speed ?? 30}
+                  onChange={(e) =>
+                    updateSettings({
+                      autoScroll: { ...settings.autoScroll, speed: parseInt(e.target.value) } as AutoScrollSettings,
+                    })
+                  }
+                  className="w-full"
+                  disabled={!settings.autoScroll?.enabled}
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{t.settings.autoScroll.speed.slow}</span>
+                  <span>{t.settings.autoScroll.speed.fast}</span>
+                </div>
+              </div>
+
+              {/* Start Delay */}
+              <div className={settings.autoScroll?.enabled ? '' : 'opacity-50 pointer-events-none'}>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.autoScroll.startDelay.label}: {((settings.autoScroll?.startDelay ?? 1000) / 1000).toFixed(1)}s
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="10000"
+                  step="500"
+                  value={settings.autoScroll?.startDelay ?? 1000}
+                  onChange={(e) =>
+                    updateSettings({
+                      autoScroll: { ...settings.autoScroll, startDelay: parseInt(e.target.value) } as AutoScrollSettings,
+                    })
+                  }
+                  className="w-full"
+                  disabled={!settings.autoScroll?.enabled}
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{t.settings.autoScroll.startDelay.short}</span>
+                  <span>{t.settings.autoScroll.startDelay.long}</span>
+                </div>
+              </div>
+
+              {/* Auto Page Turn (only in pagination mode) */}
+              <div className={settings.autoScroll?.enabled && settings.displayMode === 'pagination' ? '' : 'opacity-50 pointer-events-none'}>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="autoPageTurn"
+                    checked={settings.autoScroll?.autoPageTurn ?? false}
+                    onChange={(e) =>
+                      updateSettings({
+                        autoScroll: { ...settings.autoScroll, autoPageTurn: e.target.checked } as AutoScrollSettings,
+                      })
+                    }
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600"
+                    disabled={!settings.autoScroll?.enabled || settings.displayMode !== 'pagination'}
+                  />
+                  <label htmlFor="autoPageTurn" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.settings.autoScroll.autoPageTurn}
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t.settings.autoScroll.autoPageTurnNote}
+                </p>
+              </div>
+
+              {/* Auto Page Turn Delay */}
+              <div className={settings.autoScroll?.enabled && settings.displayMode === 'pagination' && settings.autoScroll?.autoPageTurn ? '' : 'opacity-50 pointer-events-none'}>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.autoScroll.autoPageTurnDelay.label}: {((settings.autoScroll?.autoPageTurnDelay ?? 3000) / 1000).toFixed(1)}s
+                </label>
+                <input
+                  type="range"
+                  min="1000"
+                  max="30000"
+                  step="1000"
+                  value={settings.autoScroll?.autoPageTurnDelay ?? 3000}
+                  onChange={(e) =>
+                    updateSettings({
+                      autoScroll: { ...settings.autoScroll, autoPageTurnDelay: parseInt(e.target.value) } as AutoScrollSettings,
+                    })
+                  }
+                  className="w-full"
+                  disabled={!settings.autoScroll?.enabled || settings.displayMode !== 'pagination' || !settings.autoScroll?.autoPageTurn}
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{t.settings.autoScroll.autoPageTurnDelay.short}</span>
+                  <span>{t.settings.autoScroll.autoPageTurnDelay.long}</span>
+                </div>
+              </div>
+
+              {/* User Interaction Behavior */}
+              <div className={settings.autoScroll?.enabled ? '' : 'opacity-50 pointer-events-none'}>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.autoScroll.userInteractionBehavior.label}
+                </label>
+                <select
+                  value={settings.autoScroll?.userInteractionBehavior ?? 'pause'}
+                  onChange={(e) =>
+                    updateSettings({
+                      autoScroll: { ...settings.autoScroll, userInteractionBehavior: e.target.value as UserInteractionBehavior } as AutoScrollSettings,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  disabled={!settings.autoScroll?.enabled}
+                >
+                  <option value="pause">{t.settings.autoScroll.userInteractionBehavior.pause}</option>
+                  <option value="autoResume">{t.settings.autoScroll.userInteractionBehavior.autoResume}</option>
+                </select>
               </div>
             </div>
           </section>

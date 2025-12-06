@@ -68,7 +68,25 @@ content/books/YYYY-MM/{book-id}/{lang}/
     └── cover.jpg   # Cover image
 ```
 
-### 6. Push to GitHub and Publish
+### 6. Configure Deployment URL
+
+Before deploying, update your site URL in `.github/workflows/deploy.yml`:
+
+```yaml
+- name: Build with Next.js
+  run: npm run build
+  env:
+    NODE_ENV: production
+    NEXT_PUBLIC_BASE_URL: https://yourusername.github.io/deuslibri  # Change this
+```
+
+**Examples:**
+- GitHub Pages with subdirectory: `https://yourusername.github.io/deuslibri`
+- Custom domain: `https://example.com`
+
+This is the **only place** you need to change the URL. The base path is automatically extracted from this URL.
+
+### 7. Push to GitHub and Publish
 
 ```bash
 git add .

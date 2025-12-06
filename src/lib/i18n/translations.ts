@@ -122,6 +122,33 @@ export interface TranslationMessages {
       importError: string
       note: string
     }
+    autoScroll: {
+      title: string
+      enabled: string
+      enabledNote: string
+      speed: {
+        label: string
+        slow: string
+        fast: string
+      }
+      startDelay: {
+        label: string
+        short: string
+        long: string
+      }
+      autoPageTurn: string
+      autoPageTurnNote: string
+      autoPageTurnDelay: {
+        label: string
+        short: string
+        long: string
+      }
+      userInteractionBehavior: {
+        label: string
+        pause: string
+        autoResume: string
+      }
+    }
   }
   // Book reader
   reader: {
@@ -297,6 +324,33 @@ const en: TranslationMessages = {
       importSuccess: 'Data imported successfully!',
       importError: 'Failed to import data. Please check the format.',
       note: 'Export your reading progress, favorites, and settings to backup or transfer to another device.',
+    },
+    autoScroll: {
+      title: 'Auto Scroll',
+      enabled: 'Enable Auto Scroll',
+      enabledNote: 'Enable to configure all auto scroll settings below',
+      speed: {
+        label: 'Scroll Speed',
+        slow: 'Slow',
+        fast: 'Fast',
+      },
+      startDelay: {
+        label: 'Start Delay',
+        short: '0s',
+        long: '10s',
+      },
+      autoPageTurn: 'Auto Page Turn',
+      autoPageTurnNote: 'Only available in pagination mode',
+      autoPageTurnDelay: {
+        label: 'Page Turn Delay',
+        short: '1s',
+        long: '30s',
+      },
+      userInteractionBehavior: {
+        label: 'On User Interaction',
+        pause: 'Pause',
+        autoResume: 'Auto Resume',
+      },
     },
   },
   reader: {
@@ -489,6 +543,33 @@ const ja: TranslationMessages = {
       importSuccess: 'データのインポートに成功しました！',
       importError: 'データのインポートに失敗しました。形式を確認してください。',
       note: '読書の進捗、お気に入り、設定をエクスポートして、バックアップしたり、他のデバイスに転送できます。',
+    },
+    autoScroll: {
+      title: '自動スクロール',
+      enabled: '自動スクロールを有効にする',
+      enabledNote: '有効にすると以下のすべての設定が変更可能になります',
+      speed: {
+        label: 'スクロール速度',
+        slow: '遅い',
+        fast: '速い',
+      },
+      startDelay: {
+        label: 'スクロール開始までのディレイ',
+        short: '0秒',
+        long: '10秒',
+      },
+      autoPageTurn: '自動ページ送り',
+      autoPageTurnNote: 'ページ送りモードでのみ設定可能',
+      autoPageTurnDelay: {
+        label: '自動ページ送り時間',
+        short: '1秒',
+        long: '30秒',
+      },
+      userInteractionBehavior: {
+        label: 'ユーザ操作時の挙動',
+        pause: '一時停止',
+        autoResume: '自動再開',
+      },
     },
   },
   reader: {

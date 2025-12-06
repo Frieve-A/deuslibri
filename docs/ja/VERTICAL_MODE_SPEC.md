@@ -481,6 +481,7 @@ BookReader機能はモジュール化されたコンポーネントとフック�
    - `useMouseNavigation.ts` - マウスイベント処理（クリック、ドラッグ選択）
    - `useProgressBar.ts` - プログレスバーのドラッグ操作
    - `useVerticalLayout.ts` - 縦書きモードのレイアウト管理
+   - `useAutoScroll.ts` - 自動スクロール機能（速度制御、自動ページ送り）
 
 4. **src/lib/reader/**
    - `constants.ts` - 設定定数（閾値、時間など）

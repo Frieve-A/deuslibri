@@ -29,7 +29,7 @@ export function useVerticalLayout({
         // Use setProperty with !important to override content-based height
         prose.style.setProperty('height', `${containerHeight}px`, 'important')
         prose.style.setProperty('max-height', `${containerHeight}px`, 'important')
-        // Enable horizontal scroll for vertical writing mode
+        // Enable horizontal scroll on prose element for vertical writing mode
         prose.style.overflowX = 'auto'
         prose.style.overflowY = 'hidden'
       }
@@ -69,6 +69,7 @@ export function useVerticalLayout({
         // IMPORTANT: In vertical-rl mode, scrollLeft values are NEGATIVE
         // - scrollLeft = 0: RIGHT edge content visible (reading START)
         // - scrollLeft = -maxScroll: LEFT edge content visible (reading END)
+        // CRITICAL: For vertical mode, the actual scrolling element is the inner prose element
         const maxScroll = prose.scrollWidth - prose.clientWidth
         if (direction === 'prev') {
           // Prev: show LEFT edge (where user left off on previous page)

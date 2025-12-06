@@ -25,6 +25,17 @@ export interface Bookmark {
 
 export type FontFamily = 'system' | 'serif' | 'sans-serif' | 'mincho' | 'gothic'
 
+export type UserInteractionBehavior = 'pause' | 'autoResume'
+
+export interface AutoScrollSettings {
+  enabled: boolean
+  speed: number // pixels per second (1-100)
+  startDelay: number // milliseconds (0-10000)
+  autoPageTurn: boolean
+  autoPageTurnDelay: number // milliseconds (1000-30000)
+  userInteractionBehavior: UserInteractionBehavior
+}
+
 export interface ReadingSettings {
   writingMode: 'horizontal' | 'vertical' // vertical only for Japanese
   displayMode: 'pagination' | 'scroll'
@@ -34,6 +45,7 @@ export interface ReadingSettings {
   lineHeight: number // 1.0 - 3.0
   marginSize: 'small' | 'medium' | 'large'
   brightness: number // 0 - 100
+  autoScroll: AutoScrollSettings
 }
 
 interface ReadingState {
@@ -85,6 +97,14 @@ export const useReadingStore = create<ReadingState>()(
         lineHeight: 1.8,
         marginSize: 'medium',
         brightness: 100,
+        autoScroll: {
+          enabled: false,
+          speed: 50,
+          startDelay: 5000,
+          autoPageTurn: false,
+          autoPageTurnDelay: 15000,
+          userInteractionBehavior: 'pause',
+        },
       },
 
       // Progress methods
@@ -236,6 +256,27 @@ export const useReadingStore = create<ReadingState>()(
     }),
     {
       name: 'deuslibri-reading-storage',
+      // Custom merge to handle nested objects and new properties
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<ReadingState>
+
+        // Deep merge settings to ensure new properties get defaults
+        const mergedSettings = {
+          ...currentState.settings,
+          ...persisted.settings,
+          // Deep merge autoScroll settings specifically
+          autoScroll: {
+            ...currentState.settings.autoScroll,
+            ...(persisted.settings?.autoScroll || {}),
+          },
+        }
+
+        return {
+          ...currentState,
+          ...persisted,
+          settings: mergedSettings,
+        }
+      },
     }
   )
 )

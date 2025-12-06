@@ -8,7 +8,7 @@ import { generateTableOfContents } from '@/lib/books/toc'
 import { useI18n } from '@/lib/i18n'
 import TableOfContents from './TableOfContents'
 import BookDetailsModal from './BookDetailsModal'
-import { ReaderHeader, ReaderContent, PageNavigation } from './reader'
+import { ReaderHeader, ReaderContent, PageNavigation, AutoScrollPlayButton } from './reader'
 import {
   useBookProgress,
   usePageNavigation,
@@ -16,6 +16,7 @@ import {
   useMouseNavigation,
   useProgressBar,
   useVerticalLayout,
+  useAutoScroll,
 } from '@/hooks'
 
 interface BookReaderProps {
@@ -124,6 +125,49 @@ export default function BookReader({ book }: BookReaderProps) {
     contentRef,
     navigationDirectionRef,
   })
+
+  // Auto scroll hook
+  const { isPlaying, togglePlayPause, onUserInteraction } = useAutoScroll({
+    autoScrollSettings: settings.autoScroll,
+    isVertical,
+    isPagination,
+    contentRef,
+    isTocOpen,
+    totalPages: book.pages.length,
+    currentPage,
+    goToNextPage,
+  })
+
+  // Determine if play/pause button should be shown
+  const showPlayPauseButton = settings.autoScroll?.enabled &&
+    settings.autoScroll?.userInteractionBehavior === 'pause'
+
+  // Wrap touch and mouse handlers to trigger onUserInteraction
+  const wrappedHandleTouchStart = (e: React.TouchEvent) => {
+    onUserInteraction()
+    handleTouchStart(e)
+  }
+
+  const wrappedHandleTouchMove = (e: React.TouchEvent) => {
+    handleTouchMove(e)
+  }
+
+  const wrappedHandleTouchEnd = () => {
+    handleTouchEnd()
+  }
+
+  const wrappedHandleMouseDown = (e: React.MouseEvent) => {
+    onUserInteraction()
+    handleMouseDown(e)
+  }
+
+  const wrappedHandleMouseMove = (e: React.MouseEvent) => {
+    handleMouseMove(e)
+  }
+
+  const wrappedHandleMouseUp = (e: React.MouseEvent) => {
+    handleMouseUp(e)
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -321,12 +365,12 @@ export default function BookReader({ book }: BookReaderProps) {
           marginSize={settings.marginSize ?? 'medium'}
           theme={settings.theme}
           contentRef={contentRef}
-          handleTouchStart={handleTouchStart}
-          handleTouchMove={handleTouchMove}
-          handleTouchEnd={handleTouchEnd}
-          handleMouseDown={handleMouseDown}
-          handleMouseMove={handleMouseMove}
-          handleMouseUp={handleMouseUp}
+          handleTouchStart={wrappedHandleTouchStart}
+          handleTouchMove={wrappedHandleTouchMove}
+          handleTouchEnd={wrappedHandleTouchEnd}
+          handleMouseDown={wrappedHandleMouseDown}
+          handleMouseMove={wrappedHandleMouseMove}
+          handleMouseUp={wrappedHandleMouseUp}
         />
       </main>
 
@@ -351,6 +395,11 @@ export default function BookReader({ book }: BookReaderProps) {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
       />
+
+      {/* Auto Scroll Play/Pause Button */}
+      {showPlayPauseButton && (
+        <AutoScrollPlayButton isPlaying={isPlaying} onToggle={togglePlayPause} />
+      )}
 
       {/* Brightness Overlay */}
       {brightnessOverlayOpacity > 0 && (

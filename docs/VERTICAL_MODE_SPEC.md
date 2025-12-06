@@ -807,6 +807,7 @@ The BookReader functionality is split into modular components and hooks:
    - `useMouseNavigation.ts` - Mouse event handling (click, drag selection)
    - `useProgressBar.ts` - Progress bar drag interactions
    - `useVerticalLayout.ts` - Vertical mode layout management
+   - `useAutoScroll.ts` - Auto-scroll functionality (speed control, page turn)
 
 4. **src/lib/reader/**
    - `constants.ts` - Configuration constants (thresholds, durations)

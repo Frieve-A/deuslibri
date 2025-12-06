@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ['latin'] })
 const basePath = getBasePath()
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://yourusername.github.io/deuslibri'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   title: {
     template: '%s | DeusLibri',
     default: 'DeusLibri - Free Digital Library',
