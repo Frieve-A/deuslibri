@@ -141,7 +141,7 @@ export default function SettingsPage() {
                   value={settings.theme}
                   onChange={(e) =>
                     updateSettings({
-                      theme: e.target.value as 'light' | 'dark' | 'auto',
+                      theme: e.target.value as 'light' | 'dark' | 'sepia' | 'auto',
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -149,10 +149,73 @@ export default function SettingsPage() {
                   <option value="auto">{t.settings.theme.auto}</option>
                   <option value="light">{t.settings.theme.light}</option>
                   <option value="dark">{t.settings.theme.dark}</option>
+                  <option value="sepia">{t.settings.theme.sepia}</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
                   {t.settings.theme.note}
                 </p>
+              </div>
+
+              {/* Line Height */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.lineHeight.label}: {settings.lineHeight?.toFixed(1) ?? '1.8'}
+                </label>
+                <input
+                  type="range"
+                  min="1.0"
+                  max="3.0"
+                  step="0.1"
+                  value={settings.lineHeight ?? 1.8}
+                  onChange={(e) =>
+                    updateSettings({ lineHeight: parseFloat(e.target.value) })
+                  }
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{t.settings.lineHeight.compact}</span>
+                  <span>{t.settings.lineHeight.spacious}</span>
+                </div>
+              </div>
+
+              {/* Margin Size */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t.settings.marginSize.label}</label>
+                <select
+                  value={settings.marginSize ?? 'medium'}
+                  onChange={(e) =>
+                    updateSettings({
+                      marginSize: e.target.value as 'small' | 'medium' | 'large',
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  <option value="small">{t.settings.marginSize.small}</option>
+                  <option value="medium">{t.settings.marginSize.medium}</option>
+                  <option value="large">{t.settings.marginSize.large}</option>
+                </select>
+              </div>
+
+              {/* Brightness */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.brightness.label}: {settings.brightness ?? 100}%
+                </label>
+                <input
+                  type="range"
+                  min="30"
+                  max="100"
+                  step="5"
+                  value={settings.brightness ?? 100}
+                  onChange={(e) =>
+                    updateSettings({ brightness: parseInt(e.target.value) })
+                  }
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{t.settings.brightness.dim}</span>
+                  <span>{t.settings.brightness.bright}</span>
+                </div>
               </div>
 
               {/* Font Family */}

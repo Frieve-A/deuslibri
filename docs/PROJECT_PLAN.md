@@ -187,17 +187,21 @@ page-break
 - Text-to-speech: Web Speech API integration
 - Keyboard shortcuts: Arrow keys for page navigation, etc.
 - Fullscreen mode: Immersive reading experience
+- Help modal: In-app controls guide accessible from home page and TOC ✅
+- Horizontal pagination navigation: Left/right edge tap/click and swipe for page navigation ✅
+- Browser gesture prevention: Disable pull-to-refresh and swipe back/forward in reader ✅
 
 ### 4.3 Settings Features
-- Writing direction (vertical/horizontal)
-- Page mode (pagination/scroll)
-- Font size
-- Theme (light/dark/sepia)
-- Font family
-- Line height
-- Margins
+- Writing direction (vertical/horizontal) ✅
+- Page mode (pagination/scroll) ✅
+- Font size (12px-32px slider) ✅
+- Theme (light/dark/sepia/auto) ✅
+- Font family (system/serif/sans-serif/mincho/gothic) ✅
+- Line height (1.0-3.0 slider) ✅
+- Margin size (small/medium/large) ✅
+- Brightness adjustment (30-100%) ✅
+- Data export/import (migrate reading history) ✅
 - Animation enable/disable
-- Data export/import (migrate reading history)
 
 ### 4.4 LocalStorage Data Structure
 ```typescript
@@ -221,11 +225,13 @@ interface UserData {
   };
   settings: {
     writingMode: 'vertical' | 'horizontal';
-    pageMode: 'pagination' | 'scroll';
-    fontSize: 'small' | 'medium' | 'large' | 'xlarge';
-    fontFamily: string;
-    lineHeight: number;
-    theme: 'light' | 'dark' | 'sepia';
+    displayMode: 'pagination' | 'scroll';
+    fontSize: number;  // 12-32px
+    fontFamily: 'system' | 'serif' | 'sans-serif' | 'mincho' | 'gothic';
+    lineHeight: number;  // 1.0-3.0
+    marginSize: 'small' | 'medium' | 'large';
+    brightness: number;  // 30-100%
+    theme: 'light' | 'dark' | 'sepia' | 'auto';
   };
 }
 ```
@@ -529,4 +535,4 @@ Google Analytics is configured in `src/app/layout.tsx` using Next.js `next/scrip
 
 ---
 
-Last updated: 2025-12-05
+Last updated: 2025-12-06

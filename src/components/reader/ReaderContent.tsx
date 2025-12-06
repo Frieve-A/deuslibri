@@ -10,6 +10,9 @@ import {
 } from '@/lib/reader'
 import type { FontFamily } from '@/lib/stores/useReadingStore'
 
+type MarginSize = 'small' | 'medium' | 'large'
+type Theme = 'light' | 'dark' | 'sepia' | 'auto'
+
 interface ReaderContentProps {
   pageHtml: string[]
   currentPage: number
@@ -17,6 +20,9 @@ interface ReaderContentProps {
   isPagination: boolean
   fontSize: number
   fontFamily: FontFamily
+  lineHeight: number
+  marginSize: MarginSize
+  theme: Theme
   contentRef: RefObject<HTMLDivElement | null>
   handleTouchStart: (e: React.TouchEvent) => void
   handleTouchMove: (e: React.TouchEvent) => void
@@ -26,6 +32,40 @@ interface ReaderContentProps {
   handleMouseUp: (e: React.MouseEvent) => void
 }
 
+// Convert margin size to CSS padding values for vertical mode
+function getVerticalMarginPadding(marginSize: MarginSize): string {
+  const margins = {
+    small: '0.5rem 1rem',
+    medium: '1rem 2rem',
+    large: '1.5rem 3rem',
+  }
+  return margins[marginSize]
+}
+
+// Convert margin size to max-width class for horizontal mode
+function getHorizontalMaxWidth(marginSize: MarginSize): string {
+  const widths = {
+    small: 'max-w-7xl', // wider content
+    medium: 'max-w-4xl', // default
+    large: 'max-w-2xl', // narrower content, more margin
+  }
+  return widths[marginSize]
+}
+
+// Get prose classes based on theme
+function getProseClasses(theme: Theme): string {
+  switch (theme) {
+    case 'sepia':
+      return 'prose prose-amber' // Use amber prose for sepia theme
+    case 'dark':
+      return 'prose prose-invert'
+    case 'light':
+      return 'prose'
+    default: // 'auto'
+      return 'prose dark:prose-invert'
+  }
+}
+
 export function ReaderContent({
   pageHtml,
   currentPage,
@@ -33,6 +73,9 @@ export function ReaderContent({
   isPagination,
   fontSize,
   fontFamily,
+  lineHeight,
+  marginSize,
+  theme,
   contentRef,
   handleTouchStart,
   handleTouchMove,
@@ -42,6 +85,9 @@ export function ReaderContent({
   handleMouseUp,
 }: ReaderContentProps) {
   const fontFamilyCSS = getFontFamilyCSS(fontFamily)
+  const verticalMarginPadding = getVerticalMarginPadding(marginSize)
+  const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
+  const proseClasses = getProseClasses(theme)
   // Calculate which page indices should show ads based on accumulated text size
   // Ads appear after accumulating AD_THRESHOLD_BYTES (10000 bytes) of text
   // Japanese characters count as 2 bytes, so 5000 Japanese chars = 10000 bytes
@@ -96,10 +142,12 @@ export function ReaderContent({
           }}
         >
           <div
-            className="prose dark:prose-invert h-full inline-block p-8"
+            className={`${proseClasses} h-full inline-block`}
             style={{
               fontSize: `${fontSize}px`,
               fontFamily: fontFamilyCSS,
+              lineHeight: lineHeight,
+              padding: verticalMarginPadding,
               writingMode: 'vertical-rl',
               minWidth: '100%',
               width: 'fit-content',
@@ -142,10 +190,12 @@ export function ReaderContent({
           onMouseUp={handleMouseUp}
         >
           <div
-            className="prose dark:prose-invert max-w-none p-4 sm:p-8"
+            className={`${proseClasses} max-w-none`}
             style={{
               fontSize: `${fontSize}px`,
               fontFamily: fontFamilyCSS,
+              lineHeight: lineHeight,
+              padding: verticalMarginPadding,
               writingMode: 'vertical-rl',
               height: '100%',
               width: 'max-content',
@@ -174,7 +224,11 @@ export function ReaderContent({
       key="horizontal-content"
       ref={contentRef}
       className={isPagination ? 'fixed inset-x-0 overflow-y-auto' : 'pb-24'}
-      style={isPagination ? { top: '80px', bottom: '100px' } : undefined}
+      style={
+        isPagination
+          ? { top: '80px', bottom: '100px', overscrollBehavior: 'contain' }
+          : undefined
+      }
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -182,15 +236,16 @@ export function ReaderContent({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-      <div className="max-w-6xl mx-auto p-4 sm:p-8">
+      <div className={`${horizontalMaxWidth} mx-auto p-4 sm:p-8`}>
         {isPagination ? (
           /* Pagination Mode */
           <>
             <div
-              className="prose dark:prose-invert max-w-none"
+              className={`${proseClasses} max-w-none`}
               style={{
                 fontSize: `${fontSize}px`,
                 fontFamily: fontFamilyCSS,
+                lineHeight: lineHeight,
                 writingMode: 'horizontal-tb',
               }}
               dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
@@ -211,10 +266,11 @@ export function ReaderContent({
         ) : (
           /* Horizontal Scroll Mode */
           <div
-            className="prose dark:prose-invert max-w-none"
+            className={`${proseClasses} max-w-none`}
             style={{
               fontSize: `${fontSize}px`,
               fontFamily: fontFamilyCSS,
+              lineHeight: lineHeight,
               writingMode: 'horizontal-tb',
             }}
           >

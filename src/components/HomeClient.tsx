@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
+import HelpModal from './HelpModal'
 
 export default function HomeClient() {
   const { t } = useI18n()
   const [mounted, setMounted] = useState(false)
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -42,7 +44,7 @@ export default function HomeClient() {
           <p className="text-lg mb-12 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             {t.home.description}
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/catalog"
               className="inline-block px-8 py-4 bg-amber-700 dark:bg-sky-600 text-white text-lg rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition shadow-lg"
@@ -55,6 +57,25 @@ export default function HomeClient() {
             >
               {t.common.settings}
             </Link>
+            <button
+              onClick={() => setIsHelpOpen(true)}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {t.help.title}
+            </button>
           </div>
         </div>
 
@@ -90,6 +111,9 @@ export default function HomeClient() {
           </p>
         </footer>
       </div>
+
+      {/* Help Modal */}
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </main>
   )
 }

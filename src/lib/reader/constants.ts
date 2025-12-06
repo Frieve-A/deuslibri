@@ -24,3 +24,7 @@ export const CLICK_THRESHOLD = 10
 
 // Scroll amount as percentage of visible area
 export const SCROLL_AMOUNT_RATIO = 0.8
+
+// Edge zone ratio for left/right click navigation in horizontal pagination mode
+// Clicks within this ratio from left/right edge trigger page navigation
+export const HORIZONTAL_EDGE_CLICK_RATIO = 0.15

@@ -187,17 +187,21 @@ page-break
 - 音声読み上げ: Web Speech API活用
 - キーボードショートカット: 矢印キーでページ送り等
 - フルスクリーンモード: 没入型読書体験
+- 操作方法ヘルプ: トップページ・目次から参照可能な操作ガイド ✅
+- 横書きページ送りナビゲーション: 左右端タップ/クリック・スワイプでページ送り ✅
+- ブラウザジェスチャー無効化: リーダー画面でプルリフレッシュ・スワイプ戻る/進むを無効化 ✅
 
 ### 4.3 設定機能
-- 表示方向（縦書き/横書き）
-- ページモード（ページ送り/スクロール）
-- フォントサイズ
-- テーマ（ライト/ダーク/セピア）
-- フォントファミリー
-- 行間
-- 余白
+- 表示方向（縦書き/横書き） ✅
+- ページモード（ページ送り/スクロール） ✅
+- フォントサイズ（12px-32pxスライダー） ✅
+- テーマ（ライト/ダーク/セピア/自動） ✅
+- フォントファミリー（システム/セリフ/サンセリフ/明朝/ゴシック） ✅
+- 行間（1.0-3.0スライダー） ✅
+- 余白サイズ（小/中/大） ✅
+- 明るさ調整（30-100%） ✅
+- データエクスポート/インポート（読書履歴の移行） ✅
 - アニメーション有効/無効
-- データエクスポート/インポート（読書履歴の移行）
 
 ### 4.4 LocalStorage保存データ構造
 ```typescript
@@ -221,11 +225,13 @@ interface UserData {
   };
   settings: {
     writingMode: 'vertical' | 'horizontal';
-    pageMode: 'pagination' | 'scroll';
-    fontSize: 'small' | 'medium' | 'large' | 'xlarge';
-    fontFamily: string;
-    lineHeight: number;
-    theme: 'light' | 'dark' | 'sepia';
+    displayMode: 'pagination' | 'scroll';
+    fontSize: number;  // 12-32px
+    fontFamily: 'system' | 'serif' | 'sans-serif' | 'mincho' | 'gothic';
+    lineHeight: number;  // 1.0-3.0
+    marginSize: 'small' | 'medium' | 'large';
+    brightness: number;  // 30-100%
+    theme: 'light' | 'dark' | 'sepia' | 'auto';
   };
 }
 ```
@@ -513,4 +519,4 @@ Google Analyticsは`src/app/layout.tsx`にNext.jsの`next/script`コンポーネ
 
 ---
 
-最終更新: 2025-12-05
+最終更新: 2025-12-06

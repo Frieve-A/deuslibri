@@ -123,7 +123,16 @@ deuslibri/
 - [x] Book data loader
 - [x] Catalog page with search and filters
 - [x] Reader page (pagination & scroll modes)
-- [x] Settings page
+- [x] Settings page with full customization:
+  - [x] Writing mode (vertical/horizontal)
+  - [x] Display mode (pagination/scroll)
+  - [x] Font size (12px-32px)
+  - [x] Theme (light/dark/sepia/auto)
+  - [x] Font family (system/serif/sans-serif/mincho/gothic)
+  - [x] Line height (1.0-3.0)
+  - [x] Margin size (small/medium/large)
+  - [x] Brightness adjustment (30-100%)
+  - [x] Data export/import
 - [x] LocalStorage integration
 - [x] GitHub Actions configuration
 - [x] Google Analytics integration

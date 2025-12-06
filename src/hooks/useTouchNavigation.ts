@@ -7,6 +7,7 @@ import {
   CLICK_THRESHOLD,
   SCROLL_AMOUNT_RATIO,
   SMOOTH_SCROLL_DURATION,
+  HORIZONTAL_EDGE_CLICK_RATIO,
 } from '@/lib/reader'
 import { isPointInsideSelection } from '@/lib/reader'
 
@@ -294,33 +295,47 @@ export function useTouchNavigation({
       }
     } else if (isTap && !isVertical && isPagination) {
       // Tap navigation for horizontal pagination mode
-      // Top half = scroll up / prev page, Bottom half = scroll down / next page
+      // Left/right edge = direct page navigation
+      // Center area: Top half = scroll up / prev page, Bottom half = scroll down / next page
       const element = contentRef.current
       if (element) {
         const rect = element.getBoundingClientRect()
+        const tapX = touchStartX.current
         const tapY = touchStartY.current
-        const elementCenter = rect.top + rect.height / 2
-        const scrollAmount = element.clientHeight * SCROLL_AMOUNT_RATIO
-        const currentScrollTop = element.scrollTop
-        const maxScroll = element.scrollHeight - element.clientHeight
-        const isAtBottom = currentScrollTop >= maxScroll - 5
-        const isAtTop = currentScrollTop <= 5
+        const edgeZoneWidth = rect.width * HORIZONTAL_EDGE_CLICK_RATIO
 
-        if (tapY > elementCenter) {
-          // Tapped bottom half - scroll down or go to next page
-          if (isAtBottom) {
-            goToNextPage()
-          } else {
-            const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
-            element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
-          }
+        // Check if tap is in left or right edge zone for direct page navigation
+        if (tapX < rect.left + edgeZoneWidth) {
+          // Tapped left edge - go to previous page (reading direction: left = back)
+          goToPrevPage()
+        } else if (tapX > rect.right - edgeZoneWidth) {
+          // Tapped right edge - go to next page (reading direction: right = forward)
+          goToNextPage()
         } else {
-          // Tapped top half - scroll up or go to prev page
-          if (isAtTop) {
-            goToPrevPage()
+          // Tapped center area - use top/bottom half for scroll/page navigation
+          const elementCenter = rect.top + rect.height / 2
+          const scrollAmount = element.clientHeight * SCROLL_AMOUNT_RATIO
+          const currentScrollTop = element.scrollTop
+          const maxScroll = element.scrollHeight - element.clientHeight
+          const isAtBottom = currentScrollTop >= maxScroll - 5
+          const isAtTop = currentScrollTop <= 5
+
+          if (tapY > elementCenter) {
+            // Tapped bottom half - scroll down or go to next page
+            if (isAtBottom) {
+              goToNextPage()
+            } else {
+              const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
+              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+            }
           } else {
-            const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
-            element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+            // Tapped top half - scroll up or go to prev page
+            if (isAtTop) {
+              goToPrevPage()
+            } else {
+              const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
+              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+            }
           }
         }
       }
@@ -409,8 +424,19 @@ export function useTouchNavigation({
           }
         }
       } else if (isPagination) {
-        // Horizontal pagination mode: respond to vertical swipes for page navigation
-        if (!isHorizontalSwipe) {
+        // Horizontal pagination mode: respond to both horizontal and vertical swipes for page navigation
+        if (isHorizontalSwipe) {
+          // Horizontal swipe in horizontal pagination mode
+          // Left swipe (swipeDistanceX > 0) = Next page (reading direction: swipe left to go forward)
+          // Right swipe (swipeDistanceX < 0) = Prev page (reading direction: swipe right to go back)
+          if (swipeDistanceX > 0) {
+            // Swiped left = Next page
+            goToNextPage()
+          } else if (swipeDistanceX < 0) {
+            // Swiped right = Prev page
+            goToPrevPage()
+          }
+        } else {
           // Vertical swipe in horizontal pagination mode
           // swipeDistanceY > 0 means swiped UP (finger moved from bottom to top)
           // swipeDistanceY < 0 means swiped DOWN (finger moved from top to bottom)

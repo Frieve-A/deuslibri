@@ -80,7 +80,24 @@ export interface TranslationMessages {
       auto: string
       light: string
       dark: string
+      sepia: string
       note: string
+    }
+    lineHeight: {
+      label: string
+      compact: string
+      spacious: string
+    }
+    marginSize: {
+      label: string
+      small: string
+      medium: string
+      large: string
+    }
+    brightness: {
+      label: string
+      dim: string
+      bright: string
     }
     fontFamily: {
       label: string
@@ -134,6 +151,40 @@ export interface TranslationMessages {
     publishDate: string
     close: string
     readBook: string
+  }
+  // Help / Controls
+  help: {
+    title: string
+    button: string
+    close: string
+    sections: {
+      pagination: {
+        title: string
+        horizontal: {
+          title: string
+          items: string[]
+        }
+        vertical: {
+          title: string
+          items: string[]
+        }
+      }
+      scroll: {
+        title: string
+        horizontal: {
+          title: string
+          items: string[]
+        }
+        vertical: {
+          title: string
+          items: string[]
+        }
+      }
+      common: {
+        title: string
+        items: string[]
+      }
+    }
   }
 }
 
@@ -205,7 +256,24 @@ const en: TranslationMessages = {
       auto: 'Auto (System)',
       light: 'Light',
       dark: 'Dark',
+      sepia: 'Sepia',
       note: 'Auto mode follows your system preference',
+    },
+    lineHeight: {
+      label: 'Line Height',
+      compact: 'Compact',
+      spacious: 'Spacious',
+    },
+    marginSize: {
+      label: 'Margin Size',
+      small: 'Small',
+      medium: 'Medium',
+      large: 'Large',
+    },
+    brightness: {
+      label: 'Brightness',
+      dim: 'Dim',
+      bright: 'Bright',
     },
     fontFamily: {
       label: 'Font Family',
@@ -257,6 +325,58 @@ const en: TranslationMessages = {
     publishDate: 'Published',
     close: 'Close',
     readBook: 'Read Book',
+  },
+  help: {
+    title: 'Controls',
+    button: 'Help',
+    close: 'Close',
+    sections: {
+      pagination: {
+        title: 'Pagination Mode',
+        horizontal: {
+          title: 'Horizontal Writing',
+          items: [
+            'Left/Right edge tap/click: Previous/Next page',
+            'Left/Right swipe: Previous/Next page',
+            'Top/Bottom tap/click (center): Scroll up/down within page',
+            'Up/Down swipe at edge: Previous/Next page',
+          ],
+        },
+        vertical: {
+          title: 'Vertical Writing (Japanese)',
+          items: [
+            'Left/Right tap/click: Scroll within page / Next/Previous page',
+            'Left/Right swipe at edge: Next/Previous page',
+          ],
+        },
+      },
+      scroll: {
+        title: 'Scroll Mode',
+        horizontal: {
+          title: 'Horizontal Writing',
+          items: [
+            'Top/Bottom tap/click: Scroll up/down',
+            'Normal vertical scrolling',
+          ],
+        },
+        vertical: {
+          title: 'Vertical Writing (Japanese)',
+          items: [
+            'Left/Right tap/click: Scroll left/right',
+            'Normal horizontal scrolling',
+          ],
+        },
+      },
+      common: {
+        title: 'Common',
+        items: [
+          'Long press: Text selection',
+          'Drag: Text selection',
+          'TOC button: Open table of contents',
+          'Page indicator click: Open table of contents',
+        ],
+      },
+    },
   },
 }
 
@@ -328,7 +448,24 @@ const ja: TranslationMessages = {
       auto: '自動（システム設定）',
       light: 'ライト',
       dark: 'ダーク',
+      sepia: 'セピア',
       note: '自動モードはシステム設定に従います',
+    },
+    lineHeight: {
+      label: '行間',
+      compact: '狭い',
+      spacious: '広い',
+    },
+    marginSize: {
+      label: '余白',
+      small: '小',
+      medium: '中',
+      large: '大',
+    },
+    brightness: {
+      label: '明るさ',
+      dim: '暗い',
+      bright: '明るい',
     },
     fontFamily: {
       label: 'フォント',
@@ -380,6 +517,58 @@ const ja: TranslationMessages = {
     publishDate: '出版日',
     close: '閉じる',
     readBook: '読む',
+  },
+  help: {
+    title: '操作方法',
+    button: 'ヘルプ',
+    close: '閉じる',
+    sections: {
+      pagination: {
+        title: 'ページ送りモード',
+        horizontal: {
+          title: '横書き',
+          items: [
+            '左右端タップ/クリック：前/次のページ',
+            '左右スワイプ：前/次のページ',
+            '上下タップ/クリック（中央部）：ページ内スクロール',
+            '端で上下スワイプ：前/次のページ',
+          ],
+        },
+        vertical: {
+          title: '縦書き（日本語）',
+          items: [
+            '左右タップ/クリック：ページ内スクロール / 次/前のページ',
+            '端で左右スワイプ：次/前のページ',
+          ],
+        },
+      },
+      scroll: {
+        title: 'スクロールモード',
+        horizontal: {
+          title: '横書き',
+          items: [
+            '上下タップ/クリック：上下にスクロール',
+            '通常の縦スクロール',
+          ],
+        },
+        vertical: {
+          title: '縦書き（日本語）',
+          items: [
+            '左右タップ/クリック：左右にスクロール',
+            '通常の横スクロール',
+          ],
+        },
+      },
+      common: {
+        title: '共通',
+        items: [
+          '長押し：テキスト選択',
+          'ドラッグ：テキスト選択',
+          '目次ボタン：目次を開く',
+          'ページ番号クリック：目次を開く',
+        ],
+      },
+    },
   },
 }
 

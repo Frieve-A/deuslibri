@@ -4,6 +4,7 @@ import {
   CLICK_THRESHOLD,
   SCROLL_AMOUNT_RATIO,
   SMOOTH_SCROLL_DURATION,
+  HORIZONTAL_EDGE_CLICK_RATIO,
 } from '@/lib/reader'
 import { isPointInsideSelection } from '@/lib/reader'
 
@@ -195,32 +196,45 @@ export function useMouseNavigation({
         }
       } else if (isPagination) {
         // Horizontal pagination mode click navigation
-        // Top half = scroll up / prev page, Bottom half = scroll down / next page
+        // Left/right edge = direct page navigation
+        // Center area: Top half = scroll up / prev page, Bottom half = scroll down / next page
         const rect = element.getBoundingClientRect()
         const clickY = e.clientY
-        const elementCenter = rect.top + rect.height / 2
-        const scrollAmount = element.clientHeight * SCROLL_AMOUNT_RATIO
-        const edgeThreshold = 5
-        const currentScrollTop = element.scrollTop
-        const maxScroll = element.scrollHeight - element.clientHeight
-        const isAtBottom = currentScrollTop >= maxScroll - edgeThreshold
-        const isAtTop = currentScrollTop <= edgeThreshold
+        const edgeZoneWidth = rect.width * HORIZONTAL_EDGE_CLICK_RATIO
 
-        if (clickY > elementCenter) {
-          // Clicked bottom half - scroll down or go to next page
-          if (isAtBottom) {
-            goToNextPage()
-          } else {
-            const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
-            element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
-          }
+        // Check if click is in left or right edge zone for direct page navigation
+        if (clickX < rect.left + edgeZoneWidth) {
+          // Clicked left edge - go to previous page (reading direction: left = back)
+          goToPrevPage()
+        } else if (clickX > rect.right - edgeZoneWidth) {
+          // Clicked right edge - go to next page (reading direction: right = forward)
+          goToNextPage()
         } else {
-          // Clicked top half - scroll up or go to prev page
-          if (isAtTop) {
-            goToPrevPage()
+          // Clicked center area - use top/bottom half for scroll/page navigation
+          const elementCenter = rect.top + rect.height / 2
+          const scrollAmount = element.clientHeight * SCROLL_AMOUNT_RATIO
+          const edgeThreshold = 5
+          const currentScrollTop = element.scrollTop
+          const maxScroll = element.scrollHeight - element.clientHeight
+          const isAtBottom = currentScrollTop >= maxScroll - edgeThreshold
+          const isAtTop = currentScrollTop <= edgeThreshold
+
+          if (clickY > elementCenter) {
+            // Clicked bottom half - scroll down or go to next page
+            if (isAtBottom) {
+              goToNextPage()
+            } else {
+              const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
+              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+            }
           } else {
-            const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
-            element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+            // Clicked top half - scroll up or go to prev page
+            if (isAtTop) {
+              goToPrevPage()
+            } else {
+              const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
+              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+            }
           }
         }
       } else if (isVertical) {

@@ -29,8 +29,11 @@ export interface ReadingSettings {
   writingMode: 'horizontal' | 'vertical' // vertical only for Japanese
   displayMode: 'pagination' | 'scroll'
   fontSize: number // in pixels
-  theme: 'light' | 'dark' | 'auto'
+  theme: 'light' | 'dark' | 'sepia' | 'auto'
   fontFamily: FontFamily
+  lineHeight: number // 1.0 - 3.0
+  marginSize: 'small' | 'medium' | 'large'
+  brightness: number // 0 - 100
 }
 
 interface ReadingState {
@@ -79,6 +82,9 @@ export const useReadingStore = create<ReadingState>()(
         fontSize: 16,
         theme: 'auto',
         fontFamily: 'system',
+        lineHeight: 1.8,
+        marginSize: 'medium',
+        brightness: 100,
       },
 
       // Progress methods

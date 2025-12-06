@@ -127,6 +127,15 @@ export default function BookReader({ book }: BookReaderProps) {
 
   useEffect(() => {
     setMounted(true)
+
+    // Prevent browser back/forward navigation gestures (swipe left/right) on reader page only
+    const html = document.documentElement
+    const originalOverscrollBehaviorX = html.style.overscrollBehaviorX
+    html.style.overscrollBehaviorX = 'none'
+
+    return () => {
+      html.style.overscrollBehaviorX = originalOverscrollBehaviorX
+    }
   }, [])
 
   // Convert all pages to HTML with image path fixes
@@ -242,6 +251,23 @@ export default function BookReader({ book }: BookReaderProps) {
     }
   }
 
+  // Get theme-specific classes
+  const getThemeClasses = () => {
+    switch (settings.theme) {
+      case 'sepia':
+        return 'bg-amber-50 text-amber-900'
+      case 'dark':
+        return 'bg-slate-900 text-gray-100'
+      case 'light':
+        return 'bg-white text-gray-900'
+      default: // 'auto'
+        return 'bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100'
+    }
+  }
+
+  // Calculate brightness overlay opacity (inverted: 100% = no overlay, 30% = dark overlay)
+  const brightnessOverlayOpacity = (100 - (settings.brightness ?? 100)) / 100
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -251,7 +277,10 @@ export default function BookReader({ book }: BookReaderProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className={`min-h-screen flex flex-col ${getThemeClasses()}`}
+      style={{ overscrollBehavior: 'none' }}
+    >
       {/* Table of Contents - available in both pagination and scroll modes */}
       <TableOfContents
         toc={toc}
@@ -288,6 +317,9 @@ export default function BookReader({ book }: BookReaderProps) {
           isPagination={isPagination}
           fontSize={settings.fontSize}
           fontFamily={settings.fontFamily}
+          lineHeight={settings.lineHeight ?? 1.8}
+          marginSize={settings.marginSize ?? 'medium'}
+          theme={settings.theme}
           contentRef={contentRef}
           handleTouchStart={handleTouchStart}
           handleTouchMove={handleTouchMove}
@@ -319,6 +351,14 @@ export default function BookReader({ book }: BookReaderProps) {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
       />
+
+      {/* Brightness Overlay */}
+      {brightnessOverlayOpacity > 0 && (
+        <div
+          className="fixed inset-0 bg-black pointer-events-none z-50"
+          style={{ opacity: brightnessOverlayOpacity }}
+        />
+      )}
     </div>
   )
 }
