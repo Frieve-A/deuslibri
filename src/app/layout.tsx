@@ -65,8 +65,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // AdSense publisher ID - replace with your actual publisher ID
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-XXXXXXXXXXXXXXXX'
+  // AdSense publisher ID
+  const adsenseId = 'ca-pub-5513656950154213'
 
   const gaId = 'G-FW9YWVLT8E'
 
@@ -86,16 +86,13 @@ export default function RootLayout({
             gtag('config', '${gaId}');
           `}
         </Script>
-        {/* Google AdSense - TEMPORARILY DISABLED
-        {process.env.NODE_ENV === 'production' && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-            strategy="afterInteractive"
-          />
-        )}
-        */}
+        {/* Google AdSense */}
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </head>
       <body className={inter.className}>
         <ThemeProvider>{children}</ThemeProvider>
