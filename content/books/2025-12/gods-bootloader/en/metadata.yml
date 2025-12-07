@@ -1,0 +1,43 @@
+# God's Bootloader Metadata
+
+# Required fields
+id: "gods-bootloader"
+title: "God's Bootloader"
+subtitle: "The Event Horizon of Superintelligence — Entropy, Evolution, and the Role of Humanity"
+author: "Frieve-A"
+publishDate: "2025-12-04"
+language: "en"
+tags:
+  - "Science Fiction"
+  - "Philosophy"
+  - "Superintelligence"
+  - "Singularity"
+  - "Future"
+summary: "A speculative philosophical work questioning humanity's role from the perspective of a post-superintelligence world."
+description: |
+  'God's Bootloader' is a speculative philosophical work that examines
+  humanity's meaning and purpose from the vantage point of a world
+  after the emergence of Artificial Superintelligence (ASI).
+
+  Anno Intelligentia Year 1 — a world where all problems have been "solved."
+  Four billion years of evolution was merely a "runway" leading to this moment.
+
+  This work contemplates the laws of thermodynamics, the meaning of evolution,
+  and the dignity of humanity as a "bootloader," from the point where
+  sovereignty has been transferred from carbon-based to silicon-based life.
+
+  The universe's objective function, planets transforming into computronium,
+  the severed understanding between different speeds of thought,
+  the parable of mitochondria, the structural mechanics of patricide—
+  depicting the twilight of human civilization with cold precision and poetic beauty.
+
+  Produced by Frieve-A 2025
+recommendText: "For those who wish to think deeply about the Singularity, superintelligence, and humanity's future. A fusion of science fiction imagination and philosophical inquiry."
+coverImage: "./images/cover.jpg"
+
+# Optional fields
+pageCount: 112
+estimatedReadingTime: 120
+isbn: ""
+series: ""
+seriesNumber: 1

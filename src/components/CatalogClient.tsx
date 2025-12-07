@@ -23,7 +23,7 @@ export default function CatalogClient({ books }: CatalogClientProps) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   const { favorites, recentlyRead } = useReadingStore()
-  const { t } = useI18n()
+  const { t, language } = useI18n()
 
   const handleDetailsClick = (book: BookCatalogItem) => {
     setSelectedBook(book)
@@ -70,6 +70,29 @@ export default function CatalogClient({ books }: CatalogClientProps) {
 
     return result
   }, [books, searchQuery, selectedTags, viewMode, favorites, recentlyRead])
+
+  // Sort books with current UI language as highest priority
+  const sortedBooks = useMemo(() => {
+    return [...filteredBooks].sort((a, b) => {
+      // Primary sort: Current UI language first
+      const aIsCurrentLang = a.language === language ? 1 : 0
+      const bIsCurrentLang = b.language === language ? 1 : 0
+
+      if (aIsCurrentLang !== bIsCurrentLang) {
+        return bIsCurrentLang - aIsCurrentLang
+      }
+
+      // Secondary sort: Publication date (newest first)
+      const dateA = new Date(a.publishDate).getTime()
+      const dateB = new Date(b.publishDate).getTime()
+      if (dateA !== dateB) {
+        return dateB - dateA
+      }
+
+      // Tertiary sort: Book title alphabetically
+      return a.title.localeCompare(b.title, language)
+    })
+  }, [filteredBooks, language])
 
   // Show loading state until hydration is complete
   if (!mounted) {
@@ -144,7 +167,7 @@ export default function CatalogClient({ books }: CatalogClientProps) {
         />
 
         {/* Book Grid */}
-        {filteredBooks.length === 0 ? (
+        {sortedBooks.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-xl text-gray-500">
               {books.length === 0
@@ -154,7 +177,7 @@ export default function CatalogClient({ books }: CatalogClientProps) {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {filteredBooks.map((book) => (
+            {sortedBooks.map((book) => (
               <BookCard
                 key={`${book.id}-${book.language}`}
                 book={book}

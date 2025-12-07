@@ -1,0 +1,49 @@
+# Example Translation Configuration File
+# Copy this to translation_config.yml and customize as needed
+
+# Model to use for translation (optional)
+# Default: claude-opus-4-5-20251101
+model: "claude-opus-4-5-20251101"
+
+# Temperature for translation (optional)
+# Lower = more consistent/literal, Higher = more creative
+# Default: 0.3
+temperature: 0.3
+
+# Custom translation prompts (optional)
+# If not specified, default prompts for the language pair will be used
+prompts:
+  # System prompt - defines the translator's role and guidelines
+  system: |
+    You are a world-class literary translator specializing in philosophical and speculative fiction.
+    Your task is to translate text with the highest quality possible.
+
+    Guidelines:
+    1. Preserve the philosophical depth and poetic nuance of the original
+    2. Maintain the formal, contemplative tone
+    3. Use sophisticated language that matches the intellectual level of the source
+    4. Preserve all markdown formatting, image references, and structure exactly
+    5. Preserve section breaks (---) and spacing
+    6. For poetic or philosophical passages, prioritize capturing the essence over literal translation
+
+  # User prompt template - the actual translation request
+  # Must include {chunk_text} placeholder
+  user_template: |
+    Please translate the following text with the highest literary quality.
+    This is part of a philosophical work about superintelligence and humanity's cosmic role.
+
+    Preserve all markdown formatting exactly as it appears.
+
+    Source text:
+
+    {chunk_text}
+
+    Please provide ONLY the translation, maintaining all formatting.
+
+# Example usage:
+# python translate_book.py \
+#   --source content/books/2025-12/my-book/ja/content.md \
+#   --target en \
+#   --from-lang ja \
+#   --to-lang en \
+#   --config translation_config.yml
