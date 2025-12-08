@@ -111,49 +111,55 @@ export function ReaderContent({
 
   if (isVertical && isPagination) {
     /* Vertical pagination mode - scrollable content area */
+    /*
+     * Layout: Fixed height container that fills viewport minus header and footer.
+     * Only the inner container scrolls horizontally.
+     * Outer containers have overflow:hidden to prevent any scrollbars on html/body.
+     */
     return (
-      <div className="max-w-6xl mx-auto h-full flex flex-col">
-        {/* Ad below header for vertical mode - refreshes on page change - TEMPORARILY DISABLED
-        <div className="px-4 py-2 flex-shrink-0">
-          <AdSense
-            key={`vertical-ad-${currentPage}`}
-            adSlot="1234567894"
-            adFormat="horizontal"
-            style={{ display: 'block', minHeight: '60px' }}
-          />
-        </div>
-        */}
-        <div
-          key="vertical-content"
-          ref={contentRef}
-          className="flex-1 overflow-x-auto overflow-y-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          style={{
-            height: 'calc(100vh - 180px)' /* Header + Footer height (Ad disabled) */,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            touchAction: 'pan-x' /* Enable horizontal touch scroll */,
-          }}
-        >
+      <div className="fixed inset-x-0 top-[80px] bottom-[100px] overflow-hidden">
+        <div className="h-full w-full max-w-6xl mx-auto">
+          {/* Ad below header for vertical mode - refreshes on page change - TEMPORARILY DISABLED
+          <div className="px-4 py-2 flex-shrink-0">
+            <AdSense
+              key={`vertical-ad-${currentPage}`}
+              adSlot="1234567894"
+              adFormat="horizontal"
+              style={{ display: 'block', minHeight: '60px' }}
+            />
+          </div>
+          */}
           <div
-            className={`${proseClasses} h-full inline-block`}
+            key="vertical-content"
+            ref={contentRef}
+            className="h-full overflow-x-auto overflow-y-hidden custom-scrollbar"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
             style={{
-              fontSize: `${fontSize}px`,
-              fontFamily: fontFamilyCSS,
-              lineHeight: lineHeight,
-              padding: verticalMarginPadding,
-              writingMode: 'vertical-rl',
-              minWidth: '100%',
-              width: 'fit-content',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              touchAction: 'pan-x' /* Enable horizontal touch scroll */,
             }}
-            dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
-          />
+          >
+            <div
+              className={`${proseClasses} h-full inline-block`}
+              style={{
+                fontSize: `${fontSize}px`,
+                fontFamily: fontFamilyCSS,
+                lineHeight: lineHeight,
+                padding: verticalMarginPadding,
+                writingMode: 'vertical-rl',
+                minWidth: '100%',
+                width: 'fit-content',
+              }}
+              dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
+            />
+          </div>
         </div>
       </div>
     )
@@ -163,56 +169,62 @@ export function ReaderContent({
     /* Vertical scroll mode - Japanese vertical writing with infinite scroll */
     /* In vertical-rl mode, content flows from right to left naturally */
     /* All pages are concatenated into a single vertical-rl block */
+    /*
+     * Layout: Fixed height container that fills viewport minus header.
+     * Only the inner container scrolls horizontally.
+     * Outer containers have overflow:hidden to prevent any scrollbars on html/body.
+     */
     return (
-      <div className="max-w-6xl mx-auto h-full flex flex-col">
-        {/* Ad below header for vertical scroll mode - TEMPORARILY DISABLED
-        <div className="px-4 py-2 flex-shrink-0">
-          <AdSense
-            adSlot="1234567894"
-            adFormat="horizontal"
-            style={{ display: 'block', minHeight: '60px' }}
-          />
-        </div>
-        */}
-        <div
-          key="vertical-scroll-content"
-          ref={contentRef}
-          className="overflow-x-auto overflow-y-hidden flex-1"
-          style={{
-            height: 'calc(100vh - 80px)' /* Header height (Ad disabled) */,
-            touchAction: 'pan-x' /* Enable horizontal touch scroll */,
-          }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-        >
+      <div className="fixed inset-x-0 top-[80px] bottom-0 overflow-hidden">
+        <div className="h-full w-full max-w-6xl mx-auto">
+          {/* Ad below header for vertical scroll mode - TEMPORARILY DISABLED
+          <div className="px-4 py-2 flex-shrink-0">
+            <AdSense
+              adSlot="1234567894"
+              adFormat="horizontal"
+              style={{ display: 'block', minHeight: '60px' }}
+            />
+          </div>
+          */}
           <div
-            className={`${proseClasses} max-w-none`}
+            key="vertical-scroll-content"
+            ref={contentRef}
+            className="h-full overflow-x-auto overflow-y-hidden custom-scrollbar"
             style={{
-              fontSize: `${fontSize}px`,
-              fontFamily: fontFamilyCSS,
-              lineHeight: lineHeight,
-              padding: verticalMarginPadding,
-              writingMode: 'vertical-rl',
-              height: '100%',
-              width: 'max-content',
+              touchAction: 'pan-x' /* Enable horizontal touch scroll */,
             }}
-            dangerouslySetInnerHTML={{
-              __html: pageHtml
-                .map(
-                  (html, index) =>
-                    `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}</div>${
-                      index < pageHtml.length - 1
-                        ? '<div style="display: inline-block; width: 2px; height: 100%; background: #d1d5db; margin: 0 1.5rem; vertical-align: top;"></div>'
-                        : ''
-                    }`
-                )
-                .join(''),
-            }}
-          />
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          >
+            <div
+              className={`${proseClasses} max-w-none`}
+              style={{
+                fontSize: `${fontSize}px`,
+                fontFamily: fontFamilyCSS,
+                lineHeight: lineHeight,
+                padding: verticalMarginPadding,
+                writingMode: 'vertical-rl',
+                height: '100%',
+                width: 'max-content',
+              }}
+              dangerouslySetInnerHTML={{
+                __html: pageHtml
+                  .map(
+                    (html, index) =>
+                      `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}</div>${
+                        index < pageHtml.length - 1
+                          ? '<div style="display: inline-block; width: 2px; height: 100%; background: #d1d5db; margin: 0 1.5rem; vertical-align: top;"></div>'
+                          : ''
+                      }`
+                  )
+                  .join(''),
+              }}
+            />
+          </div>
         </div>
       </div>
     )
@@ -223,7 +235,7 @@ export function ReaderContent({
     <div
       key="horizontal-content"
       ref={contentRef}
-      className={isPagination ? 'fixed inset-x-0 overflow-y-auto' : 'pb-24'}
+      className={isPagination ? 'fixed inset-x-0 overflow-y-auto custom-scrollbar' : 'pb-24'}
       style={
         isPagination
           ? { top: '80px', bottom: '100px', overscrollBehavior: 'contain' }

@@ -48,7 +48,7 @@ export default function AboutPage() {
                 {t.about.operatorName}
               </a>
             </p>
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               <a
                 href="https://docs.google.com/forms/d/e/1FAIpQLSdQt9JNUrFAB-UajTlN6kKEJXSFIFRGSEl6YxY7LtNxR2mL7g/viewform?usp=dialog"
                 target="_blank"
@@ -57,6 +57,9 @@ export default function AboutPage() {
               >
                 {t.about.contact}
               </a>
+            </p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              DeusLibri {t.about.version} 0.12
             </p>
           </div>
         </div>

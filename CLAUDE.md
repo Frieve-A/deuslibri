@@ -59,3 +59,10 @@ When debugging issues, the following workflow is **MANDATORY**:
 - The development server is managed by the user and runs at http://localhost:3000
 - DO NOT attempt to start, stop, or restart the development server
 - The user will handle all development server operations
+
+## Version Management
+
+- The app version is displayed on the About page (`src/app/about/page.tsx`)
+- **Before each commit**, increment the version number in the About page
+- Current format: `DeusLibri {t.about.version} X.XX`
+- Increment the minor version (e.g., 0.11 → 0.12) for regular changes

@@ -48,6 +48,9 @@ export function useMouseNavigation({
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      // Only handle left mouse button (0), ignore right-click (2) and middle-click (1)
+      if (e.button !== 0) return
+
       // If this mousedown follows a touch event, skip (touch already handled it)
       // Reset the flag here so pure mouse interactions work normally
       if (touchHandledRef.current) {
@@ -111,6 +114,9 @@ export function useMouseNavigation({
 
   const handleMouseUp = useCallback(
     (e: React.MouseEvent) => {
+      // Only handle left mouse button (0), ignore right-click (2) and middle-click (1)
+      if (e.button !== 0) return
+
       // If this mouseup follows a touch event, skip (touch already handled navigation)
       if (touchHandledRef.current) {
         ;(touchHandledRef as { current: boolean }).current = false

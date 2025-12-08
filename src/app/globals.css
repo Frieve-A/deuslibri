@@ -103,6 +103,69 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ======================================= */
+/* Custom scrollbar styling for reader */
+/* ======================================= */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+  background-clip: padding-box;
+}
+
+/* Dark mode scrollbar */
+:where(.dark, .dark *) .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.5);
+  background-clip: padding-box;
+}
+
+:where(.dark, .dark *) .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+  background-clip: padding-box;
+}
+
+/* Sepia mode scrollbar */
+.bg-amber-50 .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(180, 140, 100, 0.4);
+  background-clip: padding-box;
+}
+
+.bg-amber-50 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 120, 80, 0.6);
+  background-clip: padding-box;
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+:where(.dark, .dark *) .custom-scrollbar {
+  scrollbar-color: rgba(107, 114, 128, 0.5) transparent;
+}
+
+.bg-amber-50 .custom-scrollbar {
+  scrollbar-color: rgba(180, 140, 100, 0.4) transparent;
+}
+
 /* Card hover effects */
 .card-hover {
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;

@@ -226,6 +226,7 @@ export interface TranslationMessages {
     operator: string
     operatorName: string
     contact: string
+    version: string
   }
 }
 
@@ -467,6 +468,7 @@ const en: TranslationMessages = {
     operator: 'Operated by',
     operatorName: 'Frieve',
     contact: 'Contact Form',
+    version: 'Version',
   },
 }
 
@@ -708,6 +710,7 @@ const ja: TranslationMessages = {
     operator: '運営',
     operatorName: 'Frieve',
     contact: 'お問い合わせフォーム',
+    version: 'バージョン',
   },
 }
 
