@@ -66,6 +66,133 @@ function getProseClasses(theme: Theme): string {
   }
 }
 
+// Get gradient color based on theme (color that contrasts with background for visibility)
+function getGradientColor(theme: Theme): string {
+  switch (theme) {
+    case 'sepia':
+      return 'rgba(139, 90, 43, 0.15)' // Darker sepia tone for contrast
+    case 'dark':
+      return 'rgba(255, 255, 255, 0.1)' // Light color for dark mode
+    case 'light':
+      return 'rgba(0, 0, 0, 0.08)' // Dark color for light mode
+    default: // 'auto'
+      return 'rgba(0, 0, 0, 0.08)'
+  }
+}
+
+// Build exponential gradient color stops for a more natural fade effect
+// Gradient is slow at start and rapid change at the edge
+function buildExpGradient(direction: string, color: string): string {
+  // Exponential curve: opacity increases slowly then rapidly at the end
+  // Using color-stop percentages to simulate exp curve
+  const stops = [
+    `transparent 0%`,
+    `${color.replace(/[\d.]+\)$/, '0.01)')} 50%`,
+    `${color.replace(/[\d.]+\)$/, '0.02)')} 70%`,
+    `${color.replace(/[\d.]+\)$/, '0.04)')} 85%`,
+    `${color.replace(/[\d.]+\)$/, '0.06)')} 92%`,
+    `${color} 100%`,
+  ]
+  return `linear-gradient(${direction}, ${stops.join(', ')})`
+}
+
+// Inline scroll edge gradient component - placed inside scrollable content at edges
+interface ScrollEdgeGradientProps {
+  position: 'start' | 'end'
+  direction: 'horizontal' | 'vertical'
+  theme: Theme
+}
+
+function ScrollEdgeGradient({ position, direction, theme }: ScrollEdgeGradientProps) {
+  const bgColor = getGradientColor(theme)
+  const isAuto = theme === 'auto'
+  const lightModeColor = 'rgba(0, 0, 0, 0.12)'
+  const darkModeColor = 'rgba(255, 255, 255, 0.15)'
+
+  // For vertical scroll (horizontal text mode)
+  // - "start" gradient at top (beginning of scroll): transparent at top edge, fades to color toward content
+  // - "end" gradient at bottom (end of scroll): transparent at bottom edge, fades to color toward content
+  // This matches the visual style of vertical text mode where gradient color is toward content
+  // Use negative margins to extend beyond padding to screen edge
+  const baseStyle: React.CSSProperties = {
+    display: 'block',
+    width: '100vw',
+    height: '40px',
+    flexShrink: 0,
+    pointerEvents: 'none',
+    marginLeft: 'calc(-50vw + 50%)',
+    marginRight: 'calc(-50vw + 50%)',
+  }
+
+  // For start (top): transparent at top (0%), color toward content (100%)
+  // For end (bottom): transparent at bottom (0%), color toward content (100%)
+  const gradientDir = position === 'start' ? 'to bottom' : 'to top'
+
+  if (isAuto) {
+    return (
+      <>
+        <div
+          style={{ ...baseStyle, background: buildExpGradient(gradientDir, lightModeColor) }}
+          className="dark:hidden"
+        />
+        <div
+          style={{ ...baseStyle, background: buildExpGradient(gradientDir, darkModeColor) }}
+          className="hidden dark:block"
+        />
+      </>
+    )
+  }
+
+  return (
+    <div style={{ ...baseStyle, background: buildExpGradient(gradientDir, bgColor) }} />
+  )
+}
+
+// Build inline gradient HTML for vertical text mode (horizontal scroll)
+// Returns HTML string to be inserted into dangerouslySetInnerHTML
+function buildVerticalGradientHtml(position: 'start' | 'end', theme: Theme): string {
+  const lightModeColor = 'rgba(0, 0, 0, 0.12)'
+  const darkModeColor = 'rgba(255, 255, 255, 0.15)'
+  const bgColor = getGradientColor(theme)
+  const isAuto = theme === 'auto'
+
+  // In vertical-rl mode, content flows right-to-left
+  // - "start" is at the RIGHT edge of the scroll area (beginning)
+  // - "end" is at the LEFT edge of the scroll area (end)
+  // Gradient direction: color at the edge, transparent toward content
+  // - start (right): color at right edge -> transparent toward left (to left)
+  // - end (left): color at left edge -> transparent toward right (to right)
+  const gradientDir = position === 'start' ? 'to left' : 'to right'
+
+  // Use 100vh height with negative margins to extend beyond padding to screen edge
+  const baseStyle = `
+    display: inline-block;
+    width: 40px;
+    height: 100vh;
+    vertical-align: top;
+    pointer-events: none;
+    flex-shrink: 0;
+    margin-top: calc(-50vh + 50%);
+    margin-bottom: calc(-50vh + 50%);
+  `.replace(/\n/g, ' ')
+
+  // Add margin on the content side to create spacing between gradient and content
+  // In vertical-rl mode: start is on right, so margin-left pushes content away
+  // end is on left, so margin-right pushes content away
+  // Start (beginning) needs more space, end (tail) needs less
+  const marginStyle = position === 'start' ? 'margin-left: 1.5rem;' : 'margin-right: 0.5rem;'
+
+  if (isAuto) {
+    // For auto mode, use CSS class-based dark mode switching
+    return `
+      <div style="${baseStyle} ${marginStyle} background: ${buildExpGradient(gradientDir, lightModeColor)};" class="gradient-light"></div>
+      <div style="${baseStyle} ${marginStyle} background: ${buildExpGradient(gradientDir, darkModeColor)};" class="gradient-dark"></div>
+    `
+  }
+
+  return `<div style="${baseStyle} ${marginStyle} background: ${buildExpGradient(gradientDir, bgColor)};"></div>`
+}
+
 export function ReaderContent({
   pageHtml,
   currentPage,
@@ -88,6 +215,7 @@ export function ReaderContent({
   const verticalMarginPadding = getVerticalMarginPadding(marginSize)
   const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
   const proseClasses = getProseClasses(theme)
+
   // Calculate which page indices should show ads based on accumulated text size
   // Ads appear after accumulating AD_THRESHOLD_BYTES (10000 bytes) of text
   // Japanese characters count as 2 bytes, so 5000 Japanese chars = 10000 bytes
@@ -116,6 +244,11 @@ export function ReaderContent({
      * Only the inner container scrolls horizontally.
      * Outer containers have overflow:hidden to prevent any scrollbars on html/body.
      */
+    // Build content with gradient edges embedded in the HTML
+    const startGradient = buildVerticalGradientHtml('start', theme)
+    const endGradient = buildVerticalGradientHtml('end', theme)
+    const contentWithGradients = `${startGradient}${pageHtml[currentPage]}${endGradient}`
+
     return (
       <div className="fixed inset-x-0 top-[80px] bottom-[100px] overflow-hidden">
         <div className="h-full w-full max-w-6xl mx-auto">
@@ -157,7 +290,7 @@ export function ReaderContent({
                 minWidth: '100%',
                 width: 'fit-content',
               }}
-              dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
+              dangerouslySetInnerHTML={{ __html: contentWithGradients }}
             />
           </div>
         </div>
@@ -231,16 +364,65 @@ export function ReaderContent({
   }
 
   /* Horizontal mode (pagination or scroll) */
+  if (isPagination) {
+    /* Horizontal pagination mode - vertical scrolling */
+    return (
+      <div className="fixed inset-x-0 top-[80px] bottom-[100px] overflow-hidden">
+        <div className="h-full w-full">
+          <div
+            key="horizontal-content"
+            ref={contentRef}
+            className="h-full overflow-y-auto custom-scrollbar"
+            style={{ overscrollBehavior: 'contain' }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          >
+            <div className={`${horizontalMaxWidth} mx-auto px-4 sm:px-8`}>
+              {/* Start edge gradient (top - beginning of vertical scroll) */}
+              <ScrollEdgeGradient position="start" direction="vertical" theme={theme} />
+              <div className="pt-2 sm:pt-4 pb-4 sm:pb-8">
+                <div
+                  className={`${proseClasses} max-w-none`}
+                  style={{
+                    fontSize: `${fontSize}px`,
+                    fontFamily: fontFamilyCSS,
+                    lineHeight: lineHeight,
+                    writingMode: 'horizontal-tb',
+                  }}
+                  dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
+                />
+              </div>
+              {/* Ad at page bottom when accumulated text exceeds 10000 bytes threshold - TEMPORARILY DISABLED
+              {adPageIndices.has(currentPage) && (
+                <div className="mt-8">
+                  <AdSense
+                    key={`pagination-ad-${currentPage}`}
+                    adSlot="1234567893"
+                    adFormat="horizontal"
+                    style={{ display: 'block', minHeight: '90px' }}
+                  />
+                </div>
+              )}
+              */}
+              {/* End edge gradient (bottom - end of vertical scroll) */}
+              <ScrollEdgeGradient position="end" direction="vertical" theme={theme} />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  /* Horizontal scroll mode */
   return (
     <div
       key="horizontal-content"
       ref={contentRef}
-      className={isPagination ? 'fixed inset-x-0 overflow-y-auto custom-scrollbar' : 'pb-24'}
-      style={
-        isPagination
-          ? { top: '80px', bottom: '100px', overscrollBehavior: 'contain' }
-          : undefined
-      }
+      className="pb-24"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -249,65 +431,36 @@ export function ReaderContent({
       onMouseUp={handleMouseUp}
     >
       <div className={`${horizontalMaxWidth} mx-auto p-4 sm:p-8`}>
-        {isPagination ? (
-          /* Pagination Mode */
-          <>
-            <div
-              className={`${proseClasses} max-w-none`}
-              style={{
-                fontSize: `${fontSize}px`,
-                fontFamily: fontFamilyCSS,
-                lineHeight: lineHeight,
-                writingMode: 'horizontal-tb',
-              }}
-              dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
-            />
-            {/* Ad at page bottom when accumulated text exceeds 10000 bytes threshold - TEMPORARILY DISABLED
-            {adPageIndices.has(currentPage) && (
-              <div className="mt-8">
-                <AdSense
-                  key={`pagination-ad-${currentPage}`}
-                  adSlot="1234567893"
-                  adFormat="horizontal"
-                  style={{ display: 'block', minHeight: '90px' }}
-                />
-              </div>
-            )}
-            */}
-          </>
-        ) : (
-          /* Horizontal Scroll Mode */
-          <div
-            className={`${proseClasses} max-w-none`}
-            style={{
-              fontSize: `${fontSize}px`,
-              fontFamily: fontFamilyCSS,
-              lineHeight: lineHeight,
-              writingMode: 'horizontal-tb',
-            }}
-          >
-            {pageHtml.map((html, index) => (
-              <div key={index} id={`scroll-page-${index}`}>
-                <div dangerouslySetInnerHTML={{ __html: html }} className="mb-8" />
-                {/* Ad before page divider for pages that exceed the character threshold - TEMPORARILY DISABLED
-                {adPageIndices.has(index) && index < pageHtml.length - 1 && (
-                  <div className="my-4">
-                    <AdSense
-                      adSlot="1234567895"
-                      adFormat="horizontal"
-                      style={{ display: 'block', minHeight: '60px' }}
-                    />
-                  </div>
-                )}
-                */}
-                {/* Page divider */}
-                {index < pageHtml.length - 1 && (
-                  <hr className="my-8 border-t-2 border-gray-300 dark:border-gray-600" />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        <div
+          className={`${proseClasses} max-w-none`}
+          style={{
+            fontSize: `${fontSize}px`,
+            fontFamily: fontFamilyCSS,
+            lineHeight: lineHeight,
+            writingMode: 'horizontal-tb',
+          }}
+        >
+          {pageHtml.map((html, index) => (
+            <div key={index} id={`scroll-page-${index}`}>
+              <div dangerouslySetInnerHTML={{ __html: html }} className="mb-8" />
+              {/* Ad before page divider for pages that exceed the character threshold - TEMPORARILY DISABLED
+              {adPageIndices.has(index) && index < pageHtml.length - 1 && (
+                <div className="my-4">
+                  <AdSense
+                    adSlot="1234567895"
+                    adFormat="horizontal"
+                    style={{ display: 'block', minHeight: '60px' }}
+                  />
+                </div>
+              )}
+              */}
+              {/* Page divider */}
+              {index < pageHtml.length - 1 && (
+                <hr className="my-8 border-t-2 border-gray-300 dark:border-gray-600" />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

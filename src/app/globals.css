@@ -483,3 +483,24 @@ html {
   margin-left: 1.5em;
   margin-right: 1.5em;
 }
+
+/* ======================================= */
+/* Scroll edge gradient visibility for dark mode */
+/* ======================================= */
+/* Light mode: show light gradient, hide dark gradient */
+.gradient-light {
+  display: inline-block !important;
+}
+
+.gradient-dark {
+  display: none !important;
+}
+
+/* Dark mode: hide light gradient, show dark gradient */
+:where(.dark, .dark *) .gradient-light {
+  display: none !important;
+}
+
+:where(.dark, .dark *) .gradient-dark {
+  display: inline-block !important;
+}
