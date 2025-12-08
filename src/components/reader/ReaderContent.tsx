@@ -1,6 +1,6 @@
 'use client'
 
-import { RefObject, useMemo } from 'react'
+import { RefObject, useMemo, useEffect } from 'react'
 // import AdSense from '../AdSense'  // TEMPORARILY DISABLED
 import {
   AD_THRESHOLD_BYTES,
@@ -63,6 +63,20 @@ function getProseClasses(theme: Theme): string {
       return 'prose'
     default: // 'auto'
       return 'prose dark:prose-invert'
+  }
+}
+
+// Get divider color based on theme
+function getDividerColor(theme: Theme): string {
+  switch (theme) {
+    case 'sepia':
+      return '#d4a574' // Warm amber/brown for sepia
+    case 'dark':
+      return '#4b5563' // Gray-600 for dark mode
+    case 'light':
+      return '#d1d5db' // Gray-300 for light mode
+    default: // 'auto'
+      return '#d1d5db' // Default to light mode color
   }
 }
 
@@ -216,6 +230,137 @@ export function ReaderContent({
   const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
   const proseClasses = getProseClasses(theme)
 
+
+  // Effect to rotate KaTeX math elements in vertical mode
+  // Uses a 3-layer structure for safe vertical text + KaTeX rendering:
+  // 1. math-island: horizontal-tb context (isolates from vertical parent)
+  // 2. math-rotatable: handles rotation with line-height: 0
+  // 3. .katex: display: block to eliminate baseline issues
+  // CSS sets initial opacity to 0 for vertical prose, this effect sets it to 1 after processing
+  useEffect(() => {
+    // For non-vertical mode, no rotation needed
+    if (!isVertical) {
+      return
+    }
+
+    const rotateKatexElements = () => {
+      if (!contentRef.current) {
+        return
+      }
+
+      const katexElements = contentRef.current.querySelectorAll('.katex')
+      const rotatables: HTMLElement[] = []
+
+      // Phase 1: Create 3-layer wrapper structure
+      katexElements.forEach((el) => {
+        const katex = el as HTMLElement
+
+        // Skip rotation for katex elements inside tables
+        if (katex.closest('table')) {
+          return
+        }
+
+        // Skip if already wrapped
+        if (katex.closest('.math-island')) {
+          return
+        }
+
+        // Layer 1: math-island - establishes horizontal-tb context
+        const island = document.createElement('span')
+        island.className = 'math-island'
+        island.style.writingMode = 'horizontal-tb'
+        island.style.textOrientation = 'mixed'
+        island.style.display = 'inline-block'
+
+        // Layer 2: math-rotatable - handles rotation
+        const rotatable = document.createElement('span')
+        rotatable.className = 'math-rotatable'
+        rotatable.style.display = 'inline-block'
+        rotatable.style.lineHeight = '0' // Reduces line box interference
+
+        // Insert structure and move KaTeX into it
+        katex.parentNode?.insertBefore(island, katex)
+        island.appendChild(rotatable)
+        rotatable.appendChild(katex)
+
+        // Layer 3: Set .katex to block to eliminate baseline differences
+        katex.style.display = 'block'
+
+        rotatables.push(rotatable)
+      })
+
+      // Force reflow so KaTeX elements re-layout in horizontal context
+      if (rotatables.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        contentRef.current.offsetHeight
+      }
+
+      // Phase 2: Measure and apply rotation with correct margins
+      rotatables.forEach((rotatable) => {
+        const katex = rotatable.querySelector('.katex') as HTMLElement
+        if (!katex) return
+
+        // Now KaTeX is in horizontal-tb context, measure its natural dimensions
+        const width = katex.offsetWidth
+        const height = katex.offsetHeight
+
+        // Apply 90deg clockwise rotation
+        rotatable.style.transform = 'rotate(90deg)'
+        rotatable.style.transformOrigin = 'center center'
+
+        // After 90deg clockwise rotation:
+        // - The visual width becomes the original height
+        // - The visual height becomes the original width
+        // But the layout box remains width x height
+        //
+        // To correct the layout:
+        // - Need to shrink horizontal space by (width - height)
+        // - Need to expand vertical space by (width - height)
+        const diff = width - height
+        rotatable.style.marginLeft = `${-diff / 2}px`
+        rotatable.style.marginRight = `${-diff / 2}px`
+        rotatable.style.marginTop = `${diff / 2}px`
+        rotatable.style.marginBottom = `${diff / 2}px`
+      })
+
+      // Show content after KaTeX rotation is complete (CSS sets initial opacity to 0)
+      const proseElement = contentRef.current.querySelector('.prose') as HTMLElement
+      if (proseElement) {
+        proseElement.style.opacity = '1'
+      }
+    }
+
+    // Run after DOM is updated
+    const timer = setTimeout(() => {
+      requestAnimationFrame(rotateKatexElements)
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [isVertical, contentRef, currentPage, pageHtml])
+
+  // Effect for horizontal pagination mode - fade in content after render
+  // No KaTeX rotation needed, just show content with smooth transition
+  useEffect(() => {
+    // Only for horizontal pagination mode
+    if (isVertical || !isPagination) {
+      return
+    }
+
+    const showContent = () => {
+      if (!contentRef.current) return
+      // Find the container with key={`prose-${currentPage}`}
+      const contentContainer = contentRef.current.querySelector('[class*="pt-2"]') as HTMLElement
+      if (contentContainer) {
+        contentContainer.style.opacity = '1'
+      }
+    }
+
+    // Run after DOM is updated
+    const timer = setTimeout(() => {
+      requestAnimationFrame(showContent)
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [isVertical, isPagination, contentRef, currentPage, pageHtml])
+
   // Calculate which page indices should show ads based on accumulated text size
   // Ads appear after accumulating AD_THRESHOLD_BYTES (10000 bytes) of text
   // Japanese characters count as 2 bytes, so 5000 Japanese chars = 10000 bytes
@@ -250,7 +395,7 @@ export function ReaderContent({
     const contentWithGradients = `${startGradient}${pageHtml[currentPage]}${endGradient}`
 
     return (
-      <div className="fixed inset-x-0 top-[80px] bottom-[100px] overflow-hidden">
+      <div className="fixed inset-x-0 top-[80px] bottom-[92px] overflow-hidden">
         <div className="h-full w-full max-w-6xl mx-auto">
           {/* Ad below header for vertical mode - refreshes on page change - TEMPORARILY DISABLED
           <div className="px-4 py-2 flex-shrink-0">
@@ -265,7 +410,7 @@ export function ReaderContent({
           <div
             key="vertical-content"
             ref={contentRef}
-            className="h-full overflow-x-auto overflow-y-hidden custom-scrollbar"
+            className="h-full overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -280,7 +425,8 @@ export function ReaderContent({
             }}
           >
             <div
-              className={`${proseClasses} h-full inline-block`}
+              key={`prose-${currentPage}`}
+              className={`${proseClasses} h-full inline-block overflow-x-scroll custom-scrollbar`}
               style={{
                 fontSize: `${fontSize}px`,
                 fontFamily: fontFamilyCSS,
@@ -289,6 +435,7 @@ export function ReaderContent({
                 writingMode: 'vertical-rl',
                 minWidth: '100%',
                 width: 'fit-content',
+                // Initial opacity is 0 via CSS, JS sets to 1 after KaTeX rotation
               }}
               dangerouslySetInnerHTML={{ __html: contentWithGradients }}
             />
@@ -322,7 +469,7 @@ export function ReaderContent({
           <div
             key="vertical-scroll-content"
             ref={contentRef}
-            className="h-full overflow-x-auto overflow-y-hidden custom-scrollbar"
+            className="h-full overflow-x-scroll overflow-y-hidden custom-scrollbar"
             style={{
               touchAction: 'pan-x' /* Enable horizontal touch scroll */,
             }}
@@ -343,6 +490,7 @@ export function ReaderContent({
                 writingMode: 'vertical-rl',
                 height: '100%',
                 width: 'max-content',
+                // Initial opacity is 0 via CSS, JS sets to 1 after KaTeX rotation
               }}
               dangerouslySetInnerHTML={{
                 __html: pageHtml
@@ -350,7 +498,7 @@ export function ReaderContent({
                     (html, index) =>
                       `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}</div>${
                         index < pageHtml.length - 1
-                          ? '<div style="display: inline-block; width: 2px; height: 100%; background: #d1d5db; margin: 0 1.5rem; vertical-align: top;"></div>'
+                          ? `<div style="display: inline-block; width: 2px; height: 100%; background: ${getDividerColor(theme)}; margin: 0 1.5rem; vertical-align: top;"></div>`
                           : ''
                       }`
                   )
@@ -384,7 +532,14 @@ export function ReaderContent({
             <div className={`${horizontalMaxWidth} mx-auto px-4 sm:px-8`}>
               {/* Start edge gradient (top - beginning of vertical scroll) */}
               <ScrollEdgeGradient position="start" direction="vertical" theme={theme} />
-              <div className="pt-2 sm:pt-4 pb-4 sm:pb-8">
+              <div
+                key={`prose-${currentPage}`}
+                className="pt-2 sm:pt-4 pb-4 sm:pb-8"
+                style={{
+                  opacity: 0,
+                  transition: 'opacity 0.15s ease-in',
+                }}
+              >
                 <div
                   className={`${proseClasses} max-w-none`}
                   style={{
@@ -456,7 +611,11 @@ export function ReaderContent({
               */}
               {/* Page divider */}
               {index < pageHtml.length - 1 && (
-                <hr className="my-8 border-t-2 border-gray-300 dark:border-gray-600" />
+                <hr className={`my-8 border-t-2 ${
+                  theme === 'sepia'
+                    ? 'border-amber-400'
+                    : 'border-gray-300 dark:border-gray-600'
+                }`} />
               )}
             </div>
           ))}

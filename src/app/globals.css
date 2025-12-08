@@ -181,6 +181,10 @@ html {
 .prose[style*="writing-mode:vertical-rl"] {
   height: 100% !important;
   box-sizing: border-box;
+  /* Hide content initially to prevent flash before KaTeX rotation is complete */
+  /* JS sets opacity to 1 after processing in ReaderContent.tsx */
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
 }
 
 /* Image paragraphs: When a <p> contains an <img>, use flex to stack elements horizontally (in vertical-rl, flex-direction: column stacks left-to-right) */
@@ -246,6 +250,8 @@ html {
   height: auto;
   margin-left: 1.5em !important;
   margin-right: 0.5em !important;
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
 }
 
 /* Vertical mode: pre, ol, ul, blockquote margins */
@@ -310,42 +316,30 @@ html {
   margin-bottom: 0.5em !important;
 }
 
-/* KaTeX math: Always render horizontally even in vertical writing mode */
+/* KaTeX math in vertical writing mode */
+/* Rotation and layout adjustment is handled by JavaScript in ReaderContent.tsx */
+/* CSS only provides base styling */
+
+/* Hide vertical prose content initially to prevent flash before KaTeX rotation is applied */
+/* JS will set opacity to 1 after processing is complete */
+.prose[style*="writing-mode: vertical-rl"],
+.prose[style*="writing-mode:vertical-rl"] {
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
+}
+
+/* All .katex elements - base styling for JS rotation */
+.prose[style*="writing-mode: vertical-rl"] .katex,
+.prose[style*="writing-mode:vertical-rl"] .katex {
+  /* JS will set: display, writingMode, transform, margins */
+}
+
 /* Display math block container */
 .prose[style*="writing-mode: vertical-rl"] .katex-display,
 .prose[style*="writing-mode:vertical-rl"] .katex-display {
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
   display: block !important;
   margin-left: 1.5em !important;
   margin-right: 1.5em !important;
-  padding: 0.5em 0 !important;
-}
-
-/* All elements inside katex-display must inherit horizontal writing mode */
-.prose[style*="writing-mode: vertical-rl"] .katex-display *,
-.prose[style*="writing-mode:vertical-rl"] .katex-display * {
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
-}
-
-/* Inline math: .katex not inside .katex-display */
-.prose[style*="writing-mode: vertical-rl"] .katex,
-.prose[style*="writing-mode:vertical-rl"] .katex {
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
-}
-
-.prose[style*="writing-mode: vertical-rl"] .katex *,
-.prose[style*="writing-mode:vertical-rl"] .katex * {
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
-}
-
-/* Inline math in vertical mode - proper positioning */
-.prose[style*="writing-mode: vertical-rl"] p > .katex,
-.prose[style*="writing-mode:vertical-rl"] p > .katex {
-  display: inline-block !important;
 }
 
 /* ======================================= */
@@ -456,6 +450,87 @@ html {
   background-color: #111827;
 }
 
+/* Sepia theme table styles */
+.prose.prose-amber thead {
+  border-bottom-color: #b45309 !important;
+}
+
+.prose.prose-amber th {
+  border-color: #d4a574 !important;
+  background-color: #f5e6d3 !important;
+}
+
+.prose.prose-amber td {
+  border-color: #d4a574 !important;
+}
+
+.prose.prose-amber tbody tr:nth-child(even) {
+  background-color: #f9f1e6 !important;
+}
+
+.prose.prose-amber tbody tr:nth-child(even) td {
+  background-color: #f9f1e6 !important;
+}
+
+/* ======================================= */
+/* Sepia theme: Additional element colors */
+/* ======================================= */
+
+/* Blockquote border - warm brown instead of gray */
+.prose.prose-amber blockquote {
+  border-left-color: #d97706 !important;
+  border-inline-start-color: #d97706 !important;
+  color: #78350f;
+}
+
+/* Horizontal rule - warm amber instead of gray */
+.prose.prose-amber hr {
+  border-color: #d4a574;
+}
+
+/* List markers - warm brown instead of gray */
+.prose.prose-amber ul > li::marker {
+  color: #b45309;
+}
+
+.prose.prose-amber ol > li::marker {
+  color: #b45309;
+}
+
+/* Code inline - warm sepia background */
+.prose.prose-amber :not(pre) > code {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+}
+
+/* Code block (pre) - warm sepia background */
+.prose.prose-amber pre {
+  background-color: #fefce8;
+  border: 1px solid #fcd34d;
+  color: #78350f;
+}
+
+/* Links - warm amber */
+.prose.prose-amber a {
+  color: #b45309;
+}
+
+.prose.prose-amber a:hover {
+  color: #92400e;
+}
+
+/* Strong/bold text - darker brown for emphasis */
+.prose.prose-amber strong {
+  color: #78350f;
+}
+
+/* Figcaption - muted warm brown */
+.prose.prose-amber figcaption {
+  color: #a16207;
+}
+
 /* Table outer margin for spacing from surrounding content */
 .prose table {
   margin-left: 0;
@@ -482,6 +557,13 @@ html {
   writing-mode: horizontal-tb;
   margin-left: 1.5em;
   margin-right: 1.5em;
+}
+
+/* Vertical mode: markdown table width (tables with thead are markdown tables, not KaTeX) */
+.prose[style*="writing-mode: vertical-rl"] table:has(thead),
+.prose[style*="writing-mode:vertical-rl"] table:has(thead) {
+  width: auto !important;
+  max-width: 100% !important;
 }
 
 /* ======================================= */
