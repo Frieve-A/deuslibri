@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { findBookByIdAndLang, getAllBooks } from '@/lib/books/loader'
 import BookReader from '@/components/BookReader'
@@ -27,7 +28,11 @@ export default async function BookPage({ params }: BookPageProps) {
     notFound()
   }
 
-  return <BookReader book={book} />
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-xl">Loading...</p></div>}>
+      <BookReader book={book} />
+    </Suspense>
+  )
 }
 
 export async function generateMetadata({ params }: BookPageProps) {
