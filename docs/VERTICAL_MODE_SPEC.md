@@ -1325,9 +1325,61 @@ Done (navigation fired only once)
 
 ---
 
-**Last Updated**: 2025-12-04
+#### 9. "Layout breaks after window resize or browser zoom"
+
+**Problem**: In vertical pagination mode, the prose element height becomes incorrect after resizing the browser window or changing zoom level. The content may overflow or show blank areas.
+
+**Root Cause**: The prose element height is set programmatically on initial load and page changes, but not updated when the container size changes due to window resize or zoom.
+
+**Solution**: Use `ResizeObserver` and window resize event listener to trigger layout recalculation:
+
+```typescript
+useEffect(() => {
+  if (!loading && isVertical && isPagination) {
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null
+
+    const handleResize = () => {
+      // Debounce resize events to avoid excessive recalculations
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout)
+      }
+      resizeTimeout = setTimeout(() => {
+        updateProseLayout()
+      }, 100)
+    }
+
+    // Listen to window resize (covers both window resize and zoom changes)
+    window.addEventListener('resize', handleResize)
+
+    // Also use ResizeObserver for container-specific size changes
+    let resizeObserver: ResizeObserver | null = null
+    if (contentRef.current) {
+      resizeObserver = new ResizeObserver(handleResize)
+      resizeObserver.observe(contentRef.current)
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout)
+      }
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
+    }
+  }
+}, [loading, isVertical, isPagination, contentRef, updateProseLayout])
+```
+
+**Why both listeners are needed**:
+- `window.resize`: Catches browser window resizing and zoom level changes
+- `ResizeObserver`: Catches container-specific size changes that may not trigger window resize (e.g., sidebar toggle, font size changes)
+- **Debouncing**: Prevents excessive recalculations during continuous resize operations
+
+**Last Updated**: 2025-12-09
 **Created**: To prevent scrollLeft/display position confusion and facilitate future maintenance
 **Revision History**:
+- 2025-12-09: Added troubleshooting item #9 documenting window resize and browser zoom handling with `ResizeObserver` and debounced event listeners.
 - 2025-12-04: Added "Keyboard Navigation" section documenting arrow key navigation with 80% scroll and page transition at edges. Updated horizontal mode documentation with top/bottom tap behavior, vertical swipe navigation, and scroll position on page change. Added test scenarios H1-H6 for horizontal mode.
 - 2025-12-04: Added troubleshooting item #8 documenting scroll position flickering fix using Zustand selectors and `getState()` pattern to prevent re-renders during progress updates.
 - 2025-12-03: Added "Touch and Mouse Event Deduplication" section documenting `touchHandledRef` flag to prevent double page navigation on tap.

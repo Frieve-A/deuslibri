@@ -1,4 +1,4 @@
-import { useEffect, RefObject, MutableRefObject } from 'react'
+import { useEffect, useCallback, RefObject, MutableRefObject } from 'react'
 
 interface UseVerticalLayoutOptions {
   loading: boolean
@@ -17,10 +17,8 @@ export function useVerticalLayout({
   contentRef,
   navigationDirectionRef,
 }: UseVerticalLayoutOptions): void {
-  // Fix prose element height for vertical mode
-  // In writing-mode: vertical-rl, CSS height property is overridden by content height
-  // CSS height/max-height specifications are ignored, so we must use JavaScript with !important
-  useEffect(() => {
+  // Function to update prose element dimensions
+  const updateProseLayout = useCallback(() => {
     if (!loading && isVertical && contentRef.current && isPagination) {
       const container = contentRef.current
       const prose = container.firstElementChild as HTMLElement
@@ -34,7 +32,51 @@ export function useVerticalLayout({
         prose.style.overflowY = 'hidden'
       }
     }
-  }, [loading, isVertical, isPagination, currentPage, contentRef])
+  }, [loading, isVertical, isPagination, contentRef])
+
+  // Fix prose element height for vertical mode
+  // In writing-mode: vertical-rl, CSS height property is overridden by content height
+  // CSS height/max-height specifications are ignored, so we must use JavaScript with !important
+  useEffect(() => {
+    updateProseLayout()
+  }, [updateProseLayout, currentPage])
+
+  // Listen to window resize and zoom changes to update layout
+  useEffect(() => {
+    if (!loading && isVertical && isPagination) {
+      let resizeTimeout: ReturnType<typeof setTimeout> | null = null
+
+      const handleResize = () => {
+        // Debounce resize events to avoid excessive recalculations
+        if (resizeTimeout) {
+          clearTimeout(resizeTimeout)
+        }
+        resizeTimeout = setTimeout(() => {
+          updateProseLayout()
+        }, 100)
+      }
+
+      // Listen to window resize (covers both window resize and zoom changes)
+      window.addEventListener('resize', handleResize)
+
+      // Also use ResizeObserver for container-specific size changes
+      let resizeObserver: ResizeObserver | null = null
+      if (contentRef.current) {
+        resizeObserver = new ResizeObserver(handleResize)
+        resizeObserver.observe(contentRef.current)
+      }
+
+      return () => {
+        window.removeEventListener('resize', handleResize)
+        if (resizeTimeout) {
+          clearTimeout(resizeTimeout)
+        }
+        if (resizeObserver) {
+          resizeObserver.disconnect()
+        }
+      }
+    }
+  }, [loading, isVertical, isPagination, contentRef, updateProseLayout])
 
   // Scroll to appropriate edge for vertical mode when page changes
   // See docs/VERTICAL_MODE_SPEC.md for detailed specification
