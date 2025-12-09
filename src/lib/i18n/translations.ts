@@ -162,6 +162,8 @@ export interface TranslationMessages {
     removeBookmark: string
     share: string
     shareText: string
+    shareThisBook: string
+    shareThisPage: string
     loadingBook: string
     catalog: string
     tweet: string
@@ -379,6 +381,8 @@ const en: TranslationMessages = {
     removeBookmark: 'Remove Bookmark',
     share: 'Share',
     shareText: 'Check out this book:',
+    shareThisBook: 'Share this book',
+    shareThisPage: 'Share this page',
     loadingBook: 'Loading book...',
     catalog: 'Catalog',
     tweet: 'Tweet',
@@ -621,6 +625,8 @@ const ja: TranslationMessages = {
     removeBookmark: 'ブックマークを削除',
     share: '共有',
     shareText: 'この本をチェック：',
+    shareThisBook: 'この本をシェア',
+    shareThisPage: 'このページをシェア',
     loadingBook: '書籍を読み込み中...',
     catalog: 'カタログ',
     tweet: 'ツイート',

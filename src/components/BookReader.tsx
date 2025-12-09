@@ -68,6 +68,7 @@ export default function BookReader({ book }: BookReaderProps) {
     isVertical,
     contentRef,
     isSmoothScrollingRef,
+    totalPages: book.pages.length,
   })
 
   // Page navigation hook
@@ -350,6 +351,7 @@ export default function BookReader({ book }: BookReaderProps) {
         isBookmarked={isBookmarked}
         toggleBookmark={toggleBookmark}
         isPagination={isPagination}
+        currentPage={currentPage}
         t={t}
         onTitleClick={handleTitleClick}
       />
