@@ -56,6 +56,9 @@ export function useTouchNavigation({
   // Flag to track if touch event was handled (to prevent duplicate handling by mouse events)
   const touchHandledRef = useRef<boolean>(false)
 
+  // Flag to track if touch started inside a scrollable element (table, etc.)
+  const touchInsideScrollableRef = useRef<boolean>(false)
+
   // Vertical-rl mode edge detection (horizontal edges)
   // See detailed spec: docs/VERTICAL_MODE_SPEC.md
   // IMPORTANT: These track VISIBLE CONTENT position, not scrollLeft value
@@ -69,6 +72,32 @@ export function useTouchNavigation({
   const isAtTopEdgeRef = useRef<boolean>(false)
   const isAtBottomEdgeRef = useRef<boolean>(false)
 
+  // Check if an element or its ancestors are horizontally scrollable
+  const isInsideScrollableElement = useCallback(
+    (element: HTMLElement | null): boolean => {
+      let current = element
+      const contentElement = contentRef.current
+
+      while (current && current !== contentElement && current !== document.body) {
+        // Check if element is scrollable horizontally
+        const style = window.getComputedStyle(current)
+        const overflowX = style.overflowX
+        const isScrollable = overflowX === 'auto' || overflowX === 'scroll'
+
+        if (isScrollable) {
+          // Check if content actually overflows (needs scrolling)
+          const hasOverflow = current.scrollWidth > current.clientWidth
+          if (hasOverflow) {
+            return true
+          }
+        }
+        current = current.parentElement
+      }
+      return false
+    },
+    [contentRef]
+  )
+
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       // Mark that touch event is being handled (to prevent duplicate mouse event handling)
@@ -80,6 +109,10 @@ export function useTouchNavigation({
       touchStartY.current = touchY
       touchStartTimeRef.current = Date.now()
       isLongPressRef.current = false
+
+      // Check if touch started inside a scrollable element (table, code block, etc.)
+      const touchTarget = e.target as HTMLElement
+      touchInsideScrollableRef.current = isInsideScrollableElement(touchTarget)
 
       // Check if touch is inside existing text selection
       // If so, allow browser's native context menu / selection handles
@@ -181,7 +214,7 @@ export function useTouchNavigation({
         }
       }
     },
-    [contentRef, isVertical, isPagination]
+    [contentRef, isVertical, isPagination, isInsideScrollableElement]
   )
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
@@ -404,6 +437,23 @@ export function useTouchNavigation({
         )
       }, SMOOTH_SCROLL_DURATION)
     } else if (Math.abs(swipeDistanceX) > MIN_SWIPE_DISTANCE || Math.abs(swipeDistanceY) > MIN_SWIPE_DISTANCE) {
+      // Skip page navigation swipe if touch started inside a scrollable element (table, etc.)
+      // This allows the user to scroll the table without triggering page navigation
+      if (touchInsideScrollableRef.current) {
+        // Reset and exit - let the scrollable element handle the gesture
+        touchStartX.current = 0
+        touchStartY.current = 0
+        touchEndX.current = 0
+        touchEndY.current = 0
+        touchStartScrollLeft.current = 0
+        isAtRightEdgeContentRef.current = false
+        isAtLeftEdgeContentRef.current = false
+        isAtTopEdgeRef.current = false
+        isAtBottomEdgeRef.current = false
+        touchInsideScrollableRef.current = false
+        return
+      }
+
       // Check swipe direction and which content edge was visible at touch start
       const isHorizontalSwipe = Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)
 
@@ -464,6 +514,7 @@ export function useTouchNavigation({
     isAtLeftEdgeContentRef.current = false
     isAtTopEdgeRef.current = false
     isAtBottomEdgeRef.current = false
+    touchInsideScrollableRef.current = false
   }, [
     isVertical,
     isPagination,
