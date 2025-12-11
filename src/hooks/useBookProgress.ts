@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, RefObject, Dispatch, SetStateAction } from 'react'
-import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { useState, useEffect, useRef, RefObject, Dispatch, SetStateAction, useCallback } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import { SCROLL_SAVE_DELAY } from '@/lib/reader'
 
@@ -37,9 +37,15 @@ export function useBookProgress({
   const hasInitializedFromUrlRef = useRef(false)
 
   // Next.js navigation hooks for URL parameter sync
-  const searchParams = useSearchParams()
+  // Note: We avoid useSearchParams() to support static export
   const router = useRouter()
   const pathname = usePathname()
+
+  // Helper to get search params from window.location (client-side only)
+  const getSearchParams = useCallback(() => {
+    if (typeof window === 'undefined') return new URLSearchParams()
+    return new URLSearchParams(window.location.search)
+  }, [])
 
   // Refs to avoid re-creating scroll listener on every render
   const bookIdRef = useRef(bookId)
@@ -61,6 +67,7 @@ export function useBookProgress({
     hasInitializedFromUrlRef.current = true
 
     // First, check if there's a page parameter in the URL
+    const searchParams = getSearchParams()
     const pageParam = searchParams.get('page')
     if (pageParam && isPagination) {
       const pageNumber = parseInt(pageParam, 10)
@@ -76,7 +83,7 @@ export function useBookProgress({
     if (progress) {
       setCurrentPage(progress.currentPage)
     }
-  }, [bookId, language, searchParams, isPagination, totalPages])
+  }, [bookId, language, getSearchParams, isPagination, totalPages])
 
   // Restore scroll position once after content is loaded
   useEffect(() => {
@@ -120,6 +127,7 @@ export function useBookProgress({
       useReadingStore.getState().setProgress(bookId, language, currentPage)
 
       // Update URL parameter with current page (1-based for user-friendly URLs)
+      const searchParams = getSearchParams()
       const newPageNumber = currentPage + 1
       const currentPageParam = searchParams.get('page')
       const currentPageFromUrl = currentPageParam ? parseInt(currentPageParam, 10) : null
@@ -133,6 +141,7 @@ export function useBookProgress({
       }
     } else {
       // In scroll mode, remove the page parameter from URL if it exists
+      const searchParams = getSearchParams()
       if (searchParams.has('page')) {
         const params = new URLSearchParams(searchParams.toString())
         params.delete('page')
@@ -140,7 +149,7 @@ export function useBookProgress({
         router.replace(newUrl, { scroll: false })
       }
     }
-  }, [currentPage, bookId, language, loading, isPagination, searchParams, router, pathname])
+  }, [currentPage, bookId, language, loading, isPagination, getSearchParams, router, pathname])
 
   // Save scroll position periodically for scroll mode
   useEffect(() => {
