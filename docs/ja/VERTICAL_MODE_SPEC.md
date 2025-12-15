@@ -459,6 +459,200 @@ html = html.replace(
 
 これは scrollLeft 値とは逆の関係ですが、ユーザー視点では正しい表現です。
 
+## 縦書きモードにおけるKaTeX数式レンダリング
+
+### 概要
+
+KaTeXでレンダリングされた数式は、縦書きモード（`vertical-rl`）で特別な処理が必要です：
+1. 数式は本質的に横書き（左から右）
+2. 縦書きのテキストフローに合わせて90°回転が必要
+3. 回転により要素のバウンディングボックスが変化し、マージン調整が必要
+
+### 3層ラッパー構造
+
+各KaTeX要素は3層構造でラップされます：
+
+```html
+<span class="math-island" style="writing-mode: horizontal-tb; display: inline-block;">
+  <span class="math-rotatable" style="transform: rotate(90deg); display: inline-block;">
+    <span class="katex" style="display: block;">
+      <!-- KaTeXコンテンツ -->
+    </span>
+  </span>
+</span>
+```
+
+**各層の役割**：
+1. **math-island**: `writing-mode: horizontal-tb`で縦書き親コンテキストから数式を分離
+2. **math-rotatable**: 90°回転を適用し、マージン調整を保持
+3. **katex**: 元のKaTeX要素、`display: block`に設定
+
+### 実装: HTML前処理
+
+ラッパー構造は`src/lib/reader/utils.ts`の`wrapKatexForVertical()`で適用されます：
+
+```typescript
+export const wrapKatexForVertical = (html: string): string => {
+  if (typeof document === 'undefined') {
+    return html // サーバーサイドでは変更なし
+  }
+
+  const container = document.createElement('div')
+  container.innerHTML = html
+
+  const katexElements = container.querySelectorAll('.katex')
+  katexElements.forEach((katex) => {
+    if (katex.closest('table')) return // テーブル内のKaTeXはスキップ
+    if (katex.closest('.math-island')) return // 既にラップ済み
+
+    const island = document.createElement('span')
+    island.className = 'math-island'
+    island.style.writingMode = 'horizontal-tb'
+    island.style.display = 'inline-block'
+
+    const rotatable = document.createElement('span')
+    rotatable.className = 'math-rotatable'
+    rotatable.style.display = 'inline-block'
+    rotatable.style.transform = 'rotate(90deg)'
+    rotatable.style.transformOrigin = 'center center'
+    rotatable.dataset.needsMargin = 'true'
+
+    katex.parentNode?.insertBefore(island, katex)
+    island.appendChild(rotatable)
+    rotatable.appendChild(katex)
+    ;(katex as HTMLElement).style.display = 'block'
+  })
+
+  return container.innerHTML
+}
+```
+
+**なぜHTML文字列レベルで前処理するか**：
+- ラッパーはReactの再レンダリングを生き延びる必要がある
+- `dangerouslySetInnerHTML`はレンダリングごとにDOMを置き換える
+- 前処理によりラッパー構造がHTML文字列の一部として保持される
+
+### useLayoutEffectによるマージン調整
+
+回転後、要素の視覚的な境界が変化します。正方形の要素は変化しませんが、長方形の要素はマージン補正が必要です：
+
+```
+回転前:              回転後:
+┌─────────────┐      ┌───┐
+│ width=100   │  →   │   │ (高さ100pxに)
+│ height=50   │      │   │
+└─────────────┘      │   │
+                     └───┘ (幅50pxに)
+```
+
+**マージン計算**：
+```typescript
+const diff = width - height
+marginLeft = -diff / 2   // 負のマージンで要素を内側に引く
+marginRight = -diff / 2
+marginTop = diff / 2     // 正のマージンで外側に押す
+marginBottom = diff / 2
+```
+
+**重要: useEffectではなくuseLayoutEffect**
+
+マージン調整は依存配列なしの`useLayoutEffect`を使用する必要があります：
+
+```typescript
+useLayoutEffect(() => {
+  if (!isVertical) return
+
+  const container = contentRef.current
+  if (!container) return
+
+  const rotatables = container.querySelectorAll('.math-rotatable') as NodeListOf<HTMLElement>
+
+  // 正確な計測のためにリフローを強制
+  if (rotatables.length > 0) {
+    container.offsetHeight
+  }
+
+  rotatables.forEach((rotatable) => {
+    const katex = rotatable.querySelector('.katex') as HTMLElement
+    if (!katex) return
+
+    const width = katex.offsetWidth
+    const height = katex.offsetHeight
+    const diff = width - height
+
+    rotatable.style.marginLeft = `${-diff / 2}px`
+    rotatable.style.marginRight = `${-diff / 2}px`
+    rotatable.style.marginTop = `${diff / 2}px`
+    rotatable.style.marginBottom = `${diff / 2}px`
+  })
+
+  // 完了を通知してコンテンツを表示
+  proseElement.style.opacity = '1'
+  window.dispatchEvent(new CustomEvent('katex-rotation-complete'))
+}) // 依存配列なし - 毎レンダリングで実行
+```
+
+**なぜ依存配列なしのuseLayoutEffectなのか**：
+
+| アプローチ | 問題点 |
+|----------|--------|
+| 依存配列付き`useEffect` | ペイント後に実行 → マージン未適用状態が一瞬見える |
+| 依存配列付き`useLayoutEffect` | エフェクト後にReactが再レンダリング、DOM置換でマージン消失 |
+| 依存配列なし`useLayoutEffect` | 毎ペイント前に同期実行、マージンは常に適用済み |
+
+**バグの根本原因**：
+1. Reactが`dangerouslySetInnerHTML`でコンポーネントをレンダリング
+2. `useEffect`が実行され、マージンを適用
+3. 何らかの状態変化がReact再レンダリングをトリガー
+4. `dangerouslySetInnerHTML`がDOMを置換、マージンスタイルが失われる
+5. 次のエフェクト実行までマージンがない状態
+
+**解決策**：
+- `useLayoutEffect`は完了までペイントをブロック
+- 依存配列なしで毎レンダリング実行
+- Reactが再レンダリングしてDOMを置換しても、ユーザーが見る前にマージンが再適用される
+
+### コンテンツ表示の制御
+
+コンテンツは初期状態で非表示（`opacity: 0`）で、KaTeX処理完了後にのみ表示されます：
+
+```typescript
+// ReaderContent.tsx内
+<div
+  className="prose"
+  style={{ opacity: isVertical ? 0 : 1 }}
+  dangerouslySetInnerHTML={{ __html: processedPageHtml[currentPage] }}
+/>
+```
+
+`useLayoutEffect`はマージン適用後に`opacity: 1`を設定し、スクロール復元が進行できるよう`katex-rotation-complete`イベントをディスパッチします。
+
+### イベント: katex-rotation-complete
+
+このカスタムイベントはKaTeX処理の完了を通知します：
+
+```typescript
+window.dispatchEvent(new CustomEvent('katex-rotation-complete'))
+```
+
+**消費者**：
+- `useBookProgress.ts`: スクロール位置復元前にこのイベントを待機
+- これにより、レイアウトが安定する前のスクロール復元を防止
+
+### テスト検証
+
+実装は`test-katex.mjs`のPlaywrightテストで検証できます：
+
+```bash
+node test-katex.mjs
+```
+
+**期待される結果**：
+- 全KaTeX要素が`.math-island`でラップされている
+- 全`.math-rotatable`要素に`rotate(90deg)`トランスフォームが適用されている
+- 全`.math-rotatable`要素にマージン調整が適用されている
+- prose要素の`opacity: 1`
+
 ## 実装ファイル
 
 ### 主要ファイル
@@ -553,9 +747,10 @@ settings.displayMode // 'pagination' | 'scroll'
 
 ---
 
-**最終更新**: 2025-12-03
+**最終更新**: 2025-12-15
 **作成理由**: scrollLeft値と表示位置の混乱を防ぎ、将来のメンテナンスを容易にするため
 **更新履歴**:
+- 2025-12-15: 「縦書きモードにおけるKaTeX数式レンダリング」セクションを追加。3層ラッパー構造、`wrapKatexForVertical()`によるHTML前処理、依存配列なし`useLayoutEffect`によるマージン調整、スクロール復元同期のための`katex-rotation-complete`イベントについて文書化。
 - 2025-12-03: 「タイポグラフィと余白」セクションを追加。縦書き/横書きモードのブロック要素マージン、Flexコンテナを使用した画像レイアウト、Markdownの複数空行を保持するスペーサー要素について文書化。
 
 **English version**: [docs/VERTICAL_MODE_SPEC.md](../VERTICAL_MODE_SPEC.md)

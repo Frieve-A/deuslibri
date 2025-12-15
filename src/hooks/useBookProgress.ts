@@ -35,6 +35,17 @@ export function useBookProgress({
   const [currentPage, setCurrentPage] = useState(0)
   const hasRestoredScrollRef = useRef(false)
   const hasInitializedFromUrlRef = useRef(false)
+  const initialPageFromUrlRef = useRef<number | null>(null)
+  // Track the target page during initialization to prevent premature URL updates
+  // This is needed because setCurrentPage is async but hasInitializedFromUrlRef is set synchronously
+  const initializingToPageRef = useRef<number | null>(null)
+
+  // Disable browser's automatic scroll restoration
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'scrollRestoration' in history) {
+      history.scrollRestoration = 'manual'
+    }
+  }, [])
 
   // Next.js navigation hooks for URL parameter sync
   // Note: We avoid useSearchParams() to support static export
@@ -61,20 +72,31 @@ export function useBookProgress({
     isVerticalRef.current = isVertical
   }, [bookId, language, currentPage, isVertical])
 
-  // Initialize page from URL parameter or saved progress - only on initial mount
+  // Initialize page from URL parameter or saved progress - only after loading completes
   useEffect(() => {
+    // Wait for loading to complete before initializing (settings must be ready)
+    if (loading) return
     if (hasInitializedFromUrlRef.current) return
     hasInitializedFromUrlRef.current = true
 
     // First, check if there's a page parameter in the URL
     const searchParams = getSearchParams()
     const pageParam = searchParams.get('page')
-    if (pageParam && isPagination) {
+    if (pageParam) {
       const pageNumber = parseInt(pageParam, 10)
       // URL uses 1-based page numbers, internal state uses 0-based
       if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
-        setCurrentPage(pageNumber - 1)
-        return
+        if (isPagination) {
+          // Store target page to prevent URL update effect from running with stale currentPage
+          initializingToPageRef.current = pageNumber - 1
+          setCurrentPage(pageNumber - 1)
+          return
+        } else {
+          // Infinite scroll mode: save page number to scroll to later
+          initialPageFromUrlRef.current = pageNumber - 1
+          // Do NOT fall through to saved progress - we have a URL target
+          return
+        }
       }
     }
 
@@ -83,30 +105,68 @@ export function useBookProgress({
     if (progress) {
       setCurrentPage(progress.currentPage)
     }
-  }, [bookId, language, getSearchParams, isPagination, totalPages])
+  }, [bookId, language, getSearchParams, isPagination, totalPages, loading])
 
   // Restore scroll position once after content is loaded
+  // For vertical mode, we must wait for KaTeX rotation to complete before scrolling
   useEffect(() => {
     // Only restore scroll position once, when content finishes loading
     if (loading || hasRestoredScrollRef.current) return
     if (isPagination) return // Don't restore scroll in pagination mode
 
-    const progress = useReadingStore.getState().getProgress(bookId, language)
-    if (progress?.scrollPosition !== undefined) {
-      hasRestoredScrollRef.current = true
-      // Suppress scroll saving during restoration
-      if (isSmoothScrollingRef.current !== undefined) {
-        ;(isSmoothScrollingRef as { current: boolean }).current = true
+    // Wait for initialization to complete first
+    if (!hasInitializedFromUrlRef.current) {
+      return
+    }
+
+    // Function to execute the actual scroll
+    const executeScroll = () => {
+      // Guard: prevent multiple executions
+      if (hasRestoredScrollRef.current) {
+        return
       }
 
-      // Defer scroll restoration until content is rendered
-      setTimeout(() => {
-        if (contentRef.current && isVertical) {
-          // Vertical scroll mode: restore horizontal scroll position (instant, no animation)
-          contentRef.current.scrollLeft = progress.scrollPosition!
-        } else if (!isVertical) {
-          // Horizontal scroll mode: restore vertical scroll position (instant, no animation)
-          window.scrollTo(0, progress.scrollPosition!)
+      // If page was specified in URL, scroll to that page's start position (takes priority)
+      const targetPage = initialPageFromUrlRef.current
+      if (targetPage !== null) {
+        hasRestoredScrollRef.current = true
+        initialPageFromUrlRef.current = null
+
+        // Suppress scroll saving during programmatic scroll
+        if (isSmoothScrollingRef.current !== undefined) {
+          ;(isSmoothScrollingRef as { current: boolean }).current = true
+        }
+
+        const pageElement = document.getElementById(`scroll-page-${targetPage}`)
+
+        if (isVertical && contentRef.current && pageElement) {
+          // Vertical scroll mode: scroll horizontally to the page section (instant, no animation)
+          const container = contentRef.current
+          // Temporarily disable smooth scroll (CSS scroll-behavior: smooth affects scrollLeft assignment)
+          const originalScrollBehavior = container.style.scrollBehavior
+          container.style.scrollBehavior = 'auto'
+          const containerRect = container.getBoundingClientRect()
+          const pageRect = pageElement.getBoundingClientRect()
+          const offsetFromRight = containerRect.right - pageRect.right
+          const newScrollLeft = container.scrollLeft - offsetFromRight
+          container.scrollLeft = newScrollLeft
+          // Restore original scroll behavior
+          container.style.scrollBehavior = originalScrollBehavior
+        } else if (!isVertical && pageElement) {
+          // Horizontal scroll mode: scroll vertically to the page section (instant, no animation)
+          // Temporarily disable smooth scroll on html element
+          const html = document.documentElement
+          const originalScrollBehavior = html.style.scrollBehavior
+          html.style.scrollBehavior = 'auto'
+          const header = document.querySelector('header')
+          const headerHeight = header?.offsetHeight || 80
+          const elementPosition = pageElement.getBoundingClientRect().top
+          const offsetPosition = elementPosition + window.scrollY - headerHeight - 16
+          window.scrollTo(0, offsetPosition)
+          // Restore original scroll behavior
+          html.style.scrollBehavior = originalScrollBehavior
+          // Signal that scroll restoration is complete for horizontal scroll mode
+          window.dispatchEvent(new CustomEvent('scroll-restoration-complete'))
         }
 
         // Reset flag after a short delay to allow scroll event to complete
@@ -115,13 +175,95 @@ export function useBookProgress({
             ;(isSmoothScrollingRef as { current: boolean }).current = false
           }
         }, 100)
-      }, 100)
+        return
+      }
+
+      // If no URL page parameter, fall back to saved scroll position
+      const progress = useReadingStore.getState().getProgress(bookId, language)
+      if (progress?.scrollPosition !== undefined) {
+        hasRestoredScrollRef.current = true
+        // Suppress scroll saving during restoration
+        if (isSmoothScrollingRef.current !== undefined) {
+          ;(isSmoothScrollingRef as { current: boolean }).current = true
+        }
+
+        if (contentRef.current && isVertical) {
+          // Vertical scroll mode: restore horizontal scroll position (instant, no animation)
+          // Temporarily disable smooth scroll (CSS scroll-behavior: smooth affects scrollLeft assignment)
+          const container = contentRef.current
+          const originalScrollBehavior = container.style.scrollBehavior
+          container.style.scrollBehavior = 'auto'
+          container.scrollLeft = progress.scrollPosition!
+          container.style.scrollBehavior = originalScrollBehavior
+        } else if (!isVertical) {
+          // Horizontal scroll mode: restore vertical scroll position (instant, no animation)
+          // Temporarily disable smooth scroll on html element
+          const html = document.documentElement
+          const originalScrollBehavior = html.style.scrollBehavior
+          html.style.scrollBehavior = 'auto'
+          window.scrollTo(0, progress.scrollPosition!)
+          html.style.scrollBehavior = originalScrollBehavior
+          // Signal that scroll restoration is complete for horizontal scroll mode
+          window.dispatchEvent(new CustomEvent('scroll-restoration-complete'))
+        }
+
+        // Reset flag after a short delay to allow scroll event to complete
+        setTimeout(() => {
+          if (isSmoothScrollingRef.current !== undefined) {
+            ;(isSmoothScrollingRef as { current: boolean }).current = false
+          }
+        }, 100)
+      } else if (!isVertical) {
+        // No saved scroll position but horizontal scroll mode - still need to show content
+        window.dispatchEvent(new CustomEvent('scroll-restoration-complete'))
+      }
+    }
+
+    // For vertical mode, wait for KaTeX rotation to complete before scrolling
+    // KaTeX rotation modifies element styles which causes layout shifts
+    if (isVertical) {
+      const handleKatexComplete = () => {
+        // Small delay to ensure all layout changes have been applied
+        setTimeout(executeScroll, 50)
+      }
+
+      // Listen for the katex-rotation-complete event
+      window.addEventListener('katex-rotation-complete', handleKatexComplete, { once: true })
+
+      // Fallback timeout in case the event doesn't fire (e.g., no KaTeX elements)
+      const fallbackTimer = setTimeout(() => {
+        window.removeEventListener('katex-rotation-complete', handleKatexComplete)
+        executeScroll()
+      }, 500)
+
+      return () => {
+        window.removeEventListener('katex-rotation-complete', handleKatexComplete)
+        clearTimeout(fallbackTimer)
+      }
+    } else {
+      // For horizontal mode, scroll after a short delay for content to render
+      const timer = setTimeout(executeScroll, 100)
+      return () => clearTimeout(timer)
     }
   }, [loading, isPagination, isVertical, bookId, language, contentRef, isSmoothScrollingRef])
 
   // Save progress when page changes (pagination mode) and update URL parameter
   useEffect(() => {
     if (loading) return
+    // Wait for initialization to complete before updating URL
+    // This prevents overwriting the URL's page parameter with the default value (0)
+    if (!hasInitializedFromUrlRef.current) return
+
+    // Wait for currentPage to reach the initialization target before updating URL
+    // This handles the async nature of setCurrentPage - the URL update effect may run
+    // before currentPage has been updated to the value from the URL parameter
+    if (initializingToPageRef.current !== null) {
+      if (currentPage !== initializingToPageRef.current) {
+        return
+      }
+      // Clear the target once reached
+      initializingToPageRef.current = null
+    }
 
     if (isPagination) {
       useReadingStore.getState().setProgress(bookId, language, currentPage)
@@ -141,15 +283,22 @@ export function useBookProgress({
       }
     } else {
       // In scroll mode, remove the page parameter from URL if it exists
+      // Use history.replaceState directly to avoid Next.js scroll restoration behavior
       const searchParams = getSearchParams()
       if (searchParams.has('page')) {
-        const params = new URLSearchParams(searchParams.toString())
-        params.delete('page')
-        const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
-        router.replace(newUrl, { scroll: false })
+        // Wait for scroll restoration to complete before removing page param
+        // Timing: KaTeX event (~66ms) + executeScroll delay (50ms) + buffer (100ms) = ~216ms
+        // Using 250ms to ensure scroll is complete before URL update
+        setTimeout(() => {
+          const params = new URLSearchParams(getSearchParams().toString())
+          params.delete('page')
+          const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+          // Use native history API to avoid Next.js router triggering scroll restoration
+          window.history.replaceState(window.history.state, '', newUrl)
+        }, 250)
       }
     }
-  }, [currentPage, bookId, language, loading, isPagination, getSearchParams, router, pathname])
+  }, [currentPage, bookId, language, loading, isPagination, getSearchParams, router, pathname, contentRef])
 
   // Save scroll position periodically for scroll mode
   useEffect(() => {

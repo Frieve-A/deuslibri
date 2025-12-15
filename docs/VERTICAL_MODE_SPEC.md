@@ -785,6 +785,200 @@ setTimeout(() => {
 - `getState()` accesses current state without creating a subscription
 - The component doesn't re-render when saving progress, so scroll position is preserved
 
+## KaTeX Math Rendering in Vertical Mode
+
+### Overview
+
+KaTeX-rendered mathematical expressions need special handling in vertical writing mode (`vertical-rl`) because:
+1. Math expressions are inherently horizontal (left-to-right)
+2. They must be rotated 90° to align with vertical text flow
+3. Rotation changes the element's bounding box, requiring margin adjustments
+
+### Three-Layer Wrapper Structure
+
+Each KaTeX element is wrapped in a three-layer structure:
+
+```html
+<span class="math-island" style="writing-mode: horizontal-tb; display: inline-block;">
+  <span class="math-rotatable" style="transform: rotate(90deg); display: inline-block;">
+    <span class="katex" style="display: block;">
+      <!-- KaTeX content -->
+    </span>
+  </span>
+</span>
+```
+
+**Layer purposes**:
+1. **math-island**: Isolates the math from vertical parent context with `writing-mode: horizontal-tb`
+2. **math-rotatable**: Applies 90° rotation and holds margin adjustments
+3. **katex**: The original KaTeX element, set to `display: block`
+
+### Implementation: Pre-processing HTML
+
+The wrapper structure is applied via `wrapKatexForVertical()` in `src/lib/reader/utils.ts`:
+
+```typescript
+export const wrapKatexForVertical = (html: string): string => {
+  if (typeof document === 'undefined') {
+    return html // Server-side, return unchanged
+  }
+
+  const container = document.createElement('div')
+  container.innerHTML = html
+
+  const katexElements = container.querySelectorAll('.katex')
+  katexElements.forEach((katex) => {
+    if (katex.closest('table')) return // Skip KaTeX in tables
+    if (katex.closest('.math-island')) return // Already wrapped
+
+    const island = document.createElement('span')
+    island.className = 'math-island'
+    island.style.writingMode = 'horizontal-tb'
+    island.style.display = 'inline-block'
+
+    const rotatable = document.createElement('span')
+    rotatable.className = 'math-rotatable'
+    rotatable.style.display = 'inline-block'
+    rotatable.style.transform = 'rotate(90deg)'
+    rotatable.style.transformOrigin = 'center center'
+    rotatable.dataset.needsMargin = 'true'
+
+    katex.parentNode?.insertBefore(island, katex)
+    island.appendChild(rotatable)
+    rotatable.appendChild(katex)
+    ;(katex as HTMLElement).style.display = 'block'
+  })
+
+  return container.innerHTML
+}
+```
+
+**Why pre-process at HTML level**:
+- Wrapping must survive React re-renders
+- `dangerouslySetInnerHTML` replaces DOM on each render
+- Pre-processing ensures wrapper structure is part of the HTML string
+
+### Margin Adjustment with useLayoutEffect
+
+After rotation, the element's visual bounds change. A square element stays the same, but rectangular elements need margin compensation:
+
+```
+Before rotation:     After rotation:
+┌─────────────┐      ┌───┐
+│ width=100   │  →   │   │ (now 100px tall)
+│ height=50   │      │   │
+└─────────────┘      │   │
+                     └───┘ (now 50px wide)
+```
+
+**Margin calculation**:
+```typescript
+const diff = width - height
+marginLeft = -diff / 2   // Negative margins pull element inward
+marginRight = -diff / 2
+marginTop = diff / 2     // Positive margins push outward
+marginBottom = diff / 2
+```
+
+**Critical: useLayoutEffect, not useEffect**
+
+Margin adjustment MUST use `useLayoutEffect` with no dependency array:
+
+```typescript
+useLayoutEffect(() => {
+  if (!isVertical) return
+
+  const container = contentRef.current
+  if (!container) return
+
+  const rotatables = container.querySelectorAll('.math-rotatable') as NodeListOf<HTMLElement>
+
+  // Force reflow to get accurate measurements
+  if (rotatables.length > 0) {
+    container.offsetHeight
+  }
+
+  rotatables.forEach((rotatable) => {
+    const katex = rotatable.querySelector('.katex') as HTMLElement
+    if (!katex) return
+
+    const width = katex.offsetWidth
+    const height = katex.offsetHeight
+    const diff = width - height
+
+    rotatable.style.marginLeft = `${-diff / 2}px`
+    rotatable.style.marginRight = `${-diff / 2}px`
+    rotatable.style.marginTop = `${diff / 2}px`
+    rotatable.style.marginBottom = `${diff / 2}px`
+  })
+
+  // Signal completion and show content
+  proseElement.style.opacity = '1'
+  window.dispatchEvent(new CustomEvent('katex-rotation-complete'))
+}) // No dependency array - runs on every render
+```
+
+**Why useLayoutEffect without dependencies**:
+
+| Approach | Problem |
+|----------|---------|
+| `useEffect` with deps | Runs after paint → user sees un-margined state briefly |
+| `useLayoutEffect` with deps | React re-renders after effect, DOM replaced, margins lost |
+| `useLayoutEffect` without deps | Runs synchronously before every paint, margins always applied |
+
+**Root cause of the bug**:
+1. React renders component with `dangerouslySetInnerHTML`
+2. `useEffect` runs, applies margins
+3. Some state change triggers React re-render
+4. `dangerouslySetInnerHTML` replaces DOM, losing margin styles
+5. Margins are gone until next effect run
+
+**Solution**:
+- `useLayoutEffect` blocks painting until complete
+- No dependency array means it runs on every render
+- Even if React re-renders and replaces DOM, margins are reapplied before user sees anything
+
+### Content Visibility Control
+
+Content is initially hidden (`opacity: 0`) and only shown after KaTeX processing is complete:
+
+```typescript
+// In ReaderContent.tsx
+<div
+  className="prose"
+  style={{ opacity: isVertical ? 0 : 1 }}
+  dangerouslySetInnerHTML={{ __html: processedPageHtml[currentPage] }}
+/>
+```
+
+The `useLayoutEffect` sets `opacity: 1` after margins are applied, and dispatches `katex-rotation-complete` event for scroll restoration to proceed.
+
+### Event: katex-rotation-complete
+
+This custom event signals that KaTeX processing is complete:
+
+```typescript
+window.dispatchEvent(new CustomEvent('katex-rotation-complete'))
+```
+
+**Consumers**:
+- `useBookProgress.ts`: Waits for this event before restoring scroll position
+- This prevents scroll restoration from happening before layout is stable
+
+### Test Verification
+
+The implementation can be verified using the Playwright test in `test-katex.mjs`:
+
+```bash
+node test-katex.mjs
+```
+
+**Expected results**:
+- All KaTeX elements wrapped in `.math-island`
+- All `.math-rotatable` elements have `rotate(90deg)` transform
+- All `.math-rotatable` elements have margin adjustments applied
+- Prose element has `opacity: 1`
+
 ## Implementation Files
 
 ### Main Files
@@ -1376,9 +1570,10 @@ useEffect(() => {
 - `ResizeObserver`: Catches container-specific size changes that may not trigger window resize (e.g., sidebar toggle, font size changes)
 - **Debouncing**: Prevents excessive recalculations during continuous resize operations
 
-**Last Updated**: 2025-12-09
+**Last Updated**: 2025-12-15
 **Created**: To prevent scrollLeft/display position confusion and facilitate future maintenance
 **Revision History**:
+- 2025-12-15: Added "KaTeX Math Rendering in Vertical Mode" section documenting the three-layer wrapper structure, HTML pre-processing with `wrapKatexForVertical()`, margin adjustment using `useLayoutEffect` without dependencies, and the `katex-rotation-complete` event for synchronizing scroll restoration.
 - 2025-12-09: Added troubleshooting item #9 documenting window resize and browser zoom handling with `ResizeObserver` and debounced event listeners.
 - 2025-12-04: Added "Keyboard Navigation" section documenting arrow key navigation with 80% scroll and page transition at edges. Updated horizontal mode documentation with top/bottom tap behavior, vertical swipe navigation, and scroll position on page change. Added test scenarios H1-H6 for horizontal mode.
 - 2025-12-04: Added troubleshooting item #8 documenting scroll position flickering fix using Zustand selectors and `getState()` pattern to prevent re-renders during progress updates.

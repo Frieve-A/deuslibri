@@ -1,12 +1,13 @@
 'use client'
 
-import { RefObject, useMemo, useEffect } from 'react'
+import { RefObject, useMemo, useEffect, useLayoutEffect, useRef } from 'react'
 // import AdSense from '../AdSense'  // TEMPORARILY DISABLED
 import {
   AD_THRESHOLD_BYTES,
   calculateTextSize,
   getPlainTextFromHtml,
   getFontFamilyCSS,
+  wrapKatexForVertical,
 } from '@/lib/reader'
 import type { FontFamily } from '@/lib/stores/useReadingStore'
 
@@ -230,112 +231,84 @@ export function ReaderContent({
   const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
   const proseClasses = getProseClasses(theme)
 
+  // Pre-process HTML for vertical mode - wrap KaTeX elements before React renders
+  // This avoids React reconciliation overwriting our DOM modifications
+  const processedPageHtml = useMemo(() => {
+    if (!isVertical) {
+      return pageHtml
+    }
+    return pageHtml.map((html) => wrapKatexForVertical(html))
+  }, [pageHtml, isVertical])
 
-  // Effect to rotate KaTeX math elements in vertical mode
-  // Uses a 3-layer structure for safe vertical text + KaTeX rendering:
-  // 1. math-island: horizontal-tb context (isolates from vertical parent)
-  // 2. math-rotatable: handles rotation with line-height: 0
-  // 3. .katex: display: block to eliminate baseline issues
-  // CSS sets initial opacity to 0 for vertical prose, this effect sets it to 1 after processing
-  useEffect(() => {
-    // For non-vertical mode, no rotation needed
+  // Track the current page being displayed - used to verify rAF callbacks are for the correct page
+  const currentPageRef = useRef<number>(currentPage)
+  currentPageRef.current = currentPage
+
+  // Effect to apply margin adjustments to pre-wrapped/rotated KaTeX elements in vertical mode
+  // The wrapper structure AND rotation transform are already in the HTML from wrapKatexForVertical()
+  // This effect only needs to:
+  // 1. Force reflow to get accurate measurements
+  // 2. Calculate and apply margin adjustments based on element dimensions
+  // 3. Show content by setting opacity to 1
+  // Use useLayoutEffect to apply margin adjustments BEFORE browser paints
+  // This prevents visual flicker from unprocessed KaTeX elements
+  // The effect runs after every render to handle React re-renders that replace the DOM
+  useLayoutEffect(() => {
+    // For non-vertical mode, no margin adjustment needed
     if (!isVertical) {
       return
     }
 
-    const rotateKatexElements = () => {
-      if (!contentRef.current) {
+    // Skip if page content is not yet loaded (e.g., during initial loading)
+    const currentProcessedHtml = processedPageHtml[currentPage]
+    if (!currentProcessedHtml || currentProcessedHtml.length === 0) {
+      return
+    }
+
+    const container = contentRef.current
+    if (!container) {
+      return
+    }
+
+    const proseElement = container.querySelector('.prose') as HTMLElement | null
+    if (!proseElement) {
+      return
+    }
+
+    // Find all rotatable elements (always apply margins since DOM may have been re-created)
+    const rotatables = container.querySelectorAll('.math-rotatable') as NodeListOf<HTMLElement>
+
+    // Force reflow so KaTeX elements have correct measurements in horizontal context
+    if (rotatables.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      container.offsetHeight
+    }
+
+    // Apply margin calculations
+    rotatables.forEach((rotatable) => {
+      const katex = rotatable.querySelector('.katex') as HTMLElement
+      if (!katex) {
         return
       }
 
-      const katexElements = contentRef.current.querySelectorAll('.katex')
-      const rotatables: HTMLElement[] = []
+      const width = katex.offsetWidth
+      const height = katex.offsetHeight
 
-      // Phase 1: Create 3-layer wrapper structure
-      katexElements.forEach((el) => {
-        const katex = el as HTMLElement
+      const diff = width - height
+      rotatable.style.marginLeft = `${-diff / 2}px`
+      rotatable.style.marginRight = `${-diff / 2}px`
+      rotatable.style.marginTop = `${diff / 2}px`
+      rotatable.style.marginBottom = `${diff / 2}px`
+    })
 
-        // Skip rotation for katex elements inside tables
-        if (katex.closest('table')) {
-          return
-        }
+    // Show content - KaTeX margin adjustment is complete (or no KaTeX elements existed)
+    // Set both visibility and opacity to prevent image flicker during page change
+    proseElement.style.visibility = 'visible'
+    proseElement.style.opacity = '1'
 
-        // Skip if already wrapped
-        if (katex.closest('.math-island')) {
-          return
-        }
-
-        // Layer 1: math-island - establishes horizontal-tb context
-        const island = document.createElement('span')
-        island.className = 'math-island'
-        island.style.writingMode = 'horizontal-tb'
-        island.style.textOrientation = 'mixed'
-        island.style.display = 'inline-block'
-
-        // Layer 2: math-rotatable - handles rotation
-        const rotatable = document.createElement('span')
-        rotatable.className = 'math-rotatable'
-        rotatable.style.display = 'inline-block'
-        rotatable.style.lineHeight = '0' // Reduces line box interference
-
-        // Insert structure and move KaTeX into it
-        katex.parentNode?.insertBefore(island, katex)
-        island.appendChild(rotatable)
-        rotatable.appendChild(katex)
-
-        // Layer 3: Set .katex to block to eliminate baseline differences
-        katex.style.display = 'block'
-
-        rotatables.push(rotatable)
-      })
-
-      // Force reflow so KaTeX elements re-layout in horizontal context
-      if (rotatables.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        contentRef.current.offsetHeight
-      }
-
-      // Phase 2: Measure and apply rotation with correct margins
-      rotatables.forEach((rotatable) => {
-        const katex = rotatable.querySelector('.katex') as HTMLElement
-        if (!katex) return
-
-        // Now KaTeX is in horizontal-tb context, measure its natural dimensions
-        const width = katex.offsetWidth
-        const height = katex.offsetHeight
-
-        // Apply 90deg clockwise rotation
-        rotatable.style.transform = 'rotate(90deg)'
-        rotatable.style.transformOrigin = 'center center'
-
-        // After 90deg clockwise rotation:
-        // - The visual width becomes the original height
-        // - The visual height becomes the original width
-        // But the layout box remains width x height
-        //
-        // To correct the layout:
-        // - Need to shrink horizontal space by (width - height)
-        // - Need to expand vertical space by (width - height)
-        const diff = width - height
-        rotatable.style.marginLeft = `${-diff / 2}px`
-        rotatable.style.marginRight = `${-diff / 2}px`
-        rotatable.style.marginTop = `${diff / 2}px`
-        rotatable.style.marginBottom = `${diff / 2}px`
-      })
-
-      // Show content after KaTeX rotation is complete (CSS sets initial opacity to 0)
-      const proseElement = contentRef.current.querySelector('.prose') as HTMLElement
-      if (proseElement) {
-        proseElement.style.opacity = '1'
-      }
-    }
-
-    // Run after DOM is updated
-    const timer = setTimeout(() => {
-      requestAnimationFrame(rotateKatexElements)
-    }, 50)
-    return () => clearTimeout(timer)
-  }, [isVertical, contentRef, currentPage, pageHtml])
+    // Dispatch event to signal that KaTeX processing is complete
+    window.dispatchEvent(new CustomEvent('katex-rotation-complete'))
+  })
 
   // Effect for horizontal pagination mode - fade in content after render
   // No KaTeX rotation needed, just show content with smooth transition
@@ -390,9 +363,10 @@ export function ReaderContent({
      * Outer containers have overflow:hidden to prevent any scrollbars on html/body.
      */
     // Build content with gradient edges embedded in the HTML
+    // Use processedPageHtml which has KaTeX already wrapped for vertical mode
     const startGradient = buildVerticalGradientHtml('start', theme)
     const endGradient = buildVerticalGradientHtml('end', theme)
-    const contentWithGradients = `${startGradient}${pageHtml[currentPage]}${endGradient}`
+    const contentWithGradients = `${startGradient}${processedPageHtml[currentPage]}${endGradient}`
 
     return (
       <div className="fixed inset-x-0 top-[80px] bottom-[92px] overflow-hidden">
@@ -435,7 +409,9 @@ export function ReaderContent({
                 writingMode: 'vertical-rl',
                 minWidth: '100%',
                 width: 'fit-content',
-                // Initial opacity is 0 via CSS, JS sets to 1 after KaTeX rotation
+                visibility: 'hidden',
+                opacity: 0,
+                transition: 'opacity 0.15s ease-in',
               }}
               dangerouslySetInnerHTML={{ __html: contentWithGradients }}
             />
@@ -490,14 +466,16 @@ export function ReaderContent({
                 writingMode: 'vertical-rl',
                 height: '100%',
                 width: 'max-content',
-                // Initial opacity is 0 via CSS, JS sets to 1 after KaTeX rotation
+                visibility: 'hidden',
+                opacity: 0,
+                transition: 'opacity 0.15s ease-in',
               }}
               dangerouslySetInnerHTML={{
-                __html: pageHtml
+                __html: processedPageHtml
                   .map(
                     (html, index) =>
                       `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}</div>${
-                        index < pageHtml.length - 1
+                        index < processedPageHtml.length - 1
                           ? `<div style="display: inline-block; width: 2px; height: 100%; background: ${getDividerColor(theme)}; margin: 0 1.5rem; vertical-align: top;"></div>`
                           : ''
                       }`
@@ -520,7 +498,7 @@ export function ReaderContent({
           <div
             key="horizontal-content"
             ref={contentRef}
-            className="h-full overflow-y-auto custom-scrollbar"
+            className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar"
             style={{ overscrollBehavior: 'contain' }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -573,6 +551,33 @@ export function ReaderContent({
   }
 
   /* Horizontal scroll mode */
+  // Effect to show content after scroll restoration completes
+  useEffect(() => {
+    // Only for horizontal scroll mode (non-pagination)
+    if (isVertical || isPagination) {
+      return
+    }
+
+    const showContent = () => {
+      if (!contentRef.current) return
+      const proseElement = contentRef.current.querySelector('.prose') as HTMLElement
+      if (proseElement) {
+        proseElement.style.opacity = '1'
+      }
+    }
+
+    // Listen for scroll-restoration-complete event from useBookProgress
+    window.addEventListener('scroll-restoration-complete', showContent, { once: true })
+
+    // Fallback: show content after timeout in case event doesn't fire
+    const fallbackTimer = setTimeout(showContent, 300)
+
+    return () => {
+      window.removeEventListener('scroll-restoration-complete', showContent)
+      clearTimeout(fallbackTimer)
+    }
+  }, [isVertical, isPagination, contentRef, pageHtml])
+
   return (
     <div
       key="horizontal-content"
@@ -593,6 +598,8 @@ export function ReaderContent({
             fontFamily: fontFamilyCSS,
             lineHeight: lineHeight,
             writingMode: 'horizontal-tb',
+            opacity: 0,
+            transition: 'opacity 0.15s ease-in',
           }}
         >
           {pageHtml.map((html, index) => (

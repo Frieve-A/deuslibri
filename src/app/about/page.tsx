@@ -59,7 +59,7 @@ export default function AboutPage() {
               </a>
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              DeusLibri {t.about.version} 0.15
+              DeusLibri {t.about.version} 0.16
             </p>
           </div>
         </div>

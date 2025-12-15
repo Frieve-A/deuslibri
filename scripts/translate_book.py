@@ -40,9 +40,10 @@ Guidelines:
 7. Preserve section breaks (---) and spacing
 8. Maintain the rhythm and cadence where possible
 9. When Japanese text includes English terms in parentheses, preserve them
-10. For poetic or philosophical passages, prioritize capturing the essence over literal translation""",
+10. For poetic or philosophical passages, prioritize capturing the essence over literal translation
+11. Make it into natural expressions as if originally written in English
+12. Convert to terms, currencies, examples, and metaphors that naturally make sense in English-speaking cultures""",
         "user_template": """Please translate the following Japanese text to English with the highest literary quality.
-
 Preserve all markdown formatting exactly as it appears.
 
 Japanese text:

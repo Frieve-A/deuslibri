@@ -49,6 +49,69 @@ export const getFontFamilyCSS = (fontFamily: string): string => {
 }
 
 /**
+ * Pre-wrap KaTeX elements in HTML for vertical text mode.
+ * Creates a 3-layer structure:
+ * 1. math-island: horizontal-tb context (isolates from vertical parent)
+ * 2. math-rotatable: handles rotation (with needs-rotation class for margin adjustment)
+ * 3. .katex: the original element, modified to display: block
+ *
+ * This must be done at the HTML string level to avoid React reconciliation issues.
+ * The rotation transform is applied here directly (no effect needed).
+ * Margin adjustments are done via CSS or a separate effect that only touches margins.
+ */
+export const wrapKatexForVertical = (html: string): string => {
+  // Create a temporary DOM element to parse the HTML
+  if (typeof document === 'undefined') {
+    return html // Server-side, return unchanged
+  }
+
+  const container = document.createElement('div')
+  container.innerHTML = html
+
+  const katexElements = container.querySelectorAll('.katex')
+
+  katexElements.forEach((katex) => {
+    // Skip if inside a table
+    if (katex.closest('table')) {
+      return
+    }
+
+    // Skip if already wrapped
+    if (katex.closest('.math-island')) {
+      return
+    }
+
+    // Create wrapper structure
+    const island = document.createElement('span')
+    island.className = 'math-island'
+    island.style.writingMode = 'horizontal-tb'
+    island.style.textOrientation = 'mixed'
+    island.style.display = 'inline-block'
+
+    const rotatable = document.createElement('span')
+    rotatable.className = 'math-rotatable'
+    rotatable.style.display = 'inline-block'
+    rotatable.style.lineHeight = '0'
+    // Apply rotation transform here in the HTML preprocessing
+    // This ensures it survives React re-renders
+    rotatable.style.transform = 'rotate(90deg)'
+    rotatable.style.transformOrigin = 'center center'
+    // Use data attribute to mark elements that need margin adjustment
+    rotatable.dataset.needsMargin = 'true'
+
+    // Insert structure
+    katex.parentNode?.insertBefore(island, katex)
+    island.appendChild(rotatable)
+    rotatable.appendChild(katex)
+
+    // Set katex to block
+    ;(katex as HTMLElement).style.display = 'block'
+  })
+
+  return container.innerHTML
+}
+
+/**
  * Check if a point is inside the current text selection
  */
 export const isPointInsideSelection = (x: number, y: number): boolean => {

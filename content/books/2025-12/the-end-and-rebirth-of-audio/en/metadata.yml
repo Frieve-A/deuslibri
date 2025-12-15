@@ -1,0 +1,40 @@
+# The End and Rebirth of Audio Metadata
+
+# Required fields
+id: "the-end-and-rebirth-of-audio"
+title: "The End and Rebirth of Audio"
+subtitle: "Deconstruction and Reconstruction of Audio through Pure Reason"
+author: "Frieve-A"
+publishDate: "2025-12-08"
+language: "en"
+tags:
+  - "Audio"
+  - "Acoustical Engineering"
+  - "Cognitive Science"
+  - "Digital Signal Processing"
+  - "Science"
+summary: "Deconstructing audio illusions through pure reason and reconstructing them based on truth."
+description: |
+  "The End and Rebirth of Audio" mathematically and scientifically examines why people
+  continue to wander in search of "better sound" despite modern audio technology
+  having physically reached its end.
+
+  From the absoluteness of the sampling theorem, cognitive biases in human hearing,
+  flaws in industry structure, to new possibilities through DSP and AI—
+  this book distinguishes between the two dimensions of audio:
+  "Fidelity" and "Preference," dissecting illusions with the scalpel of cold reason.
+
+  From the axioms of digital audio to the physics of spatial acoustics,
+  and the repositioning of audio as a "matter of style"—
+  this is the definitive work that puts an end to all questions about sound.
+
+  Produced by Frieve-A 2025
+recommendText: "For those who want to scientifically understand the truth about audio, and those who question the myths of high-end audio."
+coverImage: "./images/cover.jpg"
+
+# Optional fields
+pageCount: 79
+estimatedReadingTime: 90
+isbn: ""
+series: ""
+seriesNumber: 1

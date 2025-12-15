@@ -239,7 +239,7 @@ export function ReaderHeader({
             </div>
           </div>
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/catalog')}
             className="p-2 bg-amber-100 dark:bg-gray-700 text-amber-900 dark:text-gray-200 rounded hover:bg-amber-200 dark:hover:bg-gray-600 transition-colors"
             aria-label={t.common.back}
           >

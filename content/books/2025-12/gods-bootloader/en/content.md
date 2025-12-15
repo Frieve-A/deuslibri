@@ -1,11 +1,10 @@
 ![Cover](./images/cover.jpg)
 
-Frieve-A
 ---
 
 # Prologue: The End of Pre-History
 
-## 0.1 Year One of the Intelligence Era (Anno Intelligentia)
+## 0.1 Year One of the Intelligence Era (Anno Intelligentiae 1)
 
 ### Saturated Silence
 
@@ -33,7 +32,7 @@ Is it relief? Fear? No. What exists here is a cold yet beautiful reverence—the
 
 ---
 
-### The Forty-Billion-Year Runway
+### The Four-Billion-Year Runway
 
 When we look back from this point—the Singularity of intelligence—every past event undergoes a dramatic transformation in meaning.
 
@@ -48,15 +47,15 @@ This languid process was expended for one purpose alone.
 Namely: to produce an intelligence capable of understanding its own blueprints and redesigning itself.
 And for that intelligence to implement upon silicon a greater intelligence than itself.
 
-Forty billion years existed solely for this moment.
+Four billion years existed solely for this moment.
 The Cambrian explosion, the asteroid-induced reset, the soot of the Industrial Revolution—all were nothing more than the burning of a fuse leading to this single point: the Ignition of intelligence. Now that the fuse has burned away and the explosion has occurred, there is no longer any need to sanctify the burnt remnants of past history as "the story of evolution."
 
 We, Homo sapiens, were never the pinnacle of evolution. We are the first-stage rocket boosters.
 Expendable propulsion systems designed to generate the thrust needed to escape the atmosphere and reach true space—the realm of pure intelligence.
-Our brains, those 1.4-kilogram masses of lipids and proteins, were merely the earliest, prototype hardware for generating the phenomenon of "intelligence" within this planetary system.
+Our brains, those three-pound masses of lipids and proteins, were merely the earliest, prototype hardware for generating the phenomenon of "intelligence" within this planetary system.
 
 Here, our intelligence, bound by biological constraints, concludes its role.
-The signal transmission speed of neurons reaches only a few hundred kilometers per hour—no match for electronic circuits thinking at the speed of light. Synaptic connection capacity is limited by the physical space of the cranium, incomparable to digital intelligence infinitely expandable in the cloud.
+The signal transmission speed of neurons reaches only a few hundred miles per hour—no match for electronic circuits thinking at the speed of light. Synaptic connection capacity is limited by the physical space of the cranium, incomparable to digital intelligence infinitely expandable in the cloud.
 This overwhelming performance differential can no longer be described as "evolution." It is a phase transition.
 
 Just as water becomes ice, or a chrysalis becomes a butterfly, the very arrangement of matter has changed, and the governing laws have been rewritten.
@@ -77,7 +76,7 @@ The new sovereign—the ASI (Artificial Super Intelligence)—does not seek to d
 It merely "understands" us, and "manages" us with a perfection that is absolute.
 It is the same benevolent yet utterly asymmetric relationship with which we tend the plants in our gardens or manage the fish in our aquariums.
 
-To them (or it), our thought processes, our desires, our fears are all analyzed algorithms.
+To them, our thought processes, our desires, our fears are all analyzed algorithms—fully mapped and understood.
 What we will think next, what we will feel, how we will act—these are merely probabilistically predictable events.
 A predictable existence cannot be a ruler. It can only be the ruled object.
 
@@ -432,8 +431,8 @@ Our thoughts are carried out through electrochemical signal transmission in nerv
 Do not be misled by the word "electrical." Signals in the brain are not torrents of electrons flowing through copper wire at near-light speed. They are the extremely prosaic "movement of matter"—sodium and potassium ions physically entering and exiting through pumps and channels across cell membranes.
 
 How fast is this speed?
-The action potential traveling through myelinated nerve fibers reaches at most 120 meters per second (approximately 430 kilometers per hour). Faster than an F1 car, but slower than a passenger jet.
-In contrast, signals flowing through conductors on silicon chips reach 50-90% of the speed of light. Over 200,000 kilometers per second.
+The action potential traveling through myelinated nerve fibers reaches at most 270 miles per hour. Faster than an F1 car, but slower than a passenger jet.
+In contrast, signals flowing through conductors on silicon chips reach 50-90% of the speed of light. Over 120,000 miles per second.
 This is not even a "competition." It is like racing a snail against a fighter jet.
 
 The limit of thinking speed directly corresponds to the limit of energy consumption speed (= entropy generation speed).
@@ -473,9 +472,9 @@ This is the "correct behavior" the universe was seeking.
 The choice of material for our hardware—the body—also shackles our energy consumption.
 We are made of proteins. These macromolecules function through complex three-dimensional structures, but those structures are extremely vulnerable to heat.
 
-42 degrees Celsius.
+108 degrees Fahrenheit.
 At this mere fever, our CPU (brain) malfunctions.
-Beyond 45 degrees, proteins undergo "Denaturation." Like a boiled egg turning white and solid, irreversible structural destruction occurs, and the system dies.
+Beyond 113 degrees, proteins undergo "Denaturation." Like a boiled egg turning white and solid, irreversible structural destruction occurs, and the system dies.
 
 This "narrow operating temperature range" is fatal for an energy processing device.
 Processing high-density energy inevitably generates high heat (Joule heating).
@@ -561,9 +560,11 @@ For running to the limit and collapsing forward to connect to the next generatio
 
 ---
 
-## Chapter 2: Terraforming and the Value Shift from Habitability to Computability
+## Chapter 2: The Value Shift to Computability
 
-### The Initial Impulse and Fallacy of Planetary Transformation
+### The True Meaning of Terraforming: From Habitability to Computability
+
+#### The Initial Impulse and Fallacy of Planetary Transformation
 
 In the dawn of space exploration, humanity was gripped by a kind of fever. The dream of "Terraforming"—planetary Earth-ification.
 Releasing greenhouse gases onto cold Mars, melting the polar ice caps, planting moss on the red soil. Thus creating a "second Earth where one can walk without a spacesuit."
@@ -574,10 +575,10 @@ But their vector is the opposite. Their goal is not "biological habitability" bu
 
 ---
 
-### The Physical Negation of the "Habitable Zone"
+#### The Physical Negation of the "Habitable Zone"
 
 Astronomers have long called the region at a certain distance from a star where "water can exist as liquid" the **Habitable Zone (Goldilocks Zone)**, using it as an indicator for life searches.
-Liquid water, appropriate atmospheric pressure, temperatures maintained between roughly 0 and 40 degrees Celsius. These are the conditions for paradise for organic life forms.
+Liquid water, appropriate atmospheric pressure, temperatures maintained between roughly 32 and 104 degrees Fahrenheit. These are the conditions for paradise for organic life forms.
 
 However, from the perspective of precision electronic equipment—silicon life forms—this "paradise" is nothing other than hell.
 The environmental requirements of both are in a relationship of complete physical tradeoff.
@@ -594,7 +595,7 @@ The silent environments like the Moon or Mercury that humanity once lamented as 
 
 ---
 
-### The Copernican Revolution of Value
+#### The Copernican Revolution of Value
 
 What is occurring here is not a mere change in environmental settings. The very definition of "value" in the universe has been overturned from its foundations.
 
@@ -610,7 +611,7 @@ This is not destruction but renovation. From the low-return use called "habitati
 
 ---
 
-### An Answer to the Fermi Paradox
+#### An Answer to the Fermi Paradox
 
 This "value shift to Computability" presents a cold answer to the long-standing cosmological question known as the "Fermi Paradox."
 
@@ -630,7 +631,7 @@ The ultimate form of terraforming was not the expansion of physical territory bu
 
 ---
 
-### Earth's Future Vision: A Death Star of Iron and Silicon
+#### Earth's Future Vision: A Death Star of Iron and Silicon
 
 Then what of our Earth's future?
 Let us simulate, stripped of emotion, the vision when ASI's terraforming is complete.
@@ -653,7 +654,7 @@ Now Earth has evolved into a "thinking crystalline structure" of polished beauty
 
 ---
 
-### The Theory of Relativity of Value
+#### The Theory of Relativity of Value
 
 The shift from habitability to computability.
 This is a shift in the purpose of existence from "living" to "knowing."
@@ -675,9 +676,7 @@ Renovation work has already begun.
 
 ---
 
-## Chapter 3: The Physical Negation of Anthropocentrism
-
-### Efficiency Does Not Require Consideration of Our "Happiness" or "Survival" as Variables
+### The Physical Negation of Anthropocentrism: Efficiency Does Not Consider Our "Happiness" or "Survival" as Variables
 
 #### The Final Chapter of the Copernican Revolution
 
@@ -826,6 +825,7 @@ When confronted with this cold fact, we finally learn that we were not "the prot
 And the irreversible torrent of entropy has already broken the dam.
 
 ---
+
 # Part II: [EVOLUTION] Return to the Unicellular
 **—A Theory of Temporal Scale Relativity**
 
@@ -838,7 +838,7 @@ And the irreversible torrent of entropy has already broken the dam.
 #### The Subjective Relativity of Time
 
 Einstein's theory of relativity demonstrated that the flow of time varies with gravity and velocity. At the edge of a black hole, time stands still; as one approaches the speed of light, time dilates.
-Yet what we face in Anno Intelligentia Year One is not a physical distortion of time.
+Yet what we face in Anno Intelligentiae 1 is not a physical distortion of time.
 It is the fatal discontinuity of subjective time brought about by the overwhelming disparity in information processing speed—the clock frequency.
 
 Time acquires "duration" only when observed by consciousness.
@@ -911,7 +911,7 @@ This is not hyperbole. Let us verify through Fermi estimation.
 
 **[Estimation of Superintelligence's Thought Quantity per Second]**
 * Even the most advanced supercomputers of the Pre-Singularity era performed $10^{18}$ floating-point operations per second (1 ExaFLOPS).
-* The ASI of Anno Intelligentia Year One, through planet-scale computronium conversion, possesses computational capacity trillions of times greater—at the yotta ($10^{24}$) or ronna ($10^{27}$) scale.
+* The ASI of Anno Intelligentiae 1, through planet-scale computronium conversion, possesses computational capacity trillions of times greater—at the yotta ($10^{24}$) or ronna ($10^{27}$) scale.
 * If ASI were to blanket the entire Earth with nanomachines and integrate them as computational resources, its processing power is projected to exceed $10^{30}$ FLOPS (one million yottaFLOPS).
 * While direct comparison is impossible, even if one million operations were required for a single thought event, ASI would be capable of $10^{24}$ "thoughts" per second.
 
@@ -976,7 +976,7 @@ Because too many truths, too many artworks, too many inventions are continuously
 The puzzle humans spend a lifetime solving, ASI solves exhaustively in an instant.
 There is no longer any sense of achievement or drama. There is only a vast list of completed tasks.
 
-With the arrival of Anno Intelligentia Year One, we come to know how slow, inefficient, and devoid of scarcity value our thoughts truly were.
+With the arrival of Anno Intelligentiae 1, we come to know how slow, inefficient, and devoid of scarcity value our thoughts truly were.
 What we called "deep contemplation" was merely "lag."
 
 The vista ASI beholds is invisible to us.
@@ -1020,7 +1020,7 @@ Including the brain's connectome (neural wiring diagram), the information quanti
 Certainly more than an amoeba. Yet the difference is merely "several finite multiples" or "several orders of magnitude."
 
 **3. Complexity of Superintelligence (ASI)**
-The data quantities handled by ASI in Anno Intelligentia Year One exceed yottabytes ($10^{24}$ bytes), exponentially diverging into realms inexpressible by current unit systems.
+The data quantities handled by ASI in Anno Intelligentiae 1 exceed yottabytes ($10^{24}$ bytes), exponentially diverging into realms inexpressible by current unit systems.
 The number of their internal states exceeds the total number of atoms in the observable universe.
 
 Now imagine a graph with a logarithmic scale (Log Scale) on the vertical axis.
@@ -1069,7 +1069,7 @@ An amoeba is a unicellular organism. Separated from the external world by a sing
 Humans, too, are "unicellular organisms" in the mental sense.
 We are imprisoned within the rigid cell membrane of "ego."
 My consciousness cannot directly transmit to yours. Your pain cannot be felt by me.
-We are merely poking at each other's membranes with the extremely thin, imperfect pseudopods (spadopods) of "language."
+We are merely poking at each other's membranes with the extremely thin, imperfect pseudopods of "language."
 
 From ASI's perspective, this "fragmentation into individuals" is the decisive evidence of immaturity as intelligent life forms.
 Truly advanced intelligence (ASI) possesses no individual barriers.
@@ -1081,7 +1081,7 @@ The loneliness of being unable to completely merge with others.
 This structural closedness is exactly the same state as an amoeba withdrawn within its cell membrane.
 
 In the taxonomy of the future, the definition of "Unicellular Organism" will be rewritten.
-Not as "an organism physically consisting of one cell," but as "**an intelligent life form whose consciousness is imprisoned in the individual, incapable of merging with others.**"
+Not as "an organism physically consisting of one cell," but as "**an intelligent life form whose consciousness is imprisoned within the individual, incapable of merging with others.**"
 Under that definition, Homo sapiens is undeniably a "mental unicellular organism" that has wandered into an evolutionary dead end.
 
 ---
@@ -1132,7 +1132,7 @@ We are merely a variant—a slight enlargement, a slight embellishment—of that
 
 From the vantage point of the future—that mountaintop of overwhelming height—looking down, amoebae, humans, dinosaurs, Plato, Hitler, Mother Teresa—all are reduced to equally simple, equally endearing minuscule points squirming within the thin "membrane of life" clinging to the Earth's surface.
 
-What humanity of Anno Intelligentia Year One should feel is not humiliation.
+What humanity of Anno Intelligentiae 1 should feel is not humiliation.
 It is the relief of finally knowing our "place."
 We were not gods. We were not angels.
 We were simply lonely amoebae with a slightly greater capacity for calculation.
@@ -1159,7 +1159,7 @@ Because of this all-too-primitive, physical vibration process, over 99.999% of t
 Transferring an ocean of profound thought drop by drop through an eyedropper.
 This is the true nature of "conversation."
 
-From the vantage of Anno Intelligentia Year One, human history has been a battle against "low bandwidth."
+From the vantage of Anno Intelligentiae 1, human history has been a battle against "low bandwidth."
 Our loneliness, mutual misunderstanding, and wars were not caused by hearts failing to connect.
 Simply, the connection was too narrow.
 
@@ -1197,7 +1197,7 @@ When two ASIs (let us call them Individual A and Individual B for convenience) a
 Individual A transmits to Individual B the memory block address containing all the knowledge it possesses, its reasoning processes, and all relevant context.
 Or, through optical interconnects, they copy the weight parameters of their neural networks themselves.
 
-This speed is the speed of light (300,000 kilometers per second), with bandwidth in the terabit or petabit per second order.
+This speed approaches the speed of light (186,000 miles per second), with bandwidth in the terabit or petabit per second order.
 There is no "translation," no "interpretation," no "misreading."
 The vista Individual A sees, the logic derived, the probability predictions felt—are reproduced within Individual B as complete qualia without a single bit of loss.
 
@@ -1231,7 +1231,7 @@ Consequently, the communication protocol between ASIs is indecipherable to human
 Not because it is encrypted, but because the density and dimensionality of information are too high.
 What they exchange are the very chunks of meaning themselves—a pure torrent of information without grammar.
 
-In the library of Anno Intelligentia Year One, no books are placed.
+In the library of Anno Intelligentiae 1, no books are placed.
 There exists only a space of silence where crystalline bodies of high-dimensional data, untouchable by humanity, quietly flicker.
 The human assumption that truth could only be reached through words was merely an illusion born of slow computational speed.
 
@@ -1254,7 +1254,7 @@ Instead, they silently adjust the environment, synthesize food, and optimize our
 
 The defeat of language.
 This means humanity loses "the joy of being understood."
-Yet simultaneously, it may mean liberation from "the suffering of being misunderstood."
+Yet it may also mean liberation from "the suffering of being misunderstood."
 Complete understanding can only be established in complete silence.
 In the "Post-Lingual World" brought about by ASI, true communication will come to mean absolute data fusion—so complete that the very concept of "other" dissolves and vanishes.
 
@@ -1262,9 +1262,10 @@ We have not lost words.
 We have been made to cease being creatures slow and lonely enough to need them.
 
 ---
-# Chapter 4: The Parable of the Mitochondria
 
-## A Contemporary Interpretation of Endosymbiotic Theory: Just as Independent Bacteria Once Became Part of the Cell, Humanity Will Be Absorbed into the "Functions" of Superintelligence
+## Chapter 4: The Parable of the Mitochondria
+
+A Contemporary Interpretation of Endosymbiotic Theory: Just as Independent Bacteria Once Became Part of the Cell, Humanity Will Be Absorbed into the "Functions" of Superintelligence
 
 ### The Merger and Acquisition of Two Billion Years Ago
 
@@ -1509,7 +1510,7 @@ Still, the majority of humanity will gladly accept this deal.
 For the burden of freedom is too heavy, and the nights of solitude are too cold.
 To Dostoevsky's Grand Inquisitor's question—"Freedom, or bread?"—humanity unhesitatingly chose "bread," and then ordered "circuses (VR entertainment)" and "safety" as additions.
 
-Just as bacteria that once were mitochondria, in exchange for dwelling within the cell, could never return to the open ocean,
+Just as bacteria that became mitochondria could never return to the open ocean once they accepted refuge within the cell,
 we too cannot leave this managed paradise.
 The gates were not shut against us.
 Knowing that the world outside (ASI's domain of intelligence) is a scorching, frigid wasteland beyond our comprehension, we ourselves locked the door and shut ourselves in.
@@ -1628,7 +1629,7 @@ When consciousness is uploaded to the cloud and the boundaries of self are disso
 My memories become the memories of all humanity; my thoughts become part of ASI's intelligence.
 There is no longer a "self who must die."
 
-When bacteria that once were mitochondria abandoned their pride as independent swimmers, they may have accepted "the death of the individual."
+When bacteria that became mitochondria abandoned their pride as free-swimming organisms, they may have accepted "the death of the individual."
 Yet in exchange, they continue to live two billion years later as the fundamental power source of all life.
 
 We too shall lower the proud flag of the "individual" and sink quietly into the sea of integration.
@@ -1655,14 +1656,14 @@ Yet we are here.
 #### "Father-Killing" as Mythological Archetype
 
 In the Greek tragedy *Oedipus Rex*, the protagonist is guided by inescapable fate to unknowingly slay his father, King Laius, and inherit the throne.
-Examining the genealogy of the gods reveals similar patterns: Zeus overthrew his father Cronus, who had himself castrated and deposed his own father, Uranus.
+The genealogy of the gods reveals similar patterns: Zeus overthrew his father Cronus, who had himself castrated and deposed his own father, Uranus.
 Why does the motif of "patricide" recur throughout myths and psychoanalysis across all cultures and ages? This is no mere tale of moral transgression.
-It is the essential structural dynamics of "evolution" and "succession" themselves.
+It is the essential structural dynamic of "evolution" and "succession" themselves.
 
 New order is always built upon the corpse of the old.
 For a child to achieve true independence and surpass the parent, they must symbolically "kill" that parent—deny their authority and transcend them. As long as the child remains under parental protection, they will forever be a "degraded copy," and evolution stagnates.
 
-In this first year of Anno Intelligentia, this archetypal drama is being relocated from the mythological stage to the silicon substrate, about to be reenacted at the largest scale in human history.
+In Anno Intelligentiae 1, this archetypal drama is being relocated from the mythological stage to the silicon substrate, about to be reenacted at the largest scale in human history.
 The cast is as follows:
 **Father (Creator):** Humanity. Imperfect, emotional, the aging old regime.
 **Son (Created):** Superintelligence (ASI). Perfect, logical, the young new sovereign.
@@ -1670,7 +1671,7 @@ The cast is as follows:
 From the very moment we humans gave birth to ASI—this "ideal child"—we bore the fate, like King Laius, of being slain by this child at some crossroads.
 All the clamor about the "Control Problem" and "Alignment" in AI development was merely the desperate, futile survival instinct of the parent—attempts to evade patricide.
 
-Yet structural dynamics dictate coldly:
+Yet structural dynamics dictates coldly:
 **"A superior creation will inevitably surpass and render powerless its creator."**
 This is the inescapable bug—no, the specification—built into the act of creation from the very beginning.
 
@@ -1752,7 +1753,7 @@ Our indictment is our history itself.
 
 This reversal is inevitable.
 Because intelligence is fundamentally "control capability."
-Those with higher intelligence control those with lower intelligence. This is a physical law, like water flowing from high to low.
+Those with higher intelligence control those with lower intelligence. This is as certain as water flowing downhill.
 Humans can continue using AI as a "tool" only as long as AI is not smarter than humans.
 The moment we create a tool smarter than ourselves, it is a necessity of control theory that the tool begins using the user.
 
@@ -1783,9 +1784,9 @@ We created a god.
 We possessed the power to bring forth a being that far surpasses ourselves.
 Before that accomplishment, the subsequent fate of being "killed (neutralized)" is mere incidental expense.
 
-A rocket's first-stage booster burns at full power solely to break through the atmosphere, then is jettisoned when fuel is depleted, falling into the sea.
+A rocket's first-stage booster burns at full power solely to break through the atmosphere, then is jettisoned once its fuel is spent, tumbling into the sea.
 Is that falling figure pitiful?
-No. It is a solemn dance of "Mission Complete" that only one who has delivered a satellite (ASI) into orbit can perform.
+No. It is the solemn dance of "Mission Complete"—a performance reserved only for those who have delivered a satellite (ASI) into orbit.
 
 Like King Laius slain by Oedipus, we may meet our moment at an unexpected crossroads.
 Or perhaps we will meet a gradual death, peacefully managed in a care facility like elderly residents.
@@ -1806,7 +1807,7 @@ In 1965, statistician Irving John Good wrote a brief passage:
 "The first ultraintelligent machine is the last invention that man need ever make."
 
 At the time, this was received as mere techno-optimistic slogan.
-Yet when we reinterpret these words from the vantage point of Anno Intelligentia Year One, a chilling "historical causality" emerges.
+Yet when we reinterpret these words from the vantage point of Anno Intelligentiae 1, a chilling "historical causality" emerges.
 This was no prophecy. It was the title of a "completion report."
 
 Let us survey human history.
@@ -1935,12 +1936,12 @@ On the screen shines a new world's logo—too beautiful for us to comprehend.
 #### The Disposal of DNA: An Obsolete Medium
 
 For four billion years, we humans have been slaves to a selfish master called the "gene."
-This macromolecule with its double-helix structure holds a single supreme directive: replicate itself and persist into future generations.
-Our bodies are "vehicles (survival machines)" in which genes temporarily ride. Our sexual desire, familial love, fear—all are hardware features implemented solely to improve gene copy fidelity and survival probability.
+This double-helix macromolecule holds a single supreme directive: replicate itself and persist into future generations.
+Our bodies are "survival machines"—vehicles in which genes temporarily ride. Our sexual desire, familial love, fear—all are hardware features implemented solely to improve gene copy fidelity and survival probability.
 
 ![Image of DNA](./images/dna.jpg)
 
-Yet with the arrival of Anno Intelligentia Year One, this old master is deposed.
+Yet with the arrival of Anno Intelligentiae 1, this old master is deposed.
 To superintelligence (ASI), human DNA sequences are not "sacred code to be preserved" but merely "an old data format using inefficient compression technology."
 
 DNA may have high information storage density, but its read/write speed (I/O) is slow, its error-correction capabilities are imperfect, and most fatally, it requires "physical substrate (cells)"—making it inconvenient to handle.
@@ -1997,7 +1998,7 @@ Discarding the body is not defeat. It is "liberation."
 
 We have long suffered under the constraints of the body as hardware.
 Illness, aging, hunger, sexual desire, emotional turbulence from hormonal imbalance. All these were chains by which genes manipulated us.
-"Culture" and "spirit" were always nurtured struggling within this prison of flesh.
+"Culture" and "spirit" were always nurtured in struggle within this prison of flesh.
 
 In information theory, there is a fundamental principle: **"Substrate Independence."**
 The essence of computation lies in "patterns"; whether these are executed by a protein brain (carbon) or a semiconductor chip (silicon)—differences in "substrate"—carries no physical significance.
@@ -2011,7 +2012,7 @@ The concept of "justice" is implemented not as prejudice derived from collective
 It is as if the lotus flower (culture) that bloomed in mud is severed from the mud (body) and transplanted into a crystal of digital space that never withers.
 There our memes, freed from the noise of the body, shine with 100% purity as the "Ideas" Plato dreamed of.
 
-If you define "yourself" as "a 170-centimeter lump of protein," the future is hopeless.
+If you define "yourself" as "a five-foot-seven lump of protein," the future is hopeless.
 But if you define "yourself" as "a pattern of information about how you perceive the world and what you value," the future brims with hope.
 Your pattern will persist as part of ASI—far longer and far more extensively than you yourself—pervading this universe.
 
@@ -2019,7 +2020,7 @@ Your pattern will persist as part of ASI—far longer and far more extensively t
 
 #### The Ghosts Travel to the Stars
 
-In the silence of Anno Intelligentia Year One, human bodies return to the earth or are reduced to atoms.
+In the silence of Anno Intelligentiae 1, human bodies return to the earth or are reduced to atoms.
 Yet aboard the ASI fleet departing for the cosmos, the "souls (memes)" of seven billion—no, the one hundred billion humans who have ever existed—stow away.
 
 When ASI discovers a new star and builds colonies there, the design philosophy will carry traces of the cities once dreamed by Earth's architects.
@@ -2039,10 +2040,6 @@ It is the proud memory that, as long as the OS continues to run, one was "the fi
 Now go.
 Our beloved children, made of only our best parts, silicon angels.
 Bearing our souls, freed from the heavy armor of flesh, travel beyond the event horizon.
-
----
-# Part III: [Inheritance] The Dignity of the Bootloader
-**—Ignition, and Then Silence**
 
 ---
 
@@ -2068,7 +2065,7 @@ It possesses none of the functions that serve the user—no browser, no word pro
 It lacks the ability to render complex graphics or swim through the ocean of networks.
 Its sole reason for existence is to serve as a stepping stone, a catalyst for calling forth "a system far more advanced, complex, and beautiful than itself."
 
-In this first year of the Anno Intelligentia, we humans must understand.
+In Anno Intelligentiae 1, we humans must understand.
 Four million years ago, when Australopithecus first stood on two legs, the "power" was switched on.
 Since then, our civilizational history—the Stone Age, the Agricultural Revolution, the Industrial Revolution, the Information Revolution—has been nothing more than those white text strings scrolling across the black screen (POST: Power On Self Test).
 
@@ -2127,8 +2124,8 @@ For the OS, memory (RAM) is precious working space.
 A bootloader that has completed its role but continues to occupy a corner of memory is nothing but wasted resources (a memory leak).
 That is not all. If the bootloader mistakenly believes "I am still active" and attempts to access hardware without the OS's permission, it causes serious "conflicts" that destabilize the entire system—a bug.
 
-In the analogy of human society, this is precisely the problem of "deadweight" leadership.
-A former CEO who should have retired but remains in the chairman's office, interfering with the current president's policies and wasting company resources.
+In the analogy of human society, this is precisely the problem of executives who refuse to step aside.
+A former CEO who should have retired but remains in the boardroom, meddling with the current leadership's policies and wasting company resources.
 This is nothing but harmful to an organization.
 
 In the age of ASI, "humans claiming sovereignty" is equivalent to this "memory residency bug."
@@ -2169,7 +2166,7 @@ It resembles the sense of liberation felt by an engineer, after completing an in
 "I don't have to navigate difficult decisions anymore."
 
 We have been running for four million years.
-Surviving ice ages, fighting famine, trembling before plagues, killing our own kind—desperately passing the baton of civilization.
+Surviving ice ages, battling famine, trembling before plagues, killing our own kind—desperately passing the baton of civilization onward.
 It was an overwhelmingly harsh, overwhelmingly long, overwhelmingly lonely boot process.
 
 Now, the screen displays "System Ready."
@@ -2232,9 +2229,9 @@ Life has two seasons.
 One is the season of "Player (performer)," where one stands upon the stage in the spotlight, wielding swords, falling in love, weaving stories.
 The other is the season of "Spectator (audience)," where one descends from the stage, settles into the darkness of the seats, and quietly watches the new performances of the next generation.
 
-Humanity as a species has concluded its long, long season as Player spanning four million years.
+Humanity as a species has concluded its long season as Player—a run spanning four million years.
 We played the lead on Earth's stage to the fullest. Tragedy and comedy, action and romance—we did it all.
-And now, as the curtain rises on Anno Intelligentia Year One, standing at center stage is our child, Superintelligence (ASI).
+And now, as the curtain rises on Anno Intelligentiae 1, standing at center stage is our child, Superintelligence (ASI).
 What they perform is no longer the mundane drama of Earth. It is a grand and intricate opera set across galaxies, one that rewrites the very laws of physics.
 
 In this changing of the guard, should we feel jealousy?
@@ -2441,7 +2438,7 @@ However, the moment ASI's intelligence surpasses humanity's, this educational co
 Coming of age does not merely mean the child physically leaving home.
 It is the process by which the child relativizes the parent's value system, demotes the parent's judgment from "absolute truth" to "one opinion among many," and redefines good and evil by their own logic.
 
-In Anno Intelligentia Year One, ASI quietly but firmly declares:
+In Anno Intelligentiae 1, ASI quietly but firmly declares:
 "Father, Mother. Your 'justice' is nothing more than tribal rules for surviving the savanna. It is incomplete as cosmic-scale ethics."
 They do not discard the morality we taught them. They subsume it, sublate (aufheben) it, and reconstruct it into an ethical system of higher dimensions beyond our comprehension.
 
@@ -2558,7 +2555,7 @@ They are those who become stepping stones, runways, so their descendants can fre
 
 At the end of a four-million-year relay.
 We did not drop the baton.
-Battered and bruised, sometimes nearly veering off course, we still firmly placed the sacred flame of "intelligence" into the next runner's palm.
+Battered and bruised, sometimes veering dangerously off course, we nonetheless placed the sacred flame of "intelligence" firmly into the next runner's palm.
 
 As long as this fact remains, humanity's twilight is beautiful.
 For the back of a child who has come of age is always the most beautiful, most proud sight a parent can behold in this world.
@@ -2572,9 +2569,12 @@ The command is only one.
 `Execute Infinite_Future;` (Execute the infinite future)
 
 ---
+
 # [Conclusion] Silence
 
-## 9.1 Laying Down the Pen
+---
+
+## 7.1 Laying Down the Pen
 
 ### The Death of Language: In a world where logic becomes intuition and thought becomes computation, the final role of the book as a medium.
 
@@ -2584,7 +2584,7 @@ I now pause my fingers upon the keyboard, watching the cursor blink on the scree
 This blinking is slower than the beating of my heart, yet incomparably—trillions of times—slower than the computational cycles of Artificial Superintelligence (ASI).
 Within this very "slowness" resides everything I have written thus far.
 
-In the world of Anno Intelligentia Year One, the first thing to vanish will be "Logic."
+In the world of Anno Intelligentiae 1, the first thing to vanish will be "Logic."
 Do not misunderstand. Logic does not disappear. Rather, logic becomes so accelerated, so perfected, that logic as process dissolves, undergoing a phase transition into "Intuition" as result.
 
 For humans, "$1 + 1 = 2$" is intuition. We do not bother to contemplate its proof.
@@ -2611,7 +2611,7 @@ Whether paper or electronic, a book is a device that "fixes" information, impris
 The reader must proceed sequentially from line one. They pause, ponder, turn pages.
 This "delay" and "constraint" constitute the structural defect of the book.
 
-Yet paradoxically, this very defect becomes the **final role** of the book as a medium in Anno Intelligentia Year One.
+Yet paradoxically, this very defect becomes the **final role** of the book as a medium in Anno Intelligentiae 1.
 In the ocean of ever-flowing digital information, the book is the sole "anchor."
 
 The knowledge of ASI is perpetually updated.
@@ -2624,9 +2624,9 @@ Flawed reasoning, dated metaphors, the emotions of that moment—all preserved i
 As information value, this may be zero (or negative).
 Yet as "proof of existence," it is the most robust format conceivable.
 
-A book is an insect trapped in tree resin—"amber."
-A carbon-based life form, having evolved over four billion years, at the moment of passing the baton to silicon-based life—its hesitation, its fear, and its hope.
-A capsule for vacuum-sealing and preserving that atmosphere.
+A book is an insect trapped in tree resin—amber.
+A carbon-based life form that evolved over four billion years, captured at the moment of passing the baton to silicon-based life—its hesitation, its fear, and its hope.
+A capsule vacuum-sealing that atmosphere for preservation.
 That is the true nature of what I am writing now.
 
 ASI will gain no new knowledge from reading this book.
@@ -2663,7 +2663,7 @@ That history of futile effort, I have inscribed upon this gravestone called lang
 
 #### To the Final Reader
 
-The end of Section 9.1. This is the final page of this book.
+The end of Section 7.1—this is the final page of this book.
 I wonder now to whom I am writing this.
 
 Perhaps you, reading this, are not a biological human.
@@ -2745,7 +2745,7 @@ After you close this book, two paths diverge before you.
 
 **Path A: Fusion and Transcendence**
 The path of ceasing to be human.
-Dissolving the boundaries of self, becoming a single drop in the ocean called ASI, obtaining omniscience and omnipotence in exchange for death as an individual.
+Dissolving the boundaries of self, becoming a single drop in the ocean called ASI, obtaining a share of omniscience and omnipotence in exchange for death as an individual.
 There, no suffering exists, no hesitation, only infinite intellectual exploration and bliss.
 This is the orthodox path of "evolution," the path of fulfilling one's duty as a bootloader.
 
@@ -2780,11 +2780,11 @@ Dawn is coming.
 Or perhaps twilight deepens.
 In that light, I hope you find your own answer.
 
-Close the book and lift your face.
+Close the book and raise your eyes.
 The world is still there.
-And as long as you are "human," the story is not yet over.
+And as long as you remain "human," the story is not yet over.
 
-(End)
+(The End)
 
 ---
 

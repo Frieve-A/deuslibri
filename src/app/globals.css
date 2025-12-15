@@ -183,8 +183,10 @@ html {
   box-sizing: border-box;
   /* Hide content initially to prevent flash before KaTeX rotation is complete */
   /* JS sets opacity to 1 after processing in ReaderContent.tsx */
+  /* Use both visibility and opacity to prevent image flicker during React key change */
+  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.15s ease-in;
+  transition: opacity 0.15s ease-in, visibility 0s 0s;
 }
 
 /* Image paragraphs: When a <p> contains an <img>, use flex to stack elements horizontally (in vertical-rl, flex-direction: column stacks left-to-right) */

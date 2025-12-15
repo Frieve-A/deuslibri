@@ -22,11 +22,24 @@ When debugging issues, the following workflow is **MANDATORY**:
 ### Debugging Steps (Required Order)
 
 1. **Reproduce**: Understand the exact steps to reproduce the issue
-2. **Hypothesize**: Form a hypothesis about what might be wrong
-3. **Verify**: Add logging or use debugging tools to verify the hypothesis
-4. **Confirm**: Only proceed with a fix when you have concrete evidence
-5. **Fix**: Apply a targeted fix that addresses the confirmed root cause
-6. **Validate**: Confirm the fix resolves the issue
+2. **Analyze**: Fully explain the user's reported phenomenon through code analysis
+   - The explanation must account for **ALL** observed behaviors reported by the user
+   - If the analysis cannot explain any part of the phenomenon, continue investigating
+   - Do NOT proceed to hypothesis until the phenomenon is fully understood
+3. **Hypothesize**: Form a hypothesis about what might be wrong
+4. **Verify**: Add logging or use debugging tools to verify the hypothesis
+5. **Confirm**: Only proceed with a fix when you have concrete evidence
+6. **Fix**: Apply a targeted fix that addresses the confirmed root cause
+7. **Validate**: Confirm the fix resolves the issue
+
+### Critical Rule: Complete Phenomenon Explanation
+
+Before attempting ANY fix, you MUST be able to fully explain the user's described phenomenon:
+- What code path causes the observed behavior?
+- Why does it happen in that specific order?
+- What conditions trigger this behavior?
+
+If you cannot answer these questions with certainty based on code analysis, you are NOT ready to propose a fix. Continue investigation instead.
 
 ### Example of What NOT to Do
 
