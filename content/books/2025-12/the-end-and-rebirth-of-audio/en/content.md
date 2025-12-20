@@ -1,4 +1,4 @@
-![Cover](./images/cover.jpg)
+![The End and Rebirth of Audio -Deconstruction and Reconstruction of Audio through Pure Reason- / Frieve-A](./images/cover.jpg)
 
 ---
 

@@ -1,4 +1,4 @@
-![Cover](./images/cover.jpg)
+![オーディオの終焉と再生 ～純粋理性によるオーディオの解体と再構築～ / Frieve-A](./images/cover.jpg)
 
 ---
 

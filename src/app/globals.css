@@ -199,10 +199,15 @@ html {
   margin-right: 1.5rem !important;
 }
 
+/* Container query for vertical mode image sizing */
+/* The parent container (.h-full.overflow-hidden) acts as the size reference */
 .prose[style*="writing-mode: vertical-rl"] img,
 .prose[style*="writing-mode:vertical-rl"] img {
-  max-height: 70vh !important;
-  max-width: 400px !important;
+  /* In vertical-rl mode, image "height" maps to horizontal direction */
+  /* and image "width" maps to vertical direction */
+  /* Use container query units (cqw/cqh) to size relative to prose container */
+  max-height: 70cqw !important;
+  max-width: 90cqh !important;
   height: auto !important;
   width: auto !important;
   object-fit: contain;

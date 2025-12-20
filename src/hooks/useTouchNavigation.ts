@@ -52,6 +52,7 @@ export function useTouchNavigation({
   const isLongPressRef = useRef<boolean>(false)
   const touchStartTimeRef = useRef<number>(0)
   const touchedInsideSelectionRef = useRef<boolean>(false)
+  const touchedOnLinkRef = useRef<boolean>(false)
 
   // Flag to track if touch event was handled (to prevent duplicate handling by mouse events)
   const touchHandledRef = useRef<boolean>(false)
@@ -113,6 +114,15 @@ export function useTouchNavigation({
       // Check if touch started inside a scrollable element (table, code block, etc.)
       const touchTarget = e.target as HTMLElement
       touchInsideScrollableRef.current = isInsideScrollableElement(touchTarget)
+
+      // Check if touch is on a link element
+      // If so, allow browser's native link behavior (navigation)
+      const linkElement = touchTarget.closest('a')
+      touchedOnLinkRef.current = linkElement !== null && linkElement.hasAttribute('href')
+      if (touchedOnLinkRef.current) {
+        // Don't interfere with link tap
+        return
+      }
 
       // Check if touch is inside existing text selection
       // If so, allow browser's native context menu / selection handles
@@ -218,8 +228,8 @@ export function useTouchNavigation({
   )
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    // If touched inside selection, let browser handle it (selection handle drag)
-    if (touchedInsideSelectionRef.current) {
+    // If touched inside selection or on a link, let browser handle it
+    if (touchedInsideSelectionRef.current || touchedOnLinkRef.current) {
       return
     }
 
@@ -258,6 +268,12 @@ export function useTouchNavigation({
     // If touched inside selection, let browser handle it (context menu, etc.)
     if (touchedInsideSelectionRef.current) {
       touchedInsideSelectionRef.current = false
+      return
+    }
+
+    // If touched on a link, let browser handle it (link navigation)
+    if (touchedOnLinkRef.current) {
+      touchedOnLinkRef.current = false
       return
     }
 

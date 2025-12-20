@@ -213,9 +213,24 @@ export function useBookProgress({
             ;(isSmoothScrollingRef as { current: boolean }).current = false
           }
         }, 100)
-      } else if (!isVertical) {
-        // No saved scroll position but horizontal scroll mode - still need to show content
-        window.dispatchEvent(new CustomEvent('scroll-restoration-complete'))
+      } else {
+        // No saved scroll position
+        if (isVertical && contentRef.current) {
+          // Vertical scroll mode: scroll to the rightmost position (start of content in vertical-rl)
+          // In vertical-rl mode, scrollLeft is negative and starts at 0 (leftmost = end of book)
+          // We need to scroll to the maximum scrollLeft to show the beginning of the book
+          const container = contentRef.current
+          const originalScrollBehavior = container.style.scrollBehavior
+          container.style.scrollBehavior = 'auto'
+          // scrollWidth - clientWidth gives the maximum scroll distance
+          // For vertical-rl, this positions us at the rightmost (beginning) of content
+          container.scrollLeft = container.scrollWidth - container.clientWidth
+          container.style.scrollBehavior = originalScrollBehavior
+          hasRestoredScrollRef.current = true
+        } else if (!isVertical) {
+          // Horizontal scroll mode - still need to show content
+          window.dispatchEvent(new CustomEvent('scroll-restoration-complete'))
+        }
       }
     }
 

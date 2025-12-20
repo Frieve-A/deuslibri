@@ -112,6 +112,57 @@ export const wrapKatexForVertical = (html: string): string => {
 }
 
 /**
+ * Convert half-width digits and dots to full-width for vertical text
+ */
+const toFullWidthForVertical = (str: string): string => {
+  return str.replace(/[0-9.]/g, (char) => {
+    if (char === '.') {
+      return '．' // Full-width dot
+    }
+    return String.fromCharCode(char.charCodeAt(0) + 0xFEE0)
+  })
+}
+
+/**
+ * Convert half-width digits to full-width in heading elements (h1-h6) for vertical text mode.
+ * In vertical Japanese text, full-width digits look more natural in headings.
+ */
+export const convertHeadingDigitsToFullWidth = (html: string): string => {
+  if (typeof document === 'undefined') {
+    return html // Server-side, return unchanged
+  }
+
+  const container = document.createElement('div')
+  container.innerHTML = html
+
+  // Find all heading elements
+  const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6')
+
+  headings.forEach((heading) => {
+    // Process text nodes within the heading
+    const walker = document.createTreeWalker(
+      heading,
+      NodeFilter.SHOW_TEXT,
+      null
+    )
+
+    const textNodes: Text[] = []
+    let node: Text | null
+    while ((node = walker.nextNode() as Text | null)) {
+      textNodes.push(node)
+    }
+
+    textNodes.forEach((textNode) => {
+      if (textNode.textContent) {
+        textNode.textContent = toFullWidthForVertical(textNode.textContent)
+      }
+    })
+  })
+
+  return container.innerHTML
+}
+
+/**
  * Check if a point is inside the current text selection
  */
 export const isPointInsideSelection = (x: number, y: number): boolean => {

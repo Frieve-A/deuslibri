@@ -532,12 +532,27 @@ In vertical mode, this causes the caption to appear next to the image instead of
 }
 
 .prose[style*="writing-mode: vertical-rl"] img {
-  max-height: 70vh !important;
-  max-width: 400px !important;
+  /* Use container query units for responsive sizing relative to prose container */
+  /* In vertical-rl mode, image "height" maps to horizontal, "width" to vertical */
+  max-height: 70cqw !important;  /* 70% of container width */
+  max-width: 90cqh !important;   /* 90% of container height */
   height: auto !important;
   width: auto !important;
   object-fit: contain;
 }
+```
+
+**Container Query Setup**:
+
+The prose container must have `container-type: size` to enable container query units:
+
+```typescript
+<div
+  className="h-full overflow-x-scroll"
+  style={{
+    containerType: 'size', /* Enable container query units for image sizing */
+  }}
+>
 ```
 
 **Why `flex-direction: column` works in vertical mode**:
@@ -784,6 +799,95 @@ setTimeout(() => {
 - Selectors prevent re-render when `progress` changes (only re-render when selected state changes)
 - `getState()` accesses current state without creating a subscription
 - The component doesn't re-render when saving progress, so scroll position is preserved
+
+## Heading Digit Conversion for Vertical Mode
+
+### Overview
+
+In vertical Japanese text, full-width digits look more natural than half-width digits, especially in headings. The `convertHeadingDigitsToFullWidth()` function converts half-width digits and dots to full-width characters within heading elements (h1-h6).
+
+### Implementation
+
+Located in `src/lib/reader/utils.ts`:
+
+```typescript
+const toFullWidthForVertical = (str: string): string => {
+  return str.replace(/[0-9.]/g, (char) => {
+    if (char === '.') {
+      return '．' // Full-width dot
+    }
+    return String.fromCharCode(char.charCodeAt(0) + 0xFEE0)
+  })
+}
+
+export const convertHeadingDigitsToFullWidth = (html: string): string => {
+  // ... DOM parsing and text node processing
+}
+```
+
+### Conversion Examples
+
+| Original | Converted |
+|----------|-----------|
+| `1.1 Introduction` | `１．１ Introduction` |
+| `Chapter 2.3` | `Chapter ２．３` |
+| `Section 10` | `Section １０` |
+
+### Usage
+
+Applied during HTML pre-processing in `ReaderContent.tsx`:
+
+```typescript
+const processedPageHtml = useMemo(() => {
+  if (!isVertical) {
+    return pageHtml
+  }
+  return pageHtml.map((html) => {
+    let processed = wrapKatexForVertical(html)
+    processed = convertHeadingDigitsToFullWidth(processed)
+    return processed
+  })
+}, [pageHtml, isVertical])
+```
+
+---
+
+## Link Handling
+
+### External Links Open in New Tab
+
+All links in book content are modified to open in a new tab for better reading experience. This is done in `src/lib/books/markdown.ts`:
+
+```typescript
+html = html.replace(
+  /<a href="([^"]+)"(?![^>]*target=)/g,
+  '<a href="$1" target="_blank" rel="noopener noreferrer"'
+)
+```
+
+### Link Click Navigation Bypass
+
+When clicking/tapping on links, the normal page navigation (scroll/page change) is bypassed to allow browser's native link handling:
+
+**Mouse (useMouseNavigation.ts)**:
+```typescript
+const linkElement = target.closest('a')
+clickedOnLinkRef.current = linkElement !== null && linkElement.hasAttribute('href')
+if (clickedOnLinkRef.current) {
+  return // Don't prevent default - allow browser to handle link click
+}
+```
+
+**Touch (useTouchNavigation.ts)**:
+```typescript
+const linkElement = touchTarget.closest('a')
+touchedOnLinkRef.current = linkElement !== null && linkElement.hasAttribute('href')
+if (touchedOnLinkRef.current) {
+  return // Don't interfere with link tap
+}
+```
+
+---
 
 ## KaTeX Math Rendering in Vertical Mode
 
@@ -1570,9 +1674,10 @@ useEffect(() => {
 - `ResizeObserver`: Catches container-specific size changes that may not trigger window resize (e.g., sidebar toggle, font size changes)
 - **Debouncing**: Prevents excessive recalculations during continuous resize operations
 
-**Last Updated**: 2025-12-15
+**Last Updated**: 2025-12-20
 **Created**: To prevent scrollLeft/display position confusion and facilitate future maintenance
 **Revision History**:
+- 2025-12-20: Updated image sizing documentation to use container query units (`cqw`/`cqh`) instead of viewport units, with `container-type: size` on prose container. Added "Heading Digit Conversion for Vertical Mode" section documenting `convertHeadingDigitsToFullWidth()` function. Added "Link Handling" section documenting external links opening in new tabs and link click navigation bypass.
 - 2025-12-15: Added "KaTeX Math Rendering in Vertical Mode" section documenting the three-layer wrapper structure, HTML pre-processing with `wrapKatexForVertical()`, margin adjustment using `useLayoutEffect` without dependencies, and the `katex-rotation-complete` event for synchronizing scroll restoration.
 - 2025-12-09: Added troubleshooting item #9 documenting window resize and browser zoom handling with `ResizeObserver` and debounced event listeners.
 - 2025-12-04: Added "Keyboard Navigation" section documenting arrow key navigation with 80% scroll and page transition at edges. Updated horizontal mode documentation with top/bottom tap behavior, vertical swipe navigation, and scroll position on page change. Added test scenarios H1-H6 for horizontal mode.

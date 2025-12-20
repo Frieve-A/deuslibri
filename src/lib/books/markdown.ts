@@ -68,5 +68,12 @@ export async function markdownToHtml(markdown: string, bookFolderPath?: string):
     }
   }
 
+  // Add target="_blank" rel="noopener noreferrer" to all links
+  // This makes external links open in a new tab for better reading experience
+  html = html.replace(
+    /<a href="([^"]+)"(?![^>]*target=)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer"'
+  )
+
   return html
 }

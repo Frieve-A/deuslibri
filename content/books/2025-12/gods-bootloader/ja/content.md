@@ -1,4 +1,4 @@
-![Cover](./images/cover.jpg)
+![神のブートローダー / Frieve-A](./images/cover.jpg)
 
 ---
 

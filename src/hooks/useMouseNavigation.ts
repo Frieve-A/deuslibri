@@ -45,6 +45,7 @@ export function useMouseNavigation({
   const isDraggingRef = useRef<boolean>(false)
   const mouseDownTargetRef = useRef<EventTarget | null>(null)
   const clickedInsideSelectionRef = useRef<boolean>(false)
+  const clickedOnLinkRef = useRef<boolean>(false)
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -66,6 +67,16 @@ export function useMouseNavigation({
         return
       }
 
+      // Check if click is on a link element
+      // If so, allow browser's native link behavior (navigation)
+      const target = e.target as HTMLElement
+      const linkElement = target.closest('a')
+      clickedOnLinkRef.current = linkElement !== null && linkElement.hasAttribute('href')
+      if (clickedOnLinkRef.current) {
+        // Don't prevent default - allow browser to handle link click
+        return
+      }
+
       mouseStartX.current = e.clientX
       mouseStartY.current = e.clientY
       isDraggingRef.current = false
@@ -77,8 +88,8 @@ export function useMouseNavigation({
   )
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    // If clicked inside selection, let browser handle it
-    if (clickedInsideSelectionRef.current) return
+    // If clicked inside selection or on a link, let browser handle it
+    if (clickedInsideSelectionRef.current || clickedOnLinkRef.current) return
     if (mouseDownTargetRef.current === null) return // Not in a mouse down state
 
     const distanceX = e.clientX - mouseStartX.current
@@ -126,6 +137,12 @@ export function useMouseNavigation({
       // If clicked inside selection, let browser handle it (context menu, etc.)
       if (clickedInsideSelectionRef.current) {
         clickedInsideSelectionRef.current = false
+        return
+      }
+
+      // If clicked on a link, let browser handle it (link navigation)
+      if (clickedOnLinkRef.current) {
+        clickedOnLinkRef.current = false
         return
       }
 

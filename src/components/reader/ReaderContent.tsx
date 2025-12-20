@@ -8,6 +8,7 @@ import {
   getPlainTextFromHtml,
   getFontFamilyCSS,
   wrapKatexForVertical,
+  convertHeadingDigitsToFullWidth,
 } from '@/lib/reader'
 import type { FontFamily } from '@/lib/stores/useReadingStore'
 
@@ -231,13 +232,17 @@ export function ReaderContent({
   const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
   const proseClasses = getProseClasses(theme)
 
-  // Pre-process HTML for vertical mode - wrap KaTeX elements before React renders
+  // Pre-process HTML for vertical mode - wrap KaTeX elements and convert heading digits
   // This avoids React reconciliation overwriting our DOM modifications
   const processedPageHtml = useMemo(() => {
     if (!isVertical) {
       return pageHtml
     }
-    return pageHtml.map((html) => wrapKatexForVertical(html))
+    return pageHtml.map((html) => {
+      let processed = wrapKatexForVertical(html)
+      processed = convertHeadingDigitsToFullWidth(processed)
+      return processed
+    })
   }, [pageHtml, isVertical])
 
   // Track the current page being displayed - used to verify rAF callbacks are for the correct page
@@ -396,6 +401,7 @@ export function ReaderContent({
               flexDirection: 'row',
               justifyContent: 'flex-start',
               touchAction: 'pan-x' /* Enable horizontal touch scroll */,
+              containerType: 'size' /* Enable container query units for image sizing */,
             }}
           >
             <div
@@ -448,6 +454,7 @@ export function ReaderContent({
             className="h-full overflow-x-scroll overflow-y-hidden custom-scrollbar"
             style={{
               touchAction: 'pan-x' /* Enable horizontal touch scroll */,
+              containerType: 'size' /* Enable container query units for image sizing */,
             }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}

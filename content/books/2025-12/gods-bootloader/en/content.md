@@ -1,4 +1,4 @@
-![Cover](./images/cover.jpg)
+![God's Bootloader / Frieve-A](./images/cover.jpg)
 
 ---
 

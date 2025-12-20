@@ -348,12 +348,27 @@ Markdownで画像の次の行にキャプションがある場合（空行なし
 }
 
 .prose[style*="writing-mode: vertical-rl"] img {
-  max-height: 70vh !important;
-  max-width: 400px !important;
+  /* proseコンテナ基準でレスポンシブなサイズ指定にContainer Query単位を使用 */
+  /* vertical-rlモードでは、画像の「height」は水平方向、「width」は垂直方向にマッピング */
+  max-height: 70cqw !important;  /* コンテナ幅の70% */
+  max-width: 90cqh !important;   /* コンテナ高さの90% */
   height: auto !important;
   width: auto !important;
   object-fit: contain;
 }
+```
+
+**Container Queryの設定**:
+
+proseコンテナでContainer Query単位を有効にするには`container-type: size`が必要です：
+
+```typescript
+<div
+  className="h-full overflow-x-scroll"
+  style={{
+    containerType: 'size', /* 画像サイズ指定のためContainer Query単位を有効化 */
+  }}
+>
 ```
 
 **なぜ`flex-direction: column`が縦書きモードで機能するか**：
@@ -458,6 +473,95 @@ html = html.replace(
 - `isAtLeftEdgeContentRef` = 左端コンテンツが表示中
 
 これは scrollLeft 値とは逆の関係ですが、ユーザー視点では正しい表現です。
+
+## 縦書きモードにおける見出しの数字変換
+
+### 概要
+
+縦書きの日本語テキストでは、見出しにおいて全角数字の方が半角数字より自然に見えます。`convertHeadingDigitsToFullWidth()`関数は、見出し要素（h1-h6）内の半角数字とドットを全角文字に変換します。
+
+### 実装
+
+`src/lib/reader/utils.ts`に配置：
+
+```typescript
+const toFullWidthForVertical = (str: string): string => {
+  return str.replace(/[0-9.]/g, (char) => {
+    if (char === '.') {
+      return '．' // 全角ドット
+    }
+    return String.fromCharCode(char.charCodeAt(0) + 0xFEE0)
+  })
+}
+
+export const convertHeadingDigitsToFullWidth = (html: string): string => {
+  // ... DOMパースとテキストノード処理
+}
+```
+
+### 変換例
+
+| 変換前 | 変換後 |
+|-------|-------|
+| `1.1 はじめに` | `１．１ はじめに` |
+| `第2.3章` | `第２．３章` |
+| `セクション10` | `セクション１０` |
+
+### 使用方法
+
+`ReaderContent.tsx`でHTML前処理時に適用：
+
+```typescript
+const processedPageHtml = useMemo(() => {
+  if (!isVertical) {
+    return pageHtml
+  }
+  return pageHtml.map((html) => {
+    let processed = wrapKatexForVertical(html)
+    processed = convertHeadingDigitsToFullWidth(html)
+    return processed
+  })
+}, [pageHtml, isVertical])
+```
+
+---
+
+## リンクの処理
+
+### 外部リンクは新しいタブで開く
+
+書籍コンテンツ内のすべてのリンクは、読書体験を向上させるため新しいタブで開くように修正されます。これは`src/lib/books/markdown.ts`で行われます：
+
+```typescript
+html = html.replace(
+  /<a href="([^"]+)"(?![^>]*target=)/g,
+  '<a href="$1" target="_blank" rel="noopener noreferrer"'
+)
+```
+
+### リンククリック時のナビゲーション回避
+
+リンクをクリック/タップした際、通常のページナビゲーション（スクロール/ページ遷移）は回避され、ブラウザのネイティブなリンク処理が行われます：
+
+**マウス（useMouseNavigation.ts）**:
+```typescript
+const linkElement = target.closest('a')
+clickedOnLinkRef.current = linkElement !== null && linkElement.hasAttribute('href')
+if (clickedOnLinkRef.current) {
+  return // デフォルト動作を阻止しない - ブラウザにリンククリックを処理させる
+}
+```
+
+**タッチ（useTouchNavigation.ts）**:
+```typescript
+const linkElement = touchTarget.closest('a')
+touchedOnLinkRef.current = linkElement !== null && linkElement.hasAttribute('href')
+if (touchedOnLinkRef.current) {
+  return // リンクタップに干渉しない
+}
+```
+
+---
 
 ## 縦書きモードにおけるKaTeX数式レンダリング
 
@@ -747,9 +851,10 @@ settings.displayMode // 'pagination' | 'scroll'
 
 ---
 
-**最終更新**: 2025-12-15
+**最終更新**: 2025-12-20
 **作成理由**: scrollLeft値と表示位置の混乱を防ぎ、将来のメンテナンスを容易にするため
 **更新履歴**:
+- 2025-12-20: 画像サイズ指定をviewport単位からContainer Query単位（`cqw`/`cqh`）に更新、proseコンテナへの`container-type: size`設定を文書化。「縦書きモードにおける見出しの数字変換」セクションを追加し、`convertHeadingDigitsToFullWidth()`関数を文書化。「リンクの処理」セクションを追加し、外部リンクの新規タブ表示とリンククリック時のナビゲーション回避について文書化。
 - 2025-12-15: 「縦書きモードにおけるKaTeX数式レンダリング」セクションを追加。3層ラッパー構造、`wrapKatexForVertical()`によるHTML前処理、依存配列なし`useLayoutEffect`によるマージン調整、スクロール復元同期のための`katex-rotation-complete`イベントについて文書化。
 - 2025-12-03: 「タイポグラフィと余白」セクションを追加。縦書き/横書きモードのブロック要素マージン、Flexコンテナを使用した画像レイアウト、Markdownの複数空行を保持するスペーサー要素について文書化。
 
