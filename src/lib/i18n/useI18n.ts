@@ -7,6 +7,7 @@ import {
   SUPPORTED_LANGUAGES,
   getTranslation,
   detectBrowserLanguage,
+  getBrowserLanguageCode,
   TranslationMessages,
 } from './translations'
 
@@ -20,13 +21,13 @@ interface I18nState {
 export const useI18nStore = create<I18nState>()(
   persist(
     (set, get) => ({
-      language: 'en', // Default, will be overridden by browser detection on mount
+      language: 'default', // Default uses browser language
       setLanguage: (language: SupportedLanguage) => {
         if (SUPPORTED_LANGUAGES.includes(language)) {
           set({ language, t: getTranslation(language) })
         }
       },
-      t: getTranslation('en'),
+      t: getTranslation('default'),
     }),
     {
       name: 'deuslibri-i18n',
@@ -40,23 +41,20 @@ export const useI18nStore = create<I18nState>()(
   )
 )
 
-// Initialize language from browser on first load (client-side only)
-if (typeof window !== 'undefined') {
-  const storedData = localStorage.getItem('deuslibri-i18n')
-  if (!storedData) {
-    // No stored preference, use browser language
-    const browserLang = detectBrowserLanguage()
-    useI18nStore.getState().setLanguage(browserLang)
-  }
-}
-
 // Hook to use translations - provides type-safe access
 export function useI18n() {
   const language = useI18nStore((state) => state.language)
   const setLanguage = useI18nStore((state) => state.setLanguage)
   const t = useI18nStore((state) => state.t)
 
-  return { language, setLanguage, t }
+  // Get the effective language for catalog sorting:
+  // - If 'default', use the raw browser language code (e.g., 'fr', 'de', 'ja')
+  // - Otherwise, use the explicitly set language
+  const effectiveLanguage = language === 'default'
+    ? getBrowserLanguageCode()
+    : language
+
+  return { language, setLanguage, t, effectiveLanguage }
 }
 
 // Export for direct access when needed

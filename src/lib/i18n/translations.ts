@@ -1,10 +1,11 @@
 // Translation keys and messages for all supported languages
 // Add new languages by extending the translations object
 
-export const SUPPORTED_LANGUAGES = ['en', 'ja'] as const
+export const SUPPORTED_LANGUAGES = ['default', 'en', 'ja'] as const
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]
 
 export const LANGUAGE_NAMES: Record<SupportedLanguage, string> = {
+  default: 'Default (Browser)',
   en: 'English',
   ja: '日本語',
 }
@@ -720,24 +721,37 @@ const ja: TranslationMessages = {
   },
 }
 
+// UI languages with actual translations (excludes 'default' which is a meta-option)
+export type UILanguage = 'en' | 'ja'
+
 // All translations
-export const translations: Record<SupportedLanguage, TranslationMessages> = {
+export const translations: Record<UILanguage, TranslationMessages> = {
   en,
   ja,
 }
 
 // Helper function to get translation
 export function getTranslation(language: SupportedLanguage): TranslationMessages {
-  return translations[language] || translations.en
+  if (language === 'default') {
+    const browserLang = detectBrowserLanguage()
+    return translations[browserLang] || translations.en
+  }
+  return translations[language as 'en' | 'ja'] || translations.en
 }
 
-// Helper function to detect browser language
-export function detectBrowserLanguage(): SupportedLanguage {
+// Helper function to detect browser language for UI (returns supported UI language)
+export function detectBrowserLanguage(): 'en' | 'ja' {
   if (typeof navigator === 'undefined') return 'en'
 
   const browserLang = navigator.language.split('-')[0]
-  if (SUPPORTED_LANGUAGES.includes(browserLang as SupportedLanguage)) {
-    return browserLang as SupportedLanguage
+  if (browserLang === 'ja') {
+    return 'ja'
   }
   return 'en'
+}
+
+// Helper function to get raw browser language code for catalog sorting
+export function getBrowserLanguageCode(): string {
+  if (typeof navigator === 'undefined') return 'en'
+  return navigator.language.split('-')[0]
 }

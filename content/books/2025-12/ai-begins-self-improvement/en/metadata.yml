@@ -1,0 +1,41 @@
+# 2025—AI Begins Self-Improvement Metadata
+
+# Required fields
+id: "ai-begins-self-improvement"
+title: "2025—AI Begins Self-Improvement"
+subtitle: "The Changing Production Function of Civilization"
+author: "Frieve-A"
+publishDate: "2025-12-20"
+language: "en"
+tags:
+  - "AI"
+  - "Artificial Intelligence"
+  - "Machine Learning"
+  - "Self-Improvement"
+  - "Technology"
+  - "Future Prediction"
+summary: "In 2025, four exponential loops of AI closed, and self-reinforcing development began. This book explains the turning point where civilization's production function is being rewritten."
+description: |
+  "2025—AI Begins Self-Improvement" is a book that explains 2025—the year when the acceleration
+  of AI research and development entered a phase of "accelerating the acceleration itself"—
+  through the lens of four exponential loops.
+
+  The self-improvement loop (AI improves AI), the environment generation loop (synthetic data
+  destroys data scarcity), the computational capital loop (computation begets computation),
+  and the top-level decision-making loop (AI sets the objective function)—this book reveals
+  the structure where these four loops interconnect and begin spinning as closed exponential development.
+
+  AlphaEvolve, AI Scientist-v2, Genie 3, GR00T N1, Stargate, SKAI—rather than chasing
+  individual news items, this book provides a framework for understanding why progress
+  doesn't stop: its recursive structure.
+
+  Frieve-A 2025
+recommendText: "For those who want to structurally understand the cutting edge of AI technology and foresee technological trends from 2025 onwards."
+coverImage: "./images/cover.jpg"
+
+# Optional fields
+pageCount: 114
+estimatedReadingTime: 180
+isbn: ""
+series: ""
+seriesNumber: 1

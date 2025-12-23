@@ -23,7 +23,7 @@ export default function CatalogClient({ books }: CatalogClientProps) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   const { favorites, recentlyRead } = useReadingStore()
-  const { t, language } = useI18n()
+  const { t, effectiveLanguage } = useI18n()
 
   const handleDetailsClick = (book: BookCatalogItem) => {
     setSelectedBook(book)
@@ -71,15 +71,22 @@ export default function CatalogClient({ books }: CatalogClientProps) {
     return result
   }, [books, searchQuery, selectedTags, viewMode, favorites, recentlyRead])
 
-  // Sort books with current UI language as highest priority
+  // Sort books with user's preferred language as highest priority, English as secondary
+  // effectiveLanguage is either the explicit language setting, or browser language if 'default'
   const sortedBooks = useMemo(() => {
     return [...filteredBooks].sort((a, b) => {
-      // Primary sort: Current UI language first
-      const aIsCurrentLang = a.language === language ? 1 : 0
-      const bIsCurrentLang = b.language === language ? 1 : 0
+      // Language priority: User's preferred language > English > Others
+      const getLanguagePriority = (lang: string) => {
+        if (lang === effectiveLanguage) return 2 // User's preferred language: highest priority
+        if (lang === 'en') return 1               // English: secondary priority
+        return 0                                   // Other languages: lowest priority
+      }
 
-      if (aIsCurrentLang !== bIsCurrentLang) {
-        return bIsCurrentLang - aIsCurrentLang
+      const aPriority = getLanguagePriority(a.language)
+      const bPriority = getLanguagePriority(b.language)
+
+      if (aPriority !== bPriority) {
+        return bPriority - aPriority
       }
 
       // Secondary sort: Publication date (newest first)
@@ -90,9 +97,9 @@ export default function CatalogClient({ books }: CatalogClientProps) {
       }
 
       // Tertiary sort: Book title alphabetically
-      return a.title.localeCompare(b.title, language)
+      return a.title.localeCompare(b.title, effectiveLanguage)
     })
-  }, [filteredBooks, language])
+  }, [filteredBooks, effectiveLanguage])
 
   // Show loading state until hydration is complete
   if (!mounted) {

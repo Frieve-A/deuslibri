@@ -466,9 +466,10 @@ src/
 - **実装内容**:
   - 拡張可能な多言語対応アーキテクチャを設計・実装
   - 英語・日本語の翻訳ファイルを作成（新しい言語の追加が容易）
-  - ブラウザ言語の自動検出機能
-  - 設定ページからUI言語を切り替え可能
+  - ブラウザ言語の自動検出機能（Default設定時）
+  - 設定ページからUI言語を切り替え可能（Default/English/日本語）
   - 言語設定はLocalStorageに永続化
+  - カタログ画面の書籍ソート順: ユーザーの言語設定 → 英語 → その他の言語
 - **技術的詳細**:
   - `src/lib/i18n/` - i18n関連ファイル
     - `translations.ts` - 翻訳メッセージと型定義
@@ -476,6 +477,7 @@ src/
     - `index.ts` - エクスポート用
   - TypeScriptの型安全な翻訳キー
   - Zustand persistミドルウェアで言語設定を永続化
+  - `effectiveLanguage` - カタログソート用の実際の言語コード（Default時はブラウザ言語）
 - **対応コンポーネント**:
   - ホームページ (`HomeClient.tsx`)
   - カタログページ (`CatalogClient.tsx`, `CatalogFilters.tsx`)
@@ -488,10 +490,16 @@ src/
   - 設定: 各設定項目のラベル、説明文、ボタン
   - 書籍閲覧: ローディング表示、Catalog/Tweet/Shareボタン、Prev/Nextボタン、ページ表示
   - 目次: タイトル、ブックマークタブ、ページ番号、設定リンク
-- **新しい言語の追加方法**:
-  1. `src/lib/i18n/translations.ts` の `SUPPORTED_LANGUAGES` に言語コードを追加
-  2. `LANGUAGE_NAMES` に言語の表示名を追加
-  3. 翻訳オブジェクトを作成し `translations` に追加
+- **言語設定オプション**:
+  - `default` - ブラウザの言語設定を使用（UIはen/jaにフォールバック、カタログソートは実際のブラウザ言語を使用）
+  - `en` - 英語
+  - `ja` - 日本語
+- **新しいUI言語の追加方法**:
+  1. `src/lib/i18n/translations.ts` の `UILanguage` 型に言語コードを追加
+  2. `SUPPORTED_LANGUAGES` に言語コードを追加
+  3. `LANGUAGE_NAMES` に言語の表示名を追加
+  4. 翻訳オブジェクトを作成し `translations` に追加
+  5. `detectBrowserLanguage()` に新しい言語の判定を追加
 
 ### 17. 数式レンダリング対応（LaTeX/KaTeX）✅
 - **実装内容**:

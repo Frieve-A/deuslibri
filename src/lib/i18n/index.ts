@@ -5,6 +5,7 @@ export {
   translations,
   getTranslation,
   detectBrowserLanguage,
+  getBrowserLanguageCode,
   type SupportedLanguage,
   type TranslationMessages,
 } from './translations'
