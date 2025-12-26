@@ -111,7 +111,8 @@ deuslibri/
 │   └── types/
 │       └── book.ts
 ├── scripts/
-│   └── generate-search-index.ts       # Build-time script
+│   ├── generate-search-index.ts       # Build-time search index generation
+│   └── generate-sitemap.js            # Build-time sitemap & robots.txt generation
 ├── next.config.js
 ├── tailwind.config.js
 ├── tsconfig.json
@@ -351,8 +352,8 @@ jobs:
 
 ### 7.1 SEO Strategy
 - Meta tag optimization (OGP, Twitter Card)
-- Automatic sitemap generation
-- robots.txt configuration
+- Automatic sitemap generation ✅
+- robots.txt configuration ✅
 - Structured data (JSON-LD: Book, BreadcrumbList)
 - Appropriate title/description for each page
 
@@ -535,4 +536,4 @@ Google Analytics is configured in `src/app/layout.tsx` using Next.js `next/scrip
 
 ---
 
-Last updated: 2025-12-06
+Last updated: 2025-12-26

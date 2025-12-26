@@ -111,7 +111,8 @@ deuslibri/
 │   └── types/
 │       └── book.ts
 ├── scripts/
-│   └── generate-search-index.ts       # ビルド時スクリプト
+│   ├── generate-search-index.ts       # ビルド時検索インデックス生成
+│   └── generate-sitemap.js            # ビルド時サイトマップ・robots.txt生成
 ├── next.config.js
 ├── tailwind.config.js
 ├── tsconfig.json
@@ -351,8 +352,8 @@ jobs:
 
 ### 7.1 SEO対策
 - メタタグ最適化（OGP, Twitter Card）
-- サイトマップ自動生成
-- robots.txt設定
+- サイトマップ自動生成 ✅
+- robots.txt設定 ✅
 - 構造化データ（JSON-LD: Book, BreadcrumbList）
 - 各ページに適切なtitle/description
 
@@ -519,4 +520,4 @@ Google Analyticsは`src/app/layout.tsx`にNext.jsの`next/script`コンポーネ
 
 ---
 
-最終更新: 2025-12-06
+最終更新: 2025-12-26

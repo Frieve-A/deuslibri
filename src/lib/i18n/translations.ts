@@ -27,6 +27,8 @@ export interface TranslationMessages {
     subtitle: string
     description: string
     browseCatalog: string
+    newBooks: string
+    featuresTitle: string
     features: {
       freeBooks: {
         title: string
@@ -247,20 +249,25 @@ const en: TranslationMessages = {
     title: 'DeusLibri',
     subtitle: 'Your free digital library',
     description:
-      'Read books online for free. Browse our catalog, save your favorites, and pick up where you left off.',
+      'Enjoy reading the best original books online for free. Browse our catalog, save your favorites, and pick up where you left off.',
     browseCatalog: 'Browse Catalog',
+    newBooks: 'New Books',
+    featuresTitle: 'Features of DeusLibri',
     features: {
       freeBooks: {
         title: 'Free Original Books',
-        description: 'Access a growing collection of books completely free',
+        description:
+          'DeusLibri offers a carefully curated collection of original books, all completely free. No registration required—simply visit the site and start reading immediately. From fiction to non-fiction and essays, we offer a diverse range of works across multiple genres, with new books added regularly. Find your favorite works and enjoy reading anytime, anywhere. All content is properly licensed, so you can read with confidence.',
       },
       saveProgress: {
         title: 'Save Progress',
-        description: 'Your reading progress is saved automatically',
+        description:
+          'Your reading progress is automatically saved in your browser, so you can continue right where you left off on your next visit. Even if you are reading multiple books simultaneously, each reading position is accurately remembered. Use the favorites feature to bookmark interesting works for later. The export and import functionality makes it easy to transfer your data to another device. Enjoy a seamless reading experience across smartphones, tablets, and computers.',
       },
       customizable: {
         title: 'Customizable',
-        description: 'Adjust font size, reading mode, and more',
+        description:
+          'We provide extensive customization options for a comfortable reading experience. Adjust font size, line height, and margins to your preference, and choose eye-friendly color schemes like dark mode or sepia theme. Japanese content supports vertical writing for a reading experience closer to traditional print books. Switch between pagination mode and infinite scroll mode to enjoy works the way you prefer. The auto-scroll feature lets you read hands-free.',
       },
     },
   },
@@ -491,20 +498,25 @@ const ja: TranslationMessages = {
     title: 'DeusLibri',
     subtitle: '無料のデジタルライブラリ',
     description:
-      '無料でオンライン読書を楽しめます。カタログを閲覧し、お気に入りを保存して、いつでも続きから読むことができます。',
+      '最高のオリジナル書籍のオンライン読書を楽しめます。カタログを閲覧し、お気に入りを保存して、いつでも続きから読むことができます。',
     browseCatalog: 'カタログを見る',
+    newBooks: '新着書籍',
+    featuresTitle: 'DeusLibriの特長',
     features: {
       freeBooks: {
         title: '無料のオリジナル書籍',
-        description: '増え続ける書籍コレクションに無料でアクセス',
+        description:
+          'DeusLibriでは、厳選されたオリジナル書籍をすべて無料で提供しています。会員登録も不要で、サイトにアクセスするだけですぐに読書を始められます。フィクションからノンフィクション、エッセイまで、多彩なジャンルの作品を取り揃えており、新しい書籍も定期的に追加されます。お気に入りの作品を見つけて、いつでもどこでも読書をお楽しみください。すべてのコンテンツは著作権をクリアした正規のものですので、安心してご利用いただけます。',
       },
       saveProgress: {
         title: '進捗の保存',
-        description: '読書の進捗は自動的に保存されます',
+        description:
+          '読書の進捗は自動的にブラウザに保存されるため、次回訪問時も続きから読むことができます。複数の書籍を並行して読んでいても、それぞれの読書位置を正確に記憶します。お気に入り機能を使えば、気になる作品をブックマークしてあとで読むこともできます。また、データのエクスポート・インポート機能により、別のデバイスへの移行も簡単です。スマートフォン、タブレット、パソコンなど、お好みのデバイスでシームレスに読書体験を継続できます。',
       },
       customizable: {
         title: 'カスタマイズ可能',
-        description: 'フォントサイズ、読書モードなどを調整',
+        description:
+          '快適な読書体験のために、豊富なカスタマイズオプションを用意しています。フォントサイズや行間、余白を自分好みに調整できるほか、ダークモードやセピアテーマなど目に優しい配色も選択可能です。日本語コンテンツでは縦書き表示にも対応し、紙の書籍に近い読書体験を実現します。ページ送りモードと無限スクロールモードを切り替えられるので、お好みの読み方で作品を楽しめます。自動スクロール機能を使えば、手を使わずに読み進めることもできます。',
       },
     },
   },

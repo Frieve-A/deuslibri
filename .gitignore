@@ -50,5 +50,7 @@ coverage/
 
 # Generated files
 public/search-index.json
+public/sitemap.xml
+public/robots.txt
 .cache/
 public/content/

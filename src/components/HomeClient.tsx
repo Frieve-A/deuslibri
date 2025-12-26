@@ -2,18 +2,56 @@
 
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import HelpModal from './HelpModal'
 import Header from './Header'
+import { BookCatalogItem } from '@/types/book'
+import { getContentImagePath } from '@/lib/utils/basePath'
 
-export default function HomeClient() {
-  const { t } = useI18n()
+interface HomeClientProps {
+  books: BookCatalogItem[]
+}
+
+export default function HomeClient({ books }: HomeClientProps) {
+  const { t, effectiveLanguage } = useI18n()
   const [mounted, setMounted] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Sort books with user's preferred language as highest priority, English as secondary
+  // Same logic as CatalogClient to ensure consistency
+  const newBooks = useMemo(() => {
+    return [...books]
+      .sort((a, b) => {
+        // Language priority: User's preferred language > English > Others
+        const getLanguagePriority = (lang: string) => {
+          if (lang === effectiveLanguage) return 2 // User's preferred language: highest priority
+          if (lang === 'en') return 1 // English: secondary priority
+          return 0 // Other languages: lowest priority
+        }
+
+        const aPriority = getLanguagePriority(a.language)
+        const bPriority = getLanguagePriority(b.language)
+
+        if (aPriority !== bPriority) {
+          return bPriority - aPriority
+        }
+
+        // Secondary sort: Publication date (newest first)
+        const dateA = new Date(a.publishDate).getTime()
+        const dateB = new Date(b.publishDate).getTime()
+        if (dateA !== dateB) {
+          return dateB - dateA
+        }
+
+        // Tertiary sort: Book title alphabetically
+        return a.title.localeCompare(b.title, effectiveLanguage)
+      })
+      .slice(0, 3)
+  }, [books, effectiveLanguage])
 
   // Show loading state until hydration is complete
   if (!mounted) {
@@ -104,29 +142,92 @@ export default function HomeClient() {
           </div>
         </div>
 
-        <div className="mt-20 grid md:grid-cols-3 gap-8">
-          <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
-            <div className="text-4xl mb-4">📚</div>
-            <h2 className="text-xl font-semibold mb-2">{t.home.features.freeBooks.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              {t.home.features.freeBooks.description}
-            </p>
-          </div>
+        {/* New Books Section */}
+        {newBooks.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+              {t.home.newBooks}
+            </h2>
+            <div className="flex flex-col gap-6">
+              {newBooks.map((book) => {
+                const coverImagePath = book.coverImage
+                  ? getContentImagePath(book.folderPath, book.coverImage)
+                  : null
 
-          <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
-            <div className="text-4xl mb-4">💾</div>
-            <h2 className="text-xl font-semibold mb-2">{t.home.features.saveProgress.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              {t.home.features.saveProgress.description}
-            </p>
+                return (
+                  <Link
+                    key={`${book.id}-${book.language}`}
+                    href={`/book/${book.id}/${book.language}`}
+                    className="block bg-amber-50 dark:bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-amber-200 dark:border-slate-700 hover:shadow-xl transition-shadow"
+                  >
+                    {/* Desktop: Horizontal layout / Mobile: Vertical layout */}
+                    <div className="flex flex-col sm:flex-row">
+                      {/* Cover Image */}
+                      {coverImagePath && (
+                        <div className="sm:w-32 sm:h-44 sm:flex-shrink-0 w-full aspect-[3/4] sm:aspect-auto bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                          <img
+                            src={coverImagePath}
+                            alt={`${book.title} cover`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      )}
+                      <div className="p-4 flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                          {book.title}
+                          <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                            ({book.publishDate})
+                          </span>
+                        </h3>
+                        {book.summary && book.summary !== book.title && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 italic">
+                            {book.summary}
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                          {book.author}
+                        </p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          {book.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
           </div>
+        )}
 
-          <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
-            <div className="text-4xl mb-4">🎨</div>
-            <h2 className="text-xl font-semibold mb-2">{t.home.features.customizable.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              {t.home.features.customizable.description}
-            </p>
+        {/* Features Section */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+            {t.home.featuresTitle}
+          </h2>
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
+              <div className="text-4xl mb-4">📚</div>
+              <h3 className="text-xl font-semibold mb-2">{t.home.features.freeBooks.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                {t.home.features.freeBooks.description}
+              </p>
+            </div>
+
+            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
+              <div className="text-4xl mb-4">💾</div>
+              <h3 className="text-xl font-semibold mb-2">{t.home.features.saveProgress.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                {t.home.features.saveProgress.description}
+              </p>
+            </div>
+
+            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
+              <div className="text-4xl mb-4">🎨</div>
+              <h3 className="text-xl font-semibold mb-2">{t.home.features.customizable.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                {t.home.features.customizable.description}
+              </p>
+            </div>
           </div>
         </div>
 

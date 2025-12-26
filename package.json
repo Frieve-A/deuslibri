@@ -8,10 +8,11 @@
   },
   "scripts": {
     "dev": "npm run copy-content && next dev",
-    "build": "npm run copy-content && next build",
+    "build": "npm run copy-content && npm run generate-sitemap && next build",
     "start": "next start",
     "lint": "next lint",
-    "copy-content": "node scripts/copy-content.js"
+    "copy-content": "node scripts/copy-content.js",
+    "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "keywords": [],
   "author": "",
