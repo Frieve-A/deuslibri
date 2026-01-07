@@ -1,0 +1,38 @@
+# Physical AI: Ground Truth Metadata
+
+# Required fields
+id: "physical-ai"
+title: "Physical AI: Ground Truth"
+subtitle: "The Algorithmic Surge and the Gritty Reality of the Material World"
+author: "Frieve-A"
+publishDate: "2026-01-01"
+language: "en"
+tags:
+  - "AI"
+  - "Robotics"
+  - "Physical AI"
+  - "Autonomous Systems"
+  - "Technology"
+  - "Future Forecasting"
+summary: "AI has broken free from the 'cage of the screen' and begun its advance into the physical world. This book explains the geopolitics of a new era where robotics, energy, and semiconductors intersect."
+description: |
+  *Physical AI: Ground Truth* is a strategic guide for creating future value, grounded in the "twin gravities" of physical laws and economic principles.
+
+  This book deeply examines, from a macro perspective, why massive investments are now flowing into Physical AI. It reveals the evolutionary necessity inherent to AI itself, hidden behind the superficial explanation of "solving labor shortages."
+
+  It also discusses why the fatal misconception that hardware companies often fall into—the illusion that "we can win by developing software in-house"—doesn't hold, from the perspective of differential speeds of technological evolution.
+
+  Furthermore, it presents concrete strategies for how those without massive capital can build unique value and find winning paths within this structural transformation.
+
+  Stay in the paradise of bits, or descend into the wilderness of atoms. Here is a reliable map for those faced with that choice.
+
+  Frieve-A 2026
+recommendText: "For those who want to understand the social transformation brought by the fusion of AI and robotics, and those who want to foresee technological trends from 2026 onward."
+coverImage: "./images/cover.jpg"
+
+# Optional fields
+pageCount: 50
+estimatedReadingTime: 70
+isbn: ""
+series: ""
+seriesNumber: 1
