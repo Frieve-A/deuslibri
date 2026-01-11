@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { BookCatalogItem } from '@/types/book'
 import BookCard from '@/components/BookCard'
 import BookDetailsModal from '@/components/BookDetailsModal'
@@ -15,7 +15,6 @@ interface CatalogClientProps {
 }
 
 export default function CatalogClient({ books }: CatalogClientProps) {
-  const [mounted, setMounted] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [viewMode, setViewMode] = useState<'all' | 'favorites' | 'recent'>('all')
@@ -34,10 +33,6 @@ export default function CatalogClient({ books }: CatalogClientProps) {
     setIsDetailsModalOpen(false)
     setSelectedBook(null)
   }
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const allTags = useMemo(() => getAllTags(books), [books])
 
@@ -100,28 +95,6 @@ export default function CatalogClient({ books }: CatalogClientProps) {
       return a.title.localeCompare(b.title, effectiveLanguage)
     })
   }, [filteredBooks, effectiveLanguage])
-
-  // Show loading state until hydration is complete
-  if (!mounted) {
-    return (
-      <>
-        <Header />
-        <div className="min-h-screen p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="animate-pulse">
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6"></div>
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded mb-6"></div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {[...Array(10)].map((_, i) => (
-                  <div key={i} className="aspect-[3/4] bg-gray-200 dark:bg-gray-700 rounded"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
 
   return (
     <>

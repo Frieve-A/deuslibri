@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import HelpModal from './HelpModal'
 import Header from './Header'
 import { BookCatalogItem } from '@/types/book'
@@ -14,12 +14,7 @@ interface HomeClientProps {
 
 export default function HomeClient({ books }: HomeClientProps) {
   const { t, effectiveLanguage } = useI18n()
-  const [mounted, setMounted] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Sort books with user's preferred language as highest priority, English as secondary
   // Same logic as CatalogClient to ensure consistency
@@ -52,26 +47,6 @@ export default function HomeClient({ books }: HomeClientProps) {
       })
       .slice(0, 3)
   }, [books, effectiveLanguage])
-
-  // Show loading state until hydration is complete
-  if (!mounted) {
-    return (
-      <>
-        <Header />
-        <main className="min-h-screen p-8 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-slate-900 dark:to-slate-800">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center py-20">
-              <div className="animate-pulse">
-                <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded w-64 mx-auto mb-4"></div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-8"></div>
-                <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded w-96 mx-auto mb-12"></div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </>
-    )
-  }
 
   return (
     <>
