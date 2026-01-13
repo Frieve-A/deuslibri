@@ -171,6 +171,10 @@ In scroll mode (non-pagination), keyboard navigation scrolls 80% of visible area
 
 Tap allows quick navigation by tapping on the left or right side of the screen.
 
+**Note**: Tap navigation can be disabled in Settings → Interaction Settings. There are separate toggles for:
+- Click/tap to scroll (within page scrolling)
+- Click/tap to turn page (page navigation)
+
 #### Tap Behavior
 
 | Tap Location | Scroll Space Available | At Edge |
@@ -254,6 +258,8 @@ if (isTap && isVertical) {
 ### Swipe Navigation
 
 Swipe allows page navigation only when at content edge.
+
+**Note**: Swipe/flick page navigation can be disabled in Settings → Interaction Settings.
 
 #### Swipe Operation Definition
 
@@ -1674,9 +1680,78 @@ useEffect(() => {
 - `ResizeObserver`: Catches container-specific size changes that may not trigger window resize (e.g., sidebar toggle, font size changes)
 - **Debouncing**: Prevents excessive recalculations during continuous resize operations
 
-**Last Updated**: 2025-12-20
+## Interaction Settings
+
+Users can customize reader interaction behavior via Settings → Interaction Settings. All interaction features can be individually enabled or disabled.
+
+### Available Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| **Click/tap to scroll** | Enabled | Click/tap on screen to scroll within page (80% of visible area) |
+| **Click/tap to turn page** | Enabled | Click/tap on screen edge to navigate to next/previous page |
+| **Flick to scroll** | Enabled | Reserved for future flick-to-scroll functionality |
+| **Flick to turn page** | Enabled | Flick/swipe at page edge to navigate to next/previous page |
+
+### Settings Implementation
+
+Settings are stored in `useReadingStore` under `settings.interaction`:
+
+```typescript
+export interface InteractionSettings {
+  enableTapScroll: boolean       // Tap to scroll within page
+  enableTapPageTurn: boolean     // Tap to turn page
+  enableFlickScroll: boolean     // Flick to scroll within page (reserved)
+  enableFlickPageTurn: boolean   // Flick to turn page
+}
+```
+
+### How Settings Affect Behavior
+
+#### All Settings Enabled (Default)
+- Full navigation functionality
+- Tap scrolls within page, navigates at edges
+- Flick/swipe navigates pages at edges
+
+#### Tap Scroll Disabled
+- Tapping center area does not scroll
+- Tapping at page edges still triggers page navigation (if tap page turn is enabled)
+
+#### Tap Page Turn Disabled
+- Tapping at edges does not navigate pages
+- Tapping center area still scrolls within page (if tap scroll is enabled)
+
+#### Both Tap Settings Disabled
+- Touch/click navigation completely disabled
+- Keyboard and flick navigation still work
+- Useful for read-only mode or when user wants to minimize accidental navigation
+
+#### Flick Page Turn Disabled
+- Swipe gestures do not trigger page navigation
+- Tap navigation still works
+- Useful for devices with sensitive touch screens
+
+### Use Cases
+
+**Minimize Accidental Navigation**:
+- Disable tap page turn
+- Keep tap scroll enabled
+- Users can scroll freely without accidentally changing pages
+
+**Reading on Moving Vehicle**:
+- Disable flick page turn
+- Keep tap navigation enabled
+- Prevents unintentional swipes from vehicle motion
+
+**Text Selection Priority**:
+- Disable both tap settings
+- Use only keyboard navigation
+- Makes text selection easier without triggering navigation
+
+**Last Updated**: 2025-01-13
 **Created**: To prevent scrollLeft/display position confusion and facilitate future maintenance
 **Revision History**:
+- 2025-01-13: Added "Interaction Settings" section documenting customizable reader interaction controls (tap scroll, tap page turn, flick scroll, flick page turn).
 - 2025-12-20: Updated image sizing documentation to use container query units (`cqw`/`cqh`) instead of viewport units, with `container-type: size` on prose container. Added "Heading Digit Conversion for Vertical Mode" section documenting `convertHeadingDigitsToFullWidth()` function. Added "Link Handling" section documenting external links opening in new tabs and link click navigation bypass.
 - 2025-12-15: Added "KaTeX Math Rendering in Vertical Mode" section documenting the three-layer wrapper structure, HTML pre-processing with `wrapKatexForVertical()`, margin adjustment using `useLayoutEffect` without dependencies, and the `katex-rotation-complete` event for synchronizing scroll restoration.
 - 2025-12-09: Added troubleshooting item #9 documenting window resize and browser zoom handling with `ResizeObserver` and debounced event listeners.

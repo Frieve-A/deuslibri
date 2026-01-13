@@ -41,6 +41,8 @@ export function useTouchNavigation({
   goToNextPage,
   goToPrevPage,
 }: UseTouchNavigationOptions): UseTouchNavigationReturn {
+  // Get interaction settings from store
+  const interactionSettings = useReadingStore((state) => state.settings.interaction)
   const touchStartX = useRef<number>(0)
   const touchStartY = useRef<number>(0)
   const touchEndX = useRef<number>(0)
@@ -300,7 +302,11 @@ export function useTouchNavigation({
     const isTap =
       (touchEndX.current === 0 && touchEndY.current === 0) || totalDistance < CLICK_THRESHOLD
 
-    if (isTap && isVertical && isPagination) {
+    // Check if tap interactions are enabled
+    const tapScrollEnabled = interactionSettings?.enableTapScroll ?? true
+    const tapPageTurnEnabled = interactionSettings?.enableTapPageTurn ?? true
+
+    if (isTap && isVertical && isPagination && (tapScrollEnabled || tapPageTurnEnabled)) {
       // Tap navigation for vertical pagination mode
       // First check if we can scroll within page, otherwise navigate to prev/next page
       const element = contentRef.current
@@ -324,25 +330,33 @@ export function useTouchNavigation({
           if (tapX > elementCenter) {
             // Tapped right side - scroll toward right (reading start) or go to prev page
             if (isAtRightEdge) {
-              goToPrevPage()
+              if (tapPageTurnEnabled) {
+                goToPrevPage()
+              }
             } else {
-              // Scroll toward right edge (increase scrollLeft toward 0)
-              const newScrollLeft = Math.min(0, currentScrollLeft + scrollAmount)
-              prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                // Scroll toward right edge (increase scrollLeft toward 0)
+                const newScrollLeft = Math.min(0, currentScrollLeft + scrollAmount)
+                prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              }
             }
           } else {
             // Tapped left side - scroll toward left (reading end) or go to next page
             if (isAtLeftEdge) {
-              goToNextPage()
+              if (tapPageTurnEnabled) {
+                goToNextPage()
+              }
             } else {
-              // Scroll toward left edge (decrease scrollLeft toward -maxScroll)
-              const newScrollLeft = Math.max(-maxScroll, currentScrollLeft - scrollAmount)
-              prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                // Scroll toward left edge (decrease scrollLeft toward -maxScroll)
+                const newScrollLeft = Math.max(-maxScroll, currentScrollLeft - scrollAmount)
+                prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              }
             }
           }
         }
       }
-    } else if (isTap && !isVertical && isPagination) {
+    } else if (isTap && !isVertical && isPagination && (tapScrollEnabled || tapPageTurnEnabled)) {
       // Tap navigation for horizontal pagination mode
       // Left/right edge = direct page navigation
       // Center area: Top half = scroll up / prev page, Bottom half = scroll down / next page
@@ -356,10 +370,14 @@ export function useTouchNavigation({
         // Check if tap is in left or right edge zone for direct page navigation
         if (tapX < rect.left + edgeZoneWidth) {
           // Tapped left edge - go to previous page (reading direction: left = back)
-          goToPrevPage()
+          if (tapPageTurnEnabled) {
+            goToPrevPage()
+          }
         } else if (tapX > rect.right - edgeZoneWidth) {
           // Tapped right edge - go to next page (reading direction: right = forward)
-          goToNextPage()
+          if (tapPageTurnEnabled) {
+            goToNextPage()
+          }
         } else {
           // Tapped center area - use top/bottom half for scroll/page navigation
           const elementCenter = rect.top + rect.height / 2
@@ -372,23 +390,31 @@ export function useTouchNavigation({
           if (tapY > elementCenter) {
             // Tapped bottom half - scroll down or go to next page
             if (isAtBottom) {
-              goToNextPage()
+              if (tapPageTurnEnabled) {
+                goToNextPage()
+              }
             } else {
-              const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
-              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
+                element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              }
             }
           } else {
             // Tapped top half - scroll up or go to prev page
             if (isAtTop) {
-              goToPrevPage()
+              if (tapPageTurnEnabled) {
+                goToPrevPage()
+              }
             } else {
-              const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
-              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
+                element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              }
             }
           }
         }
       }
-    } else if (isTap && isVertical && !isPagination) {
+    } else if (isTap && isVertical && !isPagination && tapScrollEnabled) {
       // Tap navigation for vertical scroll mode
       // Scroll horizontally based on tap position (left/right of center)
       const element = contentRef.current
@@ -422,7 +448,7 @@ export function useTouchNavigation({
           )
         }, SMOOTH_SCROLL_DURATION)
       }
-    } else if (isTap && !isVertical && !isPagination) {
+    } else if (isTap && !isVertical && !isPagination && tapScrollEnabled) {
       // Tap navigation for horizontal scroll mode
       // Top half = scroll up, Bottom half = scroll down
       const tapY = touchStartY.current
@@ -453,6 +479,9 @@ export function useTouchNavigation({
         )
       }, SMOOTH_SCROLL_DURATION)
     } else if (Math.abs(swipeDistanceX) > MIN_SWIPE_DISTANCE || Math.abs(swipeDistanceY) > MIN_SWIPE_DISTANCE) {
+      // Check if flick interactions are enabled
+      const flickPageTurnEnabled = interactionSettings?.enableFlickPageTurn ?? true
+
       // Skip page navigation swipe if touch started inside a scrollable element (table, etc.)
       // This allows the user to scroll the table without triggering page navigation
       if (touchInsideScrollableRef.current) {
@@ -473,7 +502,7 @@ export function useTouchNavigation({
       // Check swipe direction and which content edge was visible at touch start
       const isHorizontalSwipe = Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)
 
-      if (isVertical) {
+      if (isVertical && flickPageTurnEnabled) {
         // Vertical-rl mode: RIGHT-to-LEFT reading (Japanese)
         // Only respond to horizontal swipes
         if (isHorizontalSwipe) {
@@ -489,7 +518,7 @@ export function useTouchNavigation({
             goToPrevPage() // Left swipe at right edge content = Prev
           }
         }
-      } else if (isPagination) {
+      } else if (isPagination && flickPageTurnEnabled) {
         // Horizontal pagination mode: respond to both horizontal and vertical swipes for page navigation
         if (isHorizontalSwipe) {
           // Horizontal swipe in horizontal pagination mode

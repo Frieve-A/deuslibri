@@ -1,6 +1,6 @@
 'use client'
 
-import { useReadingStore, type FontFamily, type UserInteractionBehavior, type AutoScrollSettings } from '@/lib/stores/useReadingStore'
+import { useReadingStore, type FontFamily, type UserInteractionBehavior, type AutoScrollSettings, type InteractionSettings } from '@/lib/stores/useReadingStore'
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useI18n, SUPPORTED_LANGUAGES, LANGUAGE_NAMES, type SupportedLanguage } from '@/lib/i18n'
@@ -408,6 +408,105 @@ function SettingsContent() {
                   <option value="pause">{t.settings.autoScroll.userInteractionBehavior.pause}</option>
                   <option value="autoResume">{t.settings.autoScroll.userInteractionBehavior.autoResume}</option>
                 </select>
+              </div>
+            </div>
+          </section>
+
+          {/* Interaction Settings */}
+          <section className="border border-amber-200 dark:border-gray-700 rounded-lg p-6 bg-amber-50 dark:bg-slate-800 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t.settings.interaction.title}</h2>
+
+            <div className="space-y-4">
+              {/* Enable Tap Scroll */}
+              <div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="enableTapScroll"
+                    checked={settings.interaction?.enableTapScroll ?? true}
+                    onChange={(e) =>
+                      updateSettings({
+                        interaction: { ...settings.interaction, enableTapScroll: e.target.checked } as InteractionSettings,
+                      })
+                    }
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600"
+                  />
+                  <label htmlFor="enableTapScroll" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.settings.interaction.enableTapScroll}
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1 ml-8">
+                  {t.settings.interaction.enableTapScrollNote}
+                </p>
+              </div>
+
+              {/* Enable Tap Page Turn */}
+              <div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="enableTapPageTurn"
+                    checked={settings.interaction?.enableTapPageTurn ?? true}
+                    onChange={(e) =>
+                      updateSettings({
+                        interaction: { ...settings.interaction, enableTapPageTurn: e.target.checked } as InteractionSettings,
+                      })
+                    }
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600"
+                  />
+                  <label htmlFor="enableTapPageTurn" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.settings.interaction.enableTapPageTurn}
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1 ml-8">
+                  {t.settings.interaction.enableTapPageTurnNote}
+                </p>
+              </div>
+
+              {/* Enable Flick Scroll */}
+              <div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="enableFlickScroll"
+                    checked={settings.interaction?.enableFlickScroll ?? true}
+                    onChange={(e) =>
+                      updateSettings({
+                        interaction: { ...settings.interaction, enableFlickScroll: e.target.checked } as InteractionSettings,
+                      })
+                    }
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600"
+                  />
+                  <label htmlFor="enableFlickScroll" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.settings.interaction.enableFlickScroll}
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1 ml-8">
+                  {t.settings.interaction.enableFlickScrollNote}
+                </p>
+              </div>
+
+              {/* Enable Flick Page Turn */}
+              <div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="enableFlickPageTurn"
+                    checked={settings.interaction?.enableFlickPageTurn ?? true}
+                    onChange={(e) =>
+                      updateSettings({
+                        interaction: { ...settings.interaction, enableFlickPageTurn: e.target.checked } as InteractionSettings,
+                      })
+                    }
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600"
+                  />
+                  <label htmlFor="enableFlickPageTurn" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.settings.interaction.enableFlickPageTurn}
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1 ml-8">
+                  {t.settings.interaction.enableFlickPageTurnNote}
+                </p>
               </div>
             </div>
           </section>

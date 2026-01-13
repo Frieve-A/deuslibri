@@ -39,6 +39,8 @@ export function useMouseNavigation({
   goToNextPage,
   goToPrevPage,
 }: UseMouseNavigationOptions): UseMouseNavigationReturn {
+  // Get interaction settings from store
+  const interactionSettings = useReadingStore((state) => state.settings.interaction)
   // Mouse drag detection refs
   const mouseStartX = useRef<number>(0)
   const mouseStartY = useRef<number>(0)
@@ -174,12 +176,16 @@ export function useMouseNavigation({
       // Clear any text selection
       window.getSelection()?.removeAllRanges()
 
+      // Check if click interactions are enabled
+      const tapScrollEnabled = interactionSettings?.enableTapScroll ?? true
+      const tapPageTurnEnabled = interactionSettings?.enableTapPageTurn ?? true
+
       const element = contentRef.current
       if (!element) return
 
       const clickX = e.clientX
 
-      if (isVertical && isPagination) {
+      if (isVertical && isPagination && (tapScrollEnabled || tapPageTurnEnabled)) {
         // Vertical pagination mode click navigation
         const prose = element.firstElementChild as HTMLElement
         if (prose) {
@@ -200,24 +206,32 @@ export function useMouseNavigation({
           if (clickX > elementCenter) {
             // Clicked right side - scroll toward right (reading start) or go to prev page
             if (isAtRightEdge) {
-              goToPrevPage()
+              if (tapPageTurnEnabled) {
+                goToPrevPage()
+              }
             } else {
-              // Scroll toward right edge (increase scrollLeft toward 0)
-              const newScrollLeft = Math.min(0, currentScrollLeft + scrollAmount)
-              prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                // Scroll toward right edge (increase scrollLeft toward 0)
+                const newScrollLeft = Math.min(0, currentScrollLeft + scrollAmount)
+                prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              }
             }
           } else {
             // Clicked left side - scroll toward left (reading end) or go to next page
             if (isAtLeftEdge) {
-              goToNextPage()
+              if (tapPageTurnEnabled) {
+                goToNextPage()
+              }
             } else {
-              // Scroll toward left edge (decrease scrollLeft toward -maxScroll)
-              const newScrollLeft = Math.max(-maxScroll, currentScrollLeft - scrollAmount)
-              prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                // Scroll toward left edge (decrease scrollLeft toward -maxScroll)
+                const newScrollLeft = Math.max(-maxScroll, currentScrollLeft - scrollAmount)
+                prose.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
+              }
             }
           }
         }
-      } else if (isPagination) {
+      } else if (isPagination && (tapScrollEnabled || tapPageTurnEnabled)) {
         // Horizontal pagination mode click navigation
         // Left/right edge = direct page navigation
         // Center area: Top half = scroll up / prev page, Bottom half = scroll down / next page
@@ -228,10 +242,14 @@ export function useMouseNavigation({
         // Check if click is in left or right edge zone for direct page navigation
         if (clickX < rect.left + edgeZoneWidth) {
           // Clicked left edge - go to previous page (reading direction: left = back)
-          goToPrevPage()
+          if (tapPageTurnEnabled) {
+            goToPrevPage()
+          }
         } else if (clickX > rect.right - edgeZoneWidth) {
           // Clicked right edge - go to next page (reading direction: right = forward)
-          goToNextPage()
+          if (tapPageTurnEnabled) {
+            goToNextPage()
+          }
         } else {
           // Clicked center area - use top/bottom half for scroll/page navigation
           const elementCenter = rect.top + rect.height / 2
@@ -245,22 +263,30 @@ export function useMouseNavigation({
           if (clickY > elementCenter) {
             // Clicked bottom half - scroll down or go to next page
             if (isAtBottom) {
-              goToNextPage()
+              if (tapPageTurnEnabled) {
+                goToNextPage()
+              }
             } else {
-              const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
-              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                const newScrollTop = Math.min(maxScroll, currentScrollTop + scrollAmount)
+                element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              }
             }
           } else {
             // Clicked top half - scroll up or go to prev page
             if (isAtTop) {
-              goToPrevPage()
+              if (tapPageTurnEnabled) {
+                goToPrevPage()
+              }
             } else {
-              const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
-              element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              if (tapScrollEnabled) {
+                const newScrollTop = Math.max(0, currentScrollTop - scrollAmount)
+                element.scrollTo({ top: newScrollTop, behavior: 'smooth' })
+              }
             }
           }
         }
-      } else if (isVertical) {
+      } else if (isVertical && tapScrollEnabled) {
         // Vertical scroll mode click navigation
         // Scroll horizontally based on click position (left/right of center)
         const rect = element.getBoundingClientRect()
@@ -290,7 +316,7 @@ export function useMouseNavigation({
             finalPos
           )
         }, SMOOTH_SCROLL_DURATION)
-      } else {
+      } else if (tapScrollEnabled) {
         // Horizontal scroll mode click navigation
         // Top half = scroll up, Bottom half = scroll down
         const clickY = e.clientY

@@ -154,6 +154,17 @@ export interface TranslationMessages {
         autoResume: string
       }
     }
+    interaction: {
+      title: string
+      enableTapScroll: string
+      enableTapScrollNote: string
+      enableTapPageTurn: string
+      enableTapPageTurnNote: string
+      enableFlickScroll: string
+      enableFlickScrollNote: string
+      enableFlickPageTurn: string
+      enableFlickPageTurnNote: string
+    }
   }
   // Book reader
   reader: {
@@ -378,6 +389,17 @@ const en: TranslationMessages = {
         pause: 'Pause',
         autoResume: 'Auto Resume',
       },
+    },
+    interaction: {
+      title: 'Interaction Settings',
+      enableTapScroll: 'Enable click/tap to scroll',
+      enableTapScrollNote: 'Click/tap on screen to scroll within page',
+      enableTapPageTurn: 'Enable click/tap to turn page',
+      enableTapPageTurnNote: 'Click/tap on screen edge to navigate to next/previous page',
+      enableFlickScroll: 'Enable flick to scroll',
+      enableFlickScrollNote: 'Flick gesture to scroll within page',
+      enableFlickPageTurn: 'Enable flick to turn page',
+      enableFlickPageTurnNote: 'Flick gesture at edge to navigate to next/previous page',
     },
   },
   reader: {
@@ -627,6 +649,17 @@ const ja: TranslationMessages = {
         pause: '一時停止',
         autoResume: '自動再開',
       },
+    },
+    interaction: {
+      title: '操作設定',
+      enableTapScroll: 'クリック/タップでスクロールを有効にする',
+      enableTapScrollNote: '画面をクリック/タップしてページ内スクロール',
+      enableTapPageTurn: 'クリック/タップでページ切り替えを有効にする',
+      enableTapPageTurnNote: '画面端をクリック/タップして次/前のページに移動',
+      enableFlickScroll: 'フリックでスクロールを有効にする',
+      enableFlickScrollNote: 'フリックジェスチャーでページ内スクロール',
+      enableFlickPageTurn: 'フリックでページ切り替えを有効にする',
+      enableFlickPageTurnNote: '端でフリックして次/前のページに移動',
     },
   },
   reader: {

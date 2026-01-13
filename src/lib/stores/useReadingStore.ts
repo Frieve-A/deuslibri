@@ -36,6 +36,13 @@ export interface AutoScrollSettings {
   userInteractionBehavior: UserInteractionBehavior
 }
 
+export interface InteractionSettings {
+  enableTapScroll: boolean // Tap to scroll within page
+  enableTapPageTurn: boolean // Tap to turn page
+  enableFlickScroll: boolean // Flick to scroll within page (not currently implemented separately)
+  enableFlickPageTurn: boolean // Flick to turn page
+}
+
 export interface ReadingSettings {
   writingMode: 'horizontal' | 'vertical' // vertical only for Japanese
   displayMode: 'pagination' | 'scroll'
@@ -46,6 +53,7 @@ export interface ReadingSettings {
   marginSize: 'small' | 'medium' | 'large'
   brightness: number // 0 - 100
   autoScroll: AutoScrollSettings
+  interaction: InteractionSettings
 }
 
 interface ReadingState {
@@ -104,6 +112,12 @@ export const useReadingStore = create<ReadingState>()(
           autoPageTurn: false,
           autoPageTurnDelay: 15000,
           userInteractionBehavior: 'pause',
+        },
+        interaction: {
+          enableTapScroll: true,
+          enableTapPageTurn: true,
+          enableFlickScroll: true,
+          enableFlickPageTurn: true,
         },
       },
 
@@ -268,6 +282,11 @@ export const useReadingStore = create<ReadingState>()(
           autoScroll: {
             ...currentState.settings.autoScroll,
             ...(persisted.settings?.autoScroll || {}),
+          },
+          // Deep merge interaction settings specifically
+          interaction: {
+            ...currentState.settings.interaction,
+            ...(persisted.settings?.interaction || {}),
           },
         }
 
