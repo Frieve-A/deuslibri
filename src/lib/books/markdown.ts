@@ -7,11 +7,21 @@ import rehypeKatex from 'rehype-katex'
 import rehypeStringify from 'rehype-stringify'
 import { withBasePath } from '@/lib/utils/basePath'
 
+interface MarkdownToHtmlOptions {
+  bookFolderPath?: string
+  /** Disable math rendering (LaTeX will be shown as plain text) */
+  disableMath?: boolean
+}
+
 /**
  * Convert markdown to HTML and fix image paths
  * Preserves multiple blank lines as visual spacing
  */
-export async function markdownToHtml(markdown: string, bookFolderPath?: string): Promise<string> {
+export async function markdownToHtml(markdown: string, options?: string | MarkdownToHtmlOptions): Promise<string> {
+  // Support legacy signature: markdownToHtml(markdown, bookFolderPath)
+  const { bookFolderPath, disableMath } = typeof options === 'string'
+    ? { bookFolderPath: options, disableMath: false }
+    : { bookFolderPath: options?.bookFolderPath, disableMath: options?.disableMath ?? false }
   // Pre-process: Manually convert bold and italic to HTML
   // remark parser doesn't recognize word boundaries correctly when **bold** or *italic*
   // is followed by CJK characters (Japanese, Chinese, etc.) without a space
@@ -36,14 +46,22 @@ export async function markdownToHtml(markdown: string, bookFolderPath?: string):
     return '\n\n' + (SPACER_MARKER + '\n\n').repeat(extraLines)
   })
 
-  const result = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkMath)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeKatex)
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(processedMarkdown)
+  // Build the processor pipeline based on whether math is enabled
+  const result = disableMath
+    ? await unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeStringify, { allowDangerousHtml: true })
+        .process(processedMarkdown)
+    : await unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkMath)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeKatex)
+        .use(rehypeStringify, { allowDangerousHtml: true })
+        .process(processedMarkdown)
 
   let html = result.toString()
 

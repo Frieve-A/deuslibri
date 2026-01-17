@@ -1,6 +1,7 @@
 export interface BookMetadata {
   id: string
   title: string
+  subtitle?: string
   author: string
   description: string
   summary: string
@@ -27,6 +28,7 @@ export interface Book extends BookMetadata {
 export interface BookCatalogItem {
   id: string
   title: string
+  subtitle?: string
   author: string
   description: string
   summary: string

@@ -21,9 +21,11 @@ import {
 
 interface BookReaderProps {
   book: Book
+  /** Disable math rendering (debug mode via ?nomath URL parameter) */
+  disableMath?: boolean
 }
 
-export default function BookReader({ book }: BookReaderProps) {
+export default function BookReader({ book, disableMath = false }: BookReaderProps) {
   const [pageHtml, setPageHtml] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -187,14 +189,17 @@ export default function BookReader({ book }: BookReaderProps) {
   useEffect(() => {
     const convertPages = async () => {
       const htmlPages = await Promise.all(
-        book.pages.map((page) => markdownToHtml(page, book.folderPath))
+        book.pages.map((page) => markdownToHtml(page, {
+          bookFolderPath: book.folderPath,
+          disableMath,
+        }))
       )
       setPageHtml(htmlPages)
       setLoading(false)
     }
 
     convertPages()
-  }, [book])
+  }, [book, disableMath])
 
   // Calculate derived state for mounted-dependent values
   // Compute from the actual arrays so changes trigger re-renders
@@ -236,6 +241,7 @@ export default function BookReader({ book }: BookReaderProps) {
   const bookCatalogItem: BookCatalogItem = {
     id: book.id,
     title: book.title,
+    subtitle: book.subtitle,
     author: book.author,
     description: book.description,
     summary: book.summary,

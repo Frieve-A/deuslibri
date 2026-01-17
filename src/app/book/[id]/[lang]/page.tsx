@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { findBookByIdAndLang, getAllBooks } from '@/lib/books/loader'
-import BookReader from '@/components/BookReader'
+import BookReaderWrapper from './BookReaderWrapper'
 import { getContentImagePath, getAbsoluteUrl } from '@/lib/utils/basePath'
 
 interface BookPageProps {
@@ -30,7 +30,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-xl">Loading...</p></div>}>
-      <BookReader book={book} />
+      <BookReaderWrapper book={book} />
     </Suspense>
   )
 }

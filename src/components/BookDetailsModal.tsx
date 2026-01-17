@@ -100,6 +100,11 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {book.title}
                 </h3>
+                {book.subtitle && (
+                  <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">
+                    {book.subtitle}
+                  </p>
+                )}
               </div>
 
               {/* Author */}

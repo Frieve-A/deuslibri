@@ -66,6 +66,7 @@ function loadMetadata(folderPath: string): BookMetadata | null {
     return {
       id: metadata.id || '',
       title: metadata.title || '',
+      subtitle: metadata.subtitle || undefined,
       author: metadata.author || '',
       description: metadata.description || '',
       summary: metadata.summary || '',
