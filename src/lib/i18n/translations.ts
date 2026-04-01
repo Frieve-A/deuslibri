@@ -184,6 +184,7 @@ export interface TranslationMessages {
     prev: string
     next: string
     donateToAuthor: string
+    purchaseBook: string
   }
   // Book details modal
   bookDetails: {
@@ -243,6 +244,7 @@ export interface TranslationMessages {
     operator: string
     operatorName: string
     contact: string
+    supportProject: string
     version: string
   }
 }
@@ -420,6 +422,7 @@ const en: TranslationMessages = {
     prev: 'Prev',
     next: 'Next',
     donateToAuthor: 'Support the Author',
+    purchaseBook: 'Purchase Book',
   },
   bookDetails: {
     title: 'Book Details',
@@ -504,6 +507,7 @@ const en: TranslationMessages = {
     operator: 'Operated by',
     operatorName: 'Frieve',
     contact: 'Contact Form',
+    supportProject: 'Support This Project',
     version: 'Version',
   },
 }
@@ -681,6 +685,7 @@ const ja: TranslationMessages = {
     prev: '前へ',
     next: '次へ',
     donateToAuthor: '著者に寄付する',
+    purchaseBook: '紙書籍を購入する',
   },
   bookDetails: {
     title: '書籍詳細',
@@ -765,6 +770,7 @@ const ja: TranslationMessages = {
     operator: '運営',
     operatorName: 'Frieve',
     contact: 'お問い合わせフォーム',
+    supportProject: 'プロジェクトを支援する',
     version: 'バージョン',
   },
 }

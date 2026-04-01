@@ -2786,6 +2786,4 @@ And as long as you remain "human," the story is not yet over.
 
 (The End)
 
----
-
 Frieve-A 2025

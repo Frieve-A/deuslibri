@@ -58,6 +58,16 @@ export default function AboutPage() {
                 {t.about.contact}
               </a>
             </p>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              <a
+                href="https://ko-fi.com/frievea"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-700 dark:text-sky-400 hover:text-amber-900 dark:hover:text-sky-300 font-semibold underline transition"
+              >
+                {t.about.supportProject}
+              </a>
+            </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               DeusLibri {t.about.version} 0.20
             </p>

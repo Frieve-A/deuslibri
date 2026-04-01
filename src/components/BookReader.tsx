@@ -386,6 +386,8 @@ export default function BookReader({ book, disableMath = false, disableImages = 
           handleMouseUp={wrappedHandleMouseUp}
           donationLink={book.donationLink}
           donateLabel={t.reader.donateToAuthor}
+          purchaseLink={book.purchaseLink}
+          purchaseLabel={t.reader.purchaseBook}
         />
       </main>
 

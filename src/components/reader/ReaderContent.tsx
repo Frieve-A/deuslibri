@@ -34,6 +34,8 @@ interface ReaderContentProps {
   handleMouseUp: (e: React.MouseEvent) => void
   donationLink?: string
   donateLabel?: string
+  purchaseLink?: string
+  purchaseLabel?: string
 }
 
 // Convert margin size to CSS padding values for vertical mode
@@ -212,48 +214,82 @@ function buildVerticalGradientHtml(position: 'start' | 'end', theme: Theme): str
 }
 
 // Donation button component for the last page
-function DonationButton({ donationLink, donateLabel, isVertical }: { donationLink: string; donateLabel: string; isVertical?: boolean }) {
+function LastPageButtons({ donationLink, donateLabel, purchaseLink, purchaseLabel, isVertical }: { donationLink?: string; donateLabel?: string; purchaseLink?: string; purchaseLabel?: string; isVertical?: boolean }) {
+  const hasDonation = donationLink && donateLabel
+  const hasPurchase = purchaseLink && purchaseLabel
+  if (!hasDonation && !hasPurchase) return null
+
+  const buttonStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.75rem 1.5rem',
+    borderRadius: '0.5rem',
+    color: '#fff',
+    fontWeight: 600,
+    fontSize: '1rem',
+    textDecoration: 'none',
+    transition: 'opacity 0.2s',
+    cursor: 'pointer',
+  }
+
   return (
     <div style={{
       display: 'flex',
       justifyContent: 'center',
+      gap: '1rem',
+      flexWrap: 'wrap',
       padding: isVertical ? '1.5rem 0' : '2rem 0',
       ...(isVertical ? { writingMode: 'horizontal-tb' as const } : {}),
     }}>
-      <a
-        href={donationLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          padding: '0.75rem 1.5rem',
-          borderRadius: '0.5rem',
-          backgroundColor: '#FF5E5B',
-          color: '#fff',
-          fontWeight: 600,
-          fontSize: '1rem',
-          textDecoration: 'none',
-          transition: 'opacity 0.2s',
-          cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-        {donateLabel}
-      </a>
+      {hasPurchase && (
+        <a
+          href={purchaseLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          style={{ ...buttonStyle, backgroundColor: '#FF9900' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+          </svg>
+          {purchaseLabel}
+        </a>
+      )}
+      {hasDonation && (
+        <a
+          href={donationLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          style={{ ...buttonStyle, backgroundColor: '#FF5E5B' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+          {donateLabel}
+        </a>
+      )}
     </div>
   )
 }
 
-// Build donation button HTML for vertical mode (inserted via dangerouslySetInnerHTML)
-function buildDonationButtonHtml(donationLink: string, donateLabel: string): string {
-  return `<div style="display: inline-flex; align-items: center; justify-content: center; height: 100%; vertical-align: top; writing-mode: horizontal-tb; padding: 0 1.5rem;">
+// Build last page buttons HTML for vertical mode (inserted via dangerouslySetInnerHTML)
+function buildLastPageButtonsHtml(donationLink?: string, donateLabel?: string, purchaseLink?: string, purchaseLabel?: string): string {
+  const purchaseBtn = purchaseLink && purchaseLabel ? `
+    <a href="${purchaseLink}" target="_blank" rel="noopener noreferrer"
+       style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF9900; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
+       onmouseenter="this.style.opacity='0.85'" onmouseleave="this.style.opacity='1'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+      </svg>
+      ${purchaseLabel}
+    </a>` : ''
+  const donateBtn = donationLink && donateLabel ? `
     <a href="${donationLink}" target="_blank" rel="noopener noreferrer"
        style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF5E5B; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
        onmouseenter="this.style.opacity='0.85'" onmouseleave="this.style.opacity='1'">
@@ -261,7 +297,12 @@ function buildDonationButtonHtml(donationLink: string, donateLabel: string): str
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
       ${donateLabel}
-    </a>
+    </a>` : ''
+  if (!purchaseBtn && !donateBtn) return ''
+  return `<div style="display: inline-flex; align-items: center; justify-content: center; height: 100%; vertical-align: top; writing-mode: horizontal-tb; padding: 0 1.5rem;">
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+      ${purchaseBtn}${donateBtn}
+    </div>
   </div>`
 }
 
@@ -284,6 +325,8 @@ export function ReaderContent({
   handleMouseUp,
   donationLink,
   donateLabel,
+  purchaseLink,
+  purchaseLabel,
 }: ReaderContentProps) {
   const fontFamilyCSS = getFontFamilyCSS(fontFamily)
   const verticalMarginPadding = getVerticalMarginPadding(marginSize)
@@ -430,7 +473,7 @@ export function ReaderContent({
     const startGradient = buildVerticalGradientHtml('start', theme)
     const endGradient = buildVerticalGradientHtml('end', theme)
     const isLastPage = currentPage === processedPageHtml.length - 1
-    const donationHtml = (donationLink && donateLabel && isLastPage) ? buildDonationButtonHtml(donationLink, donateLabel) : ''
+    const donationHtml = isLastPage ? buildLastPageButtonsHtml(donationLink, donateLabel, purchaseLink, purchaseLabel) : ''
     const contentWithGradients = `${startGradient}${processedPageHtml[currentPage]}${donationHtml}${endGradient}`
 
     return (
@@ -542,7 +585,7 @@ export function ReaderContent({
                   .map(
                     (html, index) => {
                       const isLast = index === processedPageHtml.length - 1
-                      const donHtml = (donationLink && donateLabel && isLast) ? buildDonationButtonHtml(donationLink, donateLabel) : ''
+                      const donHtml = isLast ? buildLastPageButtonsHtml(donationLink, donateLabel, purchaseLink, purchaseLabel) : ''
                       return `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}${donHtml}</div>${
                         !isLast
                           ? `<div style="display: inline-block; width: 2px; height: 100%; background: ${getDividerColor(theme)}; margin: 0 1.5rem; vertical-align: top;"></div>`
@@ -598,8 +641,8 @@ export function ReaderContent({
                   }}
                   dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
                 />
-                {donationLink && donateLabel && currentPage === pageHtml.length - 1 && (
-                  <DonationButton donationLink={donationLink} donateLabel={donateLabel} />
+                {currentPage === pageHtml.length - 1 && (
+                  <LastPageButtons donationLink={donationLink} donateLabel={donateLabel} purchaseLink={purchaseLink} purchaseLabel={purchaseLabel} />
                 )}
               </div>
               {/* Ad at page bottom when accumulated text exceeds 10000 bytes threshold - TEMPORARILY DISABLED
@@ -689,9 +732,9 @@ export function ReaderContent({
                 </div>
               )}
               */}
-              {/* Donation button on the last page */}
-              {donationLink && donateLabel && index === pageHtml.length - 1 && (
-                <DonationButton donationLink={donationLink} donateLabel={donateLabel} />
+              {/* Action buttons on the last page */}
+              {index === pageHtml.length - 1 && (
+                <LastPageButtons donationLink={donationLink} donateLabel={donateLabel} purchaseLink={purchaseLink} purchaseLabel={purchaseLabel} />
               )}
               {/* Page divider */}
               {index < pageHtml.length - 1 && (

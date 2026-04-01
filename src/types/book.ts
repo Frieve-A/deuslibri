@@ -10,6 +10,7 @@ export interface BookMetadata {
   publishDate: string
   coverImage?: string
   donationLink?: string
+  purchaseLink?: string
 }
 
 export interface TocItem {
