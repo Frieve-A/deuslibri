@@ -74,6 +74,7 @@ function loadMetadata(folderPath: string): BookMetadata | null {
       language: metadata.language || 'en',
       publishDate: metadata.publishDate || '',
       coverImage: metadata.coverImage || undefined,
+      donationLink: metadata.donationLink || undefined,
     }
   } catch (error) {
     console.error(`Error loading metadata from ${metadataPath}:`, error)

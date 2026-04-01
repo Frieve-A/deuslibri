@@ -23,9 +23,11 @@ interface BookReaderProps {
   book: Book
   /** Disable math rendering (debug mode via ?nomath URL parameter) */
   disableMath?: boolean
+  /** Disable image rendering (via ?noimage URL parameter) */
+  disableImages?: boolean
 }
 
-export default function BookReader({ book, disableMath = false }: BookReaderProps) {
+export default function BookReader({ book, disableMath = false, disableImages = false }: BookReaderProps) {
   const [pageHtml, setPageHtml] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -192,6 +194,7 @@ export default function BookReader({ book, disableMath = false }: BookReaderProp
         book.pages.map((page) => markdownToHtml(page, {
           bookFolderPath: book.folderPath,
           disableMath,
+          disableImages,
         }))
       )
       setPageHtml(htmlPages)
@@ -199,7 +202,7 @@ export default function BookReader({ book, disableMath = false }: BookReaderProp
     }
 
     convertPages()
-  }, [book, disableMath])
+  }, [book, disableMath, disableImages])
 
   // Calculate derived state for mounted-dependent values
   // Compute from the actual arrays so changes trigger re-renders
@@ -381,6 +384,8 @@ export default function BookReader({ book, disableMath = false }: BookReaderProp
           handleMouseDown={wrappedHandleMouseDown}
           handleMouseMove={wrappedHandleMouseMove}
           handleMouseUp={wrappedHandleMouseUp}
+          donationLink={book.donationLink}
+          donateLabel={t.reader.donateToAuthor}
         />
       </main>
 

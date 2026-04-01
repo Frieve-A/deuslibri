@@ -1,4 +1,4 @@
-![オーディオの終焉と再生 ～純粋理性によるオーディオの解体と再構築～ / Frieve-A](./images/cover.jpg)
+![オーディオの終焉と再生 ～純粋理性による音響の解体と再構築～ / Frieve-A](./images/cover.jpg)
 
 ---
 
@@ -1121,6 +1121,7 @@ $$f(t) = \sum_{n=1}^{\infty} A_n \sin(2\pi f_n t + \phi_n)$$
 なぜなら、オーディオにおける最大の敵は、アンプの歪みでもジッターでもなく、**「背景雑音（Background Noise）」**だからだ。
 
 ダイナミックレンジ（DR）とは、機器のスペックだけでは決まらない。環境のノイズフロアによって物理的に制限される。
+
 $$\text{Effective DR} = \text{Peak SPL} - \text{Noise Floor}$$
 
 * **静かな書斎:** 暗騒音 $35\,\text{dB}$。最大音量 $85\,\text{dB}$ で聴く場合、有効DRは $50\,\text{dB}$。

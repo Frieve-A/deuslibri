@@ -1113,6 +1113,7 @@ This is an outdated prejudice, a relic carried forward from the era of immature 
 Why? Because the greatest enemy in audio is not amplifier distortion or jitter, but **"Background Noise."**
 
 Dynamic range (DR) is not determined by equipment specs alone. It is physically limited by the environmental noise floor.
+
 $$\text{Effective DR} = \text{Peak SPL} - \text{Noise Floor}$$
 
 * **Quiet study:** Ambient noise $35\,\text{dB}$. Listening at maximum volume of $85\,\text{dB}$, effective DR is $50\,\text{dB}$.

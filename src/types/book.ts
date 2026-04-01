@@ -9,6 +9,7 @@ export interface BookMetadata {
   language: string
   publishDate: string
   coverImage?: string
+  donationLink?: string
 }
 
 export interface TocItem {
@@ -36,5 +37,6 @@ export interface BookCatalogItem {
   language: string
   publishDate: string
   coverImage?: string
+  donationLink?: string
   folderPath: string
 }

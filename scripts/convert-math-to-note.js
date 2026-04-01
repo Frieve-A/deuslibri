@@ -8,9 +8,11 @@
  * - Inline math: $formula$ -> $${formula}$$
  * - Markdown tables -> KaTeX array format (optional, disabled by default)
  * - Markdown tables -> PNG images (optional, disabled by default)
+ * - Markdown tables -> Plain text list format (optional, disabled by default)
+ * - Block math ($$...$$) -> PNG images (optional, disabled by default)
  *
  * Usage:
- * node convert-math-to-note.js <input-file> [--convert-tables] [--export-tables-as-images]
+ * node convert-math-to-note.js <input-file> [--convert-tables] [--export-tables-as-images] [--export-math-as-images] [--convert-tables-to-list]
  */
 
 const fs = require('fs');
@@ -81,6 +83,113 @@ function parseMarkdownTable(tableLines) {
   const dataRows = hasAlignmentRow ? [rows[0], ...rows.slice(2)] : rows;
 
   return dataRows;
+}
+
+function convertTableToList(tableLines) {
+  const rows = parseMarkdownTable(tableLines);
+  if (!rows || rows.length < 2) return tableLines.join('\n');
+
+  const headers = rows[0];
+  const dataRows = rows.slice(1);
+
+  // Convert each data row to a list of "- Header: Value" entries
+  const listItems = dataRows.map(row => {
+    return headers.map((header, idx) => {
+      const value = row[idx] || '';
+      return `- ${header}: ${value}`;
+    }).join('\n');
+  });
+
+  // Join rows with blank lines
+  return listItems.join('\n\n');
+}
+
+async function exportMathAsImage(formula, outputPath, mathIndex, browser) {
+  // Get KaTeX CSS
+  const katexCss = fs.readFileSync(require.resolve('katex/dist/katex.min.css'), 'utf-8');
+
+  // Render the formula
+  let renderedFormula;
+  try {
+    renderedFormula = katex.renderToString(formula.trim(), {
+      throwOnError: false,
+      displayMode: true
+    });
+  } catch (e) {
+    console.error(`  - Math ${mathIndex + 1} failed to render: ${e.message}`);
+    return false;
+  }
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    ${katexCss}
+    body {
+      margin: 0;
+      padding: 20px;
+      background: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    }
+    .math-container {
+      background: white;
+      display: inline-block;
+    }
+    .katex {
+      font-size: 1.2em;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="math-container">
+    ${renderedFormula}
+  </div>
+</body>
+</html>
+  `;
+
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html);
+
+    // Get math container dimensions
+    const dimensions = await page.evaluate(() => {
+      const container = document.querySelector('.math-container');
+      const rect = container.getBoundingClientRect();
+      return {
+        width: Math.ceil(rect.width) + 40,
+        height: Math.ceil(rect.height) + 40
+      };
+    });
+
+    await page.setViewport({
+      width: dimensions.width,
+      height: dimensions.height,
+      deviceScaleFactor: 2 // Higher resolution
+    });
+
+    // Take screenshot
+    await page.screenshot({
+      path: outputPath,
+      type: 'png',
+      clip: {
+        x: 0,
+        y: 0,
+        width: dimensions.width,
+        height: dimensions.height
+      }
+    });
+
+    await page.close();
+    console.log(`  - Math ${mathIndex + 1} exported: ${outputPath}`);
+    return true;
+  } catch (e) {
+    console.error(`  - Math ${mathIndex + 1} failed: ${e.message}`);
+    return false;
+  }
 }
 
 async function exportTableAsImage(tableLines, outputPath, tableIndex) {
@@ -243,13 +352,13 @@ async function exportTableAsImage(tableLines, outputPath, tableIndex) {
   }
 }
 
-function convertMathToNoteFormat(content, convertTables = false) {
+function convertMathToNoteFormat(content, convertTables = false, convertTablesToList = false) {
   let result = content;
 
   // First, protect and convert markdown tables to KaTeX with placeholders (if enabled)
   const tables = [];
 
-  if (convertTables) {
+  if (convertTables || convertTablesToList) {
     const lines = content.split('\n');
     const newLines = [];
     let i = 0;
@@ -270,9 +379,14 @@ function convertMathToNoteFormat(content, convertTables = false) {
 
         // Convert the table if it has at least 2 rows
         if (tableLines.length >= 2) {
-          const katex = convertTableToKaTeX(tableLines);
+          let converted;
+          if (convertTablesToList) {
+            converted = convertTableToList(tableLines);
+          } else {
+            converted = convertTableToKaTeX(tableLines);
+          }
           const placeholder = `___TABLE_PLACEHOLDER_${tables.length}___`;
-          tables.push(katex);
+          tables.push(converted);
           newLines.push(placeholder);
           i = j;
           continue;
@@ -301,10 +415,10 @@ function convertMathToNoteFormat(content, convertTables = false) {
     return `$\${${trimmedFormula}}$$`;
   });
 
-  // Restore table placeholders and replace DOLLARDOLLAR markers with $$
+  // Restore table placeholders and replace DOLLARDOLLAR markers with $$ (for KaTeX format)
   tables.forEach((table, index) => {
     const placeholder = `___TABLE_PLACEHOLDER_${index}___`;
-    // Replace DOLLARDOLLAR markers with $$
+    // Replace DOLLARDOLLAR markers with $$ (only applies to KaTeX format)
     const finalTable = table.replace(/DOLLARDOLLAR/g, () => '$$');
     // Use split/join to avoid $$ being treated as special replacement pattern
     result = result.split(placeholder).join(finalTable);
@@ -317,21 +431,25 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error('Usage: node convert-math-to-note.js <input-file> [--convert-tables] [--export-tables-as-images] [-o output-file]');
+    console.error('Usage: node convert-math-to-note.js <input-file> [--convert-tables] [--convert-tables-to-list] [--export-tables-as-images] [--export-math-as-images] [-o output-file]');
     console.error('');
     console.error('This will create a new file with "_note" suffix.');
     console.error('Example: content.md -> content_note.md');
     console.error('');
     console.error('Options:');
     console.error('  --convert-tables           Convert markdown tables to KaTeX array format (default: disabled)');
+    console.error('  --convert-tables-to-list   Convert markdown tables to plain text list format (default: disabled)');
     console.error('  --export-tables-as-images  Export markdown tables as PNG images to tables/ folder (default: disabled)');
+    console.error('  --export-math-as-images    Export block math ($$...$$) as PNG images to math/ folder (default: disabled)');
     console.error('  -o <output-file>           Specify custom output file name (optional)');
     process.exit(1);
   }
 
   const inputFile = args[0];
   const convertTables = args.includes('--convert-tables');
+  const convertTablesToList = args.includes('--convert-tables-to-list');
   const exportTablesAsImages = args.includes('--export-tables-as-images');
+  const exportMathAsImages = args.includes('--export-math-as-images');
 
   // Check for custom output file
   let customOutputFile = null;
@@ -352,16 +470,23 @@ async function main() {
   // Convert math formulas
   console.log('Converting math formulas to note.com format...');
   if (convertTables) {
-    console.log('Table conversion: ENABLED');
+    console.log('Table to KaTeX conversion: ENABLED');
+  } else if (convertTablesToList) {
+    console.log('Table to list conversion: ENABLED');
   } else {
-    console.log('Table conversion: DISABLED (use --convert-tables to enable)');
+    console.log('Table conversion: DISABLED (use --convert-tables or --convert-tables-to-list to enable)');
   }
   if (exportTablesAsImages) {
     console.log('Table image export: ENABLED');
   } else {
     console.log('Table image export: DISABLED (use --export-tables-as-images to enable)');
   }
-  const converted = convertMathToNoteFormat(content, convertTables);
+  if (exportMathAsImages) {
+    console.log('Math image export: ENABLED');
+  } else {
+    console.log('Math image export: DISABLED (use --export-math-as-images to enable)');
+  }
+  const converted = convertMathToNoteFormat(content, convertTables, convertTablesToList);
 
   // Determine output file name
   let outputFile;
@@ -427,15 +552,61 @@ async function main() {
     console.log(`Exported ${tables.length} table(s) to ${tablesDir}`);
   }
 
+  // Export math as images if requested
+  if (exportMathAsImages) {
+    console.log('');
+    console.log('Exporting block math as images...');
+
+    // Create math directory (based on output file location)
+    const outputDir = path.dirname(outputFile);
+    const mathDir = path.join(outputDir, 'math');
+    if (!fs.existsSync(mathDir)) {
+      fs.mkdirSync(mathDir, { recursive: true });
+      console.log(`Created directory: ${mathDir}`);
+    }
+
+    // Find all block math in the content
+    const blockMathRegex = /\$\$([\s\S]*?)\$\$/g;
+    const mathFormulas = [];
+    let match;
+
+    while ((match = blockMathRegex.exec(content)) !== null) {
+      mathFormulas.push(match[1]);
+    }
+
+    if (mathFormulas.length > 0) {
+      // Launch browser once for all math exports
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+
+      try {
+        // Export each math formula
+        for (let idx = 0; idx < mathFormulas.length; idx++) {
+          const imagePath = path.join(mathDir, `math_${idx + 1}.png`);
+          await exportMathAsImage(mathFormulas[idx], imagePath, idx, browser);
+        }
+      } finally {
+        await browser.close();
+      }
+
+      console.log(`Exported ${mathFormulas.length} math formula(s) to ${mathDir}`);
+    } else {
+      console.log('No block math formulas found to export.');
+    }
+  }
+
   // Count conversions
   const blockMathCount = (content.match(/\$\$[\s\S]*?\$\$/g) || []).length;
   const inlineMathCount = (content.match(/(?<!\$)\$(?!\$)[^\$\n]+?\$(?!\$)/g) || []).length;
 
   console.log('');
   console.log('Conversion complete!');
-  if (convertTables) {
+  if (convertTables || convertTablesToList) {
     const tableCount = (content.match(/(?:^|\n)((?:\|[^\n]+\|\n?)+)/gm) || []).length;
-    console.log(`- Markdown tables converted: ${tableCount}`);
+    const format = convertTablesToList ? 'list' : 'KaTeX';
+    console.log(`- Markdown tables converted to ${format}: ${tableCount}`);
   }
   console.log(`- Block math formulas converted: ${blockMathCount}`);
   console.log(`- Inline math formulas converted: ${inlineMathCount}`);

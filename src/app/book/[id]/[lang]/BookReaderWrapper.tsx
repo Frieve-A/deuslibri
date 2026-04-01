@@ -11,6 +11,7 @@ interface BookReaderWrapperProps {
 export default function BookReaderWrapper({ book }: BookReaderWrapperProps) {
   const searchParams = useSearchParams()
   const disableMath = searchParams.get('nomath') === '1'
+  const disableImages = searchParams.get('noimage') === '1'
 
-  return <BookReader book={book} disableMath={disableMath} />
+  return <BookReader book={book} disableMath={disableMath} disableImages={disableImages} />
 }

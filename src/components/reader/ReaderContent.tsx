@@ -32,6 +32,8 @@ interface ReaderContentProps {
   handleMouseDown: (e: React.MouseEvent) => void
   handleMouseMove: (e: React.MouseEvent) => void
   handleMouseUp: (e: React.MouseEvent) => void
+  donationLink?: string
+  donateLabel?: string
 }
 
 // Convert margin size to CSS padding values for vertical mode
@@ -209,6 +211,60 @@ function buildVerticalGradientHtml(position: 'start' | 'end', theme: Theme): str
   return `<div style="${baseStyle} ${marginStyle} background: ${buildExpGradient(gradientDir, bgColor)};"></div>`
 }
 
+// Donation button component for the last page
+function DonationButton({ donationLink, donateLabel, isVertical }: { donationLink: string; donateLabel: string; isVertical?: boolean }) {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      padding: isVertical ? '1.5rem 0' : '2rem 0',
+      ...(isVertical ? { writingMode: 'horizontal-tb' as const } : {}),
+    }}>
+      <a
+        href={donationLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '0.5rem',
+          backgroundColor: '#FF5E5B',
+          color: '#fff',
+          fontWeight: 600,
+          fontSize: '1rem',
+          textDecoration: 'none',
+          transition: 'opacity 0.2s',
+          cursor: 'pointer',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+        {donateLabel}
+      </a>
+    </div>
+  )
+}
+
+// Build donation button HTML for vertical mode (inserted via dangerouslySetInnerHTML)
+function buildDonationButtonHtml(donationLink: string, donateLabel: string): string {
+  return `<div style="display: inline-flex; align-items: center; justify-content: center; height: 100%; vertical-align: top; writing-mode: horizontal-tb; padding: 0 1.5rem;">
+    <a href="${donationLink}" target="_blank" rel="noopener noreferrer"
+       style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF5E5B; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
+       onmouseenter="this.style.opacity='0.85'" onmouseleave="this.style.opacity='1'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      ${donateLabel}
+    </a>
+  </div>`
+}
+
 export function ReaderContent({
   pageHtml,
   currentPage,
@@ -226,6 +282,8 @@ export function ReaderContent({
   handleMouseDown,
   handleMouseMove,
   handleMouseUp,
+  donationLink,
+  donateLabel,
 }: ReaderContentProps) {
   const fontFamilyCSS = getFontFamilyCSS(fontFamily)
   const verticalMarginPadding = getVerticalMarginPadding(marginSize)
@@ -371,7 +429,9 @@ export function ReaderContent({
     // Use processedPageHtml which has KaTeX already wrapped for vertical mode
     const startGradient = buildVerticalGradientHtml('start', theme)
     const endGradient = buildVerticalGradientHtml('end', theme)
-    const contentWithGradients = `${startGradient}${processedPageHtml[currentPage]}${endGradient}`
+    const isLastPage = currentPage === processedPageHtml.length - 1
+    const donationHtml = (donationLink && donateLabel && isLastPage) ? buildDonationButtonHtml(donationLink, donateLabel) : ''
+    const contentWithGradients = `${startGradient}${processedPageHtml[currentPage]}${donationHtml}${endGradient}`
 
     return (
       <div className="fixed inset-x-0 top-[80px] bottom-[92px] overflow-hidden">
@@ -480,12 +540,15 @@ export function ReaderContent({
               dangerouslySetInnerHTML={{
                 __html: processedPageHtml
                   .map(
-                    (html, index) =>
-                      `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}</div>${
-                        index < processedPageHtml.length - 1
+                    (html, index) => {
+                      const isLast = index === processedPageHtml.length - 1
+                      const donHtml = (donationLink && donateLabel && isLast) ? buildDonationButtonHtml(donationLink, donateLabel) : ''
+                      return `<div id="scroll-page-${index}" style="display: inline-block; height: 100%; vertical-align: top;">${html}${donHtml}</div>${
+                        !isLast
                           ? `<div style="display: inline-block; width: 2px; height: 100%; background: ${getDividerColor(theme)}; margin: 0 1.5rem; vertical-align: top;"></div>`
                           : ''
                       }`
+                    }
                   )
                   .join(''),
               }}
@@ -535,6 +598,9 @@ export function ReaderContent({
                   }}
                   dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
                 />
+                {donationLink && donateLabel && currentPage === pageHtml.length - 1 && (
+                  <DonationButton donationLink={donationLink} donateLabel={donateLabel} />
+                )}
               </div>
               {/* Ad at page bottom when accumulated text exceeds 10000 bytes threshold - TEMPORARILY DISABLED
               {adPageIndices.has(currentPage) && (
@@ -623,6 +689,10 @@ export function ReaderContent({
                 </div>
               )}
               */}
+              {/* Donation button on the last page */}
+              {donationLink && donateLabel && index === pageHtml.length - 1 && (
+                <DonationButton donationLink={donationLink} donateLabel={donateLabel} />
+              )}
               {/* Page divider */}
               {index < pageHtml.length - 1 && (
                 <hr className={`my-8 border-t-2 ${

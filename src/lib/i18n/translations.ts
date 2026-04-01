@@ -183,6 +183,7 @@ export interface TranslationMessages {
     tweet: string
     prev: string
     next: string
+    donateToAuthor: string
   }
   // Book details modal
   bookDetails: {
@@ -418,6 +419,7 @@ const en: TranslationMessages = {
     tweet: 'Tweet',
     prev: 'Prev',
     next: 'Next',
+    donateToAuthor: 'Support the Author',
   },
   bookDetails: {
     title: 'Book Details',
@@ -678,6 +680,7 @@ const ja: TranslationMessages = {
     tweet: 'ツイート',
     prev: '前へ',
     next: '次へ',
+    donateToAuthor: '著者に寄付する',
   },
   bookDetails: {
     title: '書籍詳細',
