@@ -36,7 +36,7 @@ What people expect from Physical AI is precisely this substitution of labor thro
 None of these can be solved no matter how smart the AI on screen becomes. **"Embodiment"**—the ability to perform tasks governed by physical laws (gravity, friction, reaction forces) with precision equal to or greater than humans—is becoming the commodity that now commands the highest premium.
 
 ![AI with Embodiment](./images/brain_lifting_gear.jpg)
-AI with Embodiment
+Caption: AI with Embodiment
 
 #### Robots as "Crawlers" of the Physical World
 
@@ -93,7 +93,7 @@ When Physical AI enters this loop of "Autopoiesis," it ceases to be a mere tool.
 Mining robots dig lithium, construction robots transport it to processing plants, manufacturing robots produce batteries, and those batteries power new mining robots. Once this closed loop is complete, AI's body and brain will begin to multiply at a rate independent of humanity's economic sphere.
 
 ![AI-Controlled Construction Machinery Building a Massive Data Center](./images/ai_constructing_infrastructure.jpg)
-AI-Controlled Construction Machinery Building a Massive Data Center
+Caption: AI-Controlled Construction Machinery Building a Massive Data Center
 
 ---
 
@@ -126,7 +126,7 @@ $$
 $$
 
 ![Digital Touching the Mud-Covered Reality](./images/digital_meets_physical_friction.jpg)
-Digital Touching the Mud-Covered Reality
+Caption: Digital Touching the Mud-Covered Reality
 
 #### A World Without "Undo": Irreversibility and Liability
 
@@ -271,7 +271,7 @@ There is not a single line of code saying "calculate the center of gravity." Wit
 This confronts engineers with a humbling reality: **"The final performance is higher when you teach the computer nothing and just let it learn, rather than when humans laboriously encode knowledge."**
 
 ![End-to-End Learning Swallowing Traditional Engineering](./images/equations_vs_data_flood.jpg)
-End-to-End Learning Swallowing Traditional Engineering
+Caption: End-to-End Learning Swallowing Traditional Engineering
 
 ---
 
@@ -371,7 +371,7 @@ The center overcomes physical latency through prediction, while the edge respond
 Here, the edge (cerebellum) is **autonomous in "kinematic reflex" but completely subservient to the center in "teleological will."** This "hierarchical dictatorship" is the completed form of Physical AI.
 
 ![Knowledge Poured from Giant AI Models into Individual Hardware](./images/distillation_process.jpg)
-Knowledge Poured from Giant AI Models into Individual Hardware
+Caption: Knowledge Poured from Giant AI Models into Individual Hardware
 
 ---
 
@@ -413,7 +413,7 @@ It's overwhelmingly faster, cheaper, and produces higher-quality solutions to sp
 The battlefield is no longer the factory floor. It's in the electronic dream within massive data centers.
 
 ![A Robot Walking Perfectly in the Real World After Thousands of Robots Failed Repeatedly in Digital Space](./images/sim_to_real_success.jpg)
-A Robot Walking Perfectly in the Real World After Thousands of Robots Failed Repeatedly in Digital Space
+Caption: A Robot Walking Perfectly in the Real World After Thousands of Robots Failed Repeatedly in Digital Space
 
 ---
 
@@ -444,7 +444,7 @@ Robots are the same.
 The definition of "robot maker" is changing. They are no longer creators of autonomous machines. They become sophisticated device vendors creating **"vessels"** for the giant intelligence in the cloud to inhabit.
 
 ![Simultaneous Over-the-Air Updates to Countless Standardized Robots](./images/ota_update_robots.jpg)
-Simultaneous Over-the-Air Updates to Countless Standardized Robots
+Caption: Simultaneous Over-the-Air Updates to Countless Standardized Robots
 
 #### Overwhelming Maintenance Rationality and UX Unification
 
@@ -492,7 +492,7 @@ The shapes AI outputs trace eerily organic curves, like biological skeletons. "A
 At this moment, the "structural design" process in manufacturing left human hands and became the product of compute.
 
 ![AI-Generated Organic Skeletal Robot Parts Emerging from a 3D Printer](./images/generative_design_printing.jpg)
-AI-Generated Organic Skeletal Robot Parts Emerging from a 3D Printer
+Caption: AI-Generated Organic Skeletal Robot Parts Emerging from a 3D Printer
 
 #### The Crash of "Geometry" and the Latency of "Quality"
 
@@ -551,7 +551,7 @@ While Western companies cautiously make one prototype, Shenzhen companies run 10
 The area within tens of kilometers centered on Huaqiangbei is not just a parts market—it's designed as **"a city whose entire function is a giant prototyping lab."**
 
 ![An Image of the Chaos and Vitality of Shenzhen's Electronics Markets](./images/shenzhen_market_ecosystem.jpg)
-An Image of the Chaos and Vitality of Shenzhen's Electronics Markets
+Caption: An Image of the Chaos and Vitality of Shenzhen's Electronics Markets
 
 #### The "Location" May Change, but the "Function" Remains
 
@@ -599,7 +599,7 @@ Because the robots made there have equivalent performance to Chinese competitors
 What remains is an empty state-of-the-art factory and mountains of inventory.
 
 ![A High-Tech Factory Becoming Ruins](./images/abandoned_smart_factory.jpg)
-A High-Tech Factory Becoming Ruins
+Caption: A High-Tech Factory Becoming Ruins
 
 ---
 
@@ -623,7 +623,7 @@ If monthly payment lapses, or if platform rules are violated, the "brain" in the
 The power of life and death (sovereignty) over the hardware is completely held by the software side (subscription manager). The robot sweating away in the field answers to a new master: not the factory owner, but Silicon Valley's servers.
 
 ![A Robot That Stopped Operating Due to Unpaid Subscription](./images/robot_subscription_locked.jpg)
-A Robot That Stopped Operating Due to Unpaid Subscription
+Caption: A Robot That Stopped Operating Due to Unpaid Subscription
 
 #### The Subordination of Hardware Makers
 
@@ -675,7 +675,7 @@ At this turning point, the value of data has reversed.
 **The era of striving for "data close to reality" is over. From now on, "data that transcends reality" will guide imperfect reality.**
 
 ![Synthetic Reality Overwriting the Real World](./images/synthetic_overwriting_reality.jpg)
-Synthetic Reality Overwriting the Real World
+Caption: Synthetic Reality Overwriting the Real World
 
 #### The Devaluation of Experience: Veterans from Birth
 
@@ -723,7 +723,7 @@ If the floor is tilted, AI continuously corrects ankle angles at microsecond int
 There is no margin for human intervention with screwdrivers. **The concept of "installation" disappears, leaving only the magical practicality of "place it and it works (Plug and Play)."**
 
 ![A Robot Hand Grasping a Complex-Shaped Object with Perfect Balance](./images/zero_shot_grasping.jpg)
-A Robot Hand Grasping a Complex-Shaped Object with Perfect Balance
+Caption: A Robot Hand Grasping a Complex-Shaped Object with Perfect Balance
 
 #### In-Context Learning: Adaptation at the Moment of Contact
 
@@ -781,7 +781,7 @@ Humans complement only the areas where AI struggles, and AI learns from that "in
 Rather than hiding failures, rewriting failures into "successes" by human hands and incorporating them into the system—this **"active learning"** cycle is the shortest route to practical implementation.
 
 ![A Robot Absorbing Knowledge from Human Intervention](./images/robot_learn_from_humans.jpg)
-A Robot Absorbing Knowledge from Human Intervention
+Caption: A Robot Absorbing Knowledge from Human Intervention
 
 #### From Safety Backup to Autonomy
 
@@ -837,7 +837,7 @@ As a result, traffic flows like fluid without even traffic lights, or hundreds o
 The edge guarantees "individual survival (safety)," while the cloud guarantees "overall efficiency." This **hierarchical dictatorship** is Physical AI's ultimate advantage over human organizational theory.
 
 ![Countless Robots on the Ground Under Globally Optimized Control](./images/centralized_hive_mind.jpg)
-Countless Robots on the Ground Under Globally Optimized Control
+Caption: Countless Robots on the Ground Under Globally Optimized Control
 
 ---
 
@@ -1011,7 +1011,7 @@ Currently, in major data center hubs, it takes years of waiting to secure new po
 No matter how many high-performance GPUs you pile up, if the breaker trips, they're just rocks.
 
 ![AI Data Centers Consuming Massive Electricity](./images/overheated_power_grid.jpg)
-AI Data Centers Consuming Massive Electricity
+Caption: AI Data Centers Consuming Massive Electricity
 
 **Here, the necessity of "Autopoiesis (self-construction)" touched on in the introduction rears its head.**
 If AI waits for this "slow humanity" to build infrastructure, its evolution will hit a linear wall and stop.
@@ -1075,7 +1075,7 @@ The physical world has **"the cost of time."** Interest is the price paid to buy
 In the Physical AI industry where capital investment payback takes 10 years, nations with high interest rates lose qualification as "factory construction sites" just from that alone. Capital, like water flowing downhill, **is drawn to low-interest-rate nations.**
 
 ![Capital Expenditure Concentrating in Low-Interest-Rate Nations](./images/interest_rate_scale.jpg)
-Capital Expenditure Concentrating in Low-Interest-Rate Nations
+Caption: Capital Expenditure Concentrating in Low-Interest-Rate Nations
 
 #### The "Evacuation Zone" for Capital-Intensive Industries
 
@@ -1139,7 +1139,7 @@ This "two birds with one stone" structure is why even peace-loving liberal natio
 "Resolving labor shortages" isn't a lie. But behind it always runs the governing body's instinctive motive to secure "physical enforcement capability for emergencies."
 
 ![Robots Working as Construction Units Normally, Disaster Rescue Units in Emergencies](./images/dual_use_robotics.jpg)
-Robots Working as Construction Units Normally, Disaster Rescue Units in Emergencies
+Caption: Robots Working as Construction Units Normally, Disaster Rescue Units in Emergencies
 
 ---
 
@@ -1241,7 +1241,7 @@ The source of value has shifted from "invention" to **"synthesis."**
 The more giants compete on technology, the better the "instruments" we can use and the cheaper they get. Present new contexts no one has seen by using existing elements. This overwhelming "compositional power" brings order to chaotic technological torrents.
 
 ![Countless Robot Parts and AI Models from Different Makers Fusing to Create Entirely New Value](./images/robot_chimera_assembly.jpg)
-Countless Robot Parts and AI Models from Different Makers Fusing to Create Entirely New Value
+Caption: Countless Robot Parts and AI Models from Different Makers Fusing to Create Entirely New Value
 
 ---
 
@@ -1351,7 +1351,7 @@ Overwhelming production technology and quality control that make platformers ack
 Only by honing yourself to the level where they cannot bypass you is this position maintained.
 
 ![A Single Gear Supporting a Massive, Sophisticated Future City](./images/choke_point_gear.jpg)
-A Single Gear Supporting a Massive, Sophisticated Future City
+Caption: A Single Gear Supporting a Massive, Sophisticated Future City
 
 #### The Unsung "Gap" Guardians
 
@@ -1385,7 +1385,7 @@ Customers and platformers gladly pay this premium. Because for them, it's a rati
 Anchors provide technical safety verification and legal responsibility capacity as a set, creating "roads" in territories no one else would enter.
 
 ![The Job of Shielding AI from Storms of Lawsuits and Legal Risk](./images/liability_shield.jpg)
-The Job of Shielding AI from Storms of Lawsuits and Legal Risk
+Caption: The Job of Shielding AI from Storms of Lawsuits and Legal Risk
 
 #### The "Breakwater" Supporting Civilization's Advance
 
@@ -1426,7 +1426,7 @@ Global generic models (the brain) don't know specific regions' physical and lega
 Thus, optimizing (contextualizing) AI and robot behavior to fit the "bumps" of an uneven world becomes practical added value.
 
 ![Arbitrage Between Nations with High Walls (Regulations) and Nations with Deep Valleys (Demand)](./images/global_arbitrage_map.jpg)
-Arbitrage Between Nations with High Walls (Regulations) and Nations with Deep Valleys (Demand)
+Caption: Arbitrage Between Nations with High Walls (Regulations) and Nations with Deep Valleys (Demand)
 
 #### Using Distortions as "Launch Pads"
 
@@ -1537,7 +1537,7 @@ Therefore, only humans with unwavering vision who can give AI the right commands
 In Digital Feudalism, the qualification for lordship is not the ability to exploit but **the overwhelming philosophical strength to answer "using this technology, what kind of world should we build?"**
 
 ![Lords and Digital Serfs in the Physical AI Era](./images/class_structure.jpg)
-Lords and Digital Serfs in the Physical AI Era
+Caption: Lords and Digital Serfs in the Physical AI Era
 
 ---
 
@@ -1599,7 +1599,7 @@ This differs from former simple labor.
 Thinking is done by AI in the cloud. Humans receive micro-management through AR glasses—"raise your right hand 3 centimeters," "grab there"—and merely provide muscles.
 
 ![Employees Working as Biological Actuators](./images/human_as_actuator.jpg)
-Employees Working as Biological Actuators
+Caption: Employees Working as Biological Actuators
 
 #### Role B: "Scapegoat Managers" Bearing Legal Responsibility
 

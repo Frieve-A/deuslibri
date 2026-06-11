@@ -162,6 +162,98 @@ export const convertHeadingDigitsToFullWidth = (html: string): string => {
   return container.innerHTML
 }
 
+const SHORT_ALPHANUMERIC_TOKEN = /(^|[^A-Za-z0-9])([A-Za-z0-9]{1,2})(?=$|[^A-Za-z0-9])/g
+const HAS_SHORT_ALPHANUMERIC_TOKEN = /(^|[^A-Za-z0-9])([A-Za-z0-9]{1,2})(?=$|[^A-Za-z0-9])/
+const TATE_CHU_YOKO_SKIP_SELECTOR = [
+  'script',
+  'style',
+  'textarea',
+  'code',
+  'pre',
+  'kbd',
+  'samp',
+  'var',
+  'table',
+  '.katex',
+  '.math-island',
+  '.math-rotatable',
+  '.tate-chu-yoko',
+].join(',')
+
+/**
+ * Wrap standalone half-width alphanumeric tokens of up to 2 characters for tate-chu-yoko.
+ */
+export const applyTateChuYokoToShortAlphanumerics = (html: string): string => {
+  if (typeof document === 'undefined') {
+    return html // Server-side, return unchanged
+  }
+
+  const container = document.createElement('div')
+  container.innerHTML = html
+
+  const walker = document.createTreeWalker(
+    container,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode(node) {
+        const parent = node.parentElement
+        if (!parent || parent.closest(TATE_CHU_YOKO_SKIP_SELECTOR)) {
+          return NodeFilter.FILTER_REJECT
+        }
+
+        if (!node.textContent || !HAS_SHORT_ALPHANUMERIC_TOKEN.test(node.textContent)) {
+          return NodeFilter.FILTER_REJECT
+        }
+
+        return NodeFilter.FILTER_ACCEPT
+      },
+    }
+  )
+
+  const textNodes: Text[] = []
+  let node: Text | null
+  while ((node = walker.nextNode() as Text | null)) {
+    textNodes.push(node)
+  }
+
+  textNodes.forEach((textNode) => {
+    const text = textNode.textContent
+    if (!text) {
+      return
+    }
+
+    const fragment = document.createDocumentFragment()
+    let lastIndex = 0
+    let match: RegExpExecArray | null
+
+    SHORT_ALPHANUMERIC_TOKEN.lastIndex = 0
+    while ((match = SHORT_ALPHANUMERIC_TOKEN.exec(text)) !== null) {
+      const prefix = match[1] ?? ''
+      const token = match[2]
+      const tokenStart = match.index + prefix.length
+
+      if (tokenStart > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, tokenStart)))
+      }
+
+      const span = document.createElement('span')
+      span.className = 'tate-chu-yoko'
+      span.textContent = token
+      fragment.appendChild(span)
+
+      lastIndex = tokenStart + token.length
+    }
+
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)))
+    }
+
+    textNode.parentNode?.replaceChild(fragment, textNode)
+  })
+
+  return container.innerHTML
+}
+
 /**
  * Check if a point is inside the current text selection
  */

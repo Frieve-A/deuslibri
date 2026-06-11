@@ -232,6 +232,89 @@ function convertInlineMathInMarkdown(markdown: string): string {
   return processed
 }
 
+interface MarkdownImageLine {
+  alt: string
+  src: string
+  title?: string
+}
+
+const MARKDOWN_IMAGE_LINE = /^\s{0,3}!\[([^\]\n]*)\]\(\s*(<[^>\n]*>|[^\s)]+)(?:\s+(?:"([^"]*)"|'([^']*)'|\(([^)]*)\)))?\s*\)\s*$/
+const CAPTION_LINE = /^\s*Caption: (.*)$/
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case '&':
+        return '&amp;'
+      case '<':
+        return '&lt;'
+      case '>':
+        return '&gt;'
+      case '"':
+        return '&quot;'
+      case "'":
+        return '&#39;'
+      default:
+        return char
+    }
+  })
+}
+
+function parseMarkdownImageLine(line: string): MarkdownImageLine | null {
+  const match = line.match(MARKDOWN_IMAGE_LINE)
+  if (!match) {
+    return null
+  }
+
+  const rawSrc = match[2]
+  const src = rawSrc.startsWith('<') && rawSrc.endsWith('>')
+    ? rawSrc.slice(1, -1)
+    : rawSrc
+
+  return {
+    alt: match[1],
+    src,
+    title: match[3] ?? match[4] ?? match[5] ?? undefined,
+  }
+}
+
+function buildFigureHtml(image: MarkdownImageLine, caption: string): string {
+  const title = image.title
+    ? ` title="${escapeHtml(image.title)}"`
+    : ''
+
+  return `<figure><img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}"${title}><figcaption>${escapeHtml(caption)}</figcaption></figure>`
+}
+
+function convertCaptionedImagesToFigures(markdown: string): string {
+  const lines = markdown.split(/\r?\n/)
+  const converted: string[] = []
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const image = parseMarkdownImageLine(lines[index])
+    if (!image) {
+      converted.push(lines[index])
+      continue
+    }
+
+    let nextContentIndex = index + 1
+    while (nextContentIndex < lines.length && lines[nextContentIndex].trim() === '') {
+      nextContentIndex += 1
+    }
+
+    const captionMatch = lines[nextContentIndex]?.match(CAPTION_LINE)
+    if (!captionMatch) {
+      converted.push(lines[index])
+      continue
+    }
+
+    converted.push(buildFigureHtml(image, captionMatch[1]))
+    index = nextContentIndex
+  }
+
+  return converted.join('\n')
+}
+
 interface MarkdownToHtmlOptions {
   bookFolderPath?: string
   /** Disable math rendering (LaTeX will be shown as plain text) */
@@ -266,6 +349,10 @@ export async function markdownToHtml(markdown: string, options?: string | Markdo
   // Italic: match *text* but not inside HTML tags or URLs
   // Use a simpler pattern that avoids matching asterisks in other contexts
   processedMarkdown = processedMarkdown.replace(/(?<![<\w])(\*)([^*\n]+)\1(?![>\w])/g, '<em>$2</em>')
+
+  // Pre-process: Convert a standalone markdown image followed by the next
+  // non-empty "Caption: " line into a semantic figure/figcaption pair.
+  processedMarkdown = convertCaptionedImagesToFigures(processedMarkdown)
 
   // Pre-process: Convert multiple consecutive blank lines to spacer markers
   // Standard markdown ignores extra blank lines, but we want to preserve them

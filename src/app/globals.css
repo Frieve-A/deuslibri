@@ -189,12 +189,59 @@ html {
   transition: opacity 0.15s ease-in, visibility 0s 0s;
 }
 
+/* Tate-chu-yoko for standalone short half-width alphanumerics in vertical text */
+.prose[style*="writing-mode: vertical-rl"] .tate-chu-yoko,
+.prose[style*="writing-mode:vertical-rl"] .tate-chu-yoko {
+  text-combine-upright: all;
+  -webkit-text-combine: horizontal;
+  text-orientation: mixed;
+}
+
 /* Image paragraphs: When a <p> contains an <img>, use flex to stack elements horizontally (in vertical-rl, flex-direction: column stacks left-to-right) */
 .prose[style*="writing-mode: vertical-rl"] p:has(img),
 .prose[style*="writing-mode:vertical-rl"] p:has(img) {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
+  margin-left: 1.5rem !important;
+  margin-right: 1.5rem !important;
+}
+
+/* Captioned images: keep captions below images and horizontal in every writing mode. */
+.prose figure:has(img) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.prose figure:has(img) > img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.prose figure:has(img) > figcaption {
+  align-self: center;
+  max-width: 100%;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  text-align: center;
+}
+
+/* In vertical prose, isolate the whole figure from vertical writing flow. */
+.prose[style*="writing-mode: vertical-rl"] figure:has(img),
+.prose[style*="writing-mode:vertical-rl"] figure:has(img) {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  max-width: 90cqh;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed;
+  vertical-align: top;
   margin-left: 1.5rem !important;
   margin-right: 1.5rem !important;
 }
@@ -219,6 +266,19 @@ html {
   width: auto !important;
   height: auto !important;
   object-fit: contain;
+}
+
+/* Horizontal mode: center standalone image paragraphs without captions. */
+.prose[style*="writing-mode: horizontal-tb"] p:has(> img):not(:has(> :not(img))),
+.prose[style*="writing-mode:horizontal-tb"] p:has(> img):not(:has(> :not(img))) {
+  text-align: center;
+}
+
+.prose[style*="writing-mode: horizontal-tb"] p:has(> img):not(:has(> :not(img))) > img,
+.prose[style*="writing-mode:horizontal-tb"] p:has(> img):not(:has(> :not(img))) > img {
+  display: block;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 /* In vertical-rl mode, logical margin-block (top/bottom in horizontal) becomes margin-left/right */
@@ -355,6 +415,11 @@ html {
 .prose strong,
 .prose b {
   font-weight: 700;
+}
+
+/* Code blocks should use the same size as the reader body text. */
+.prose pre {
+  font-size: 1em;
 }
 
 /* ======================================= */

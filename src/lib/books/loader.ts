@@ -6,6 +6,10 @@ import { Book, BookMetadata, BookCatalogItem } from '@/types/book'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'books')
 
+interface GetAllBooksOptions {
+  includeUnlisted?: boolean
+}
+
 /**
  * Get all book folders in the content directory
  */
@@ -76,6 +80,7 @@ function loadMetadata(folderPath: string): BookMetadata | null {
       coverImage: metadata.coverImage || undefined,
       donationLink: metadata.donationLink || undefined,
       purchaseLink: metadata.purchaseLink || undefined,
+      unlisted: metadata.unlisted === true,
     }
   } catch (error) {
     console.error(`Error loading metadata from ${metadataPath}:`, error)
@@ -128,13 +133,17 @@ export function loadBook(folderPath: string): Book | null {
 /**
  * Get all books for the catalog (metadata only)
  */
-export function getAllBooks(): BookCatalogItem[] {
+export function getAllBooks(options: GetAllBooksOptions = {}): BookCatalogItem[] {
   const folders = getAllBookFolders()
   const books: BookCatalogItem[] = []
 
   for (const folderPath of folders) {
     const metadata = loadMetadata(folderPath)
     if (metadata) {
+      if (metadata.unlisted && !options.includeUnlisted) {
+        continue
+      }
+
       books.push({
         ...metadata,
         folderPath,

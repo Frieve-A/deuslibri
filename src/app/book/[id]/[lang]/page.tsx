@@ -12,7 +12,7 @@ interface BookPageProps {
 }
 
 export async function generateStaticParams() {
-  const books = getAllBooks()
+  const books = getAllBooks({ includeUnlisted: true })
 
   return books.map((book) => ({
     id: book.id,

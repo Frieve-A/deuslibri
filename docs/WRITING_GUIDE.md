@@ -182,8 +182,10 @@ To insert images in your content:
 
 ```markdown
 ![Station view](./images/illustration-01.jpg)
-*Figure 1: The station where the incident occurred*
+Caption: Figure 1: The station where the incident occurred
 ```
+
+The caption line must start with `Caption: ` using a capital `C` and a space after the colon. If the next non-empty line after an image starts with `Caption: `, DeusLibri renders it as the preceding image's `<figcaption>`. Captions are displayed horizontally, centered below the image in both horizontal and vertical reading modes.
 
 ### Mathematical Formulas
 
@@ -263,6 +265,7 @@ Heading levels:
 - **Recommended Width**: 1200px or larger (automatically optimized)
 - **Format**: JPEG recommended (photos/complex images), PNG (simple graphics/transparency needed)
 - **File Size**: Under 500KB each recommended
+- **Captions**: Place a `Caption: ` line after the image when a visible caption is needed
 
 ### Image Optimization Tips
 
@@ -479,4 +482,4 @@ Share your stories with readers worldwide through DeusLibri.
 
 ---
 
-Last updated: 2025-12-05
+Last updated: 2026-06-11

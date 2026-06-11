@@ -47,6 +47,9 @@ function getAllBooks() {
           try {
             const fileContents = fs.readFileSync(metadataPath, 'utf8');
             const metadata = yaml.load(fileContents);
+            if (metadata.unlisted === true) {
+              continue;
+            }
             books.push({
               id: metadata.id,
               language: metadata.language,

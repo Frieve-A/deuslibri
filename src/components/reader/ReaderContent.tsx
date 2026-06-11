@@ -9,6 +9,7 @@ import {
   getFontFamilyCSS,
   wrapKatexForVertical,
   convertHeadingDigitsToFullWidth,
+  applyTateChuYokoToShortAlphanumerics,
 } from '@/lib/reader'
 import type { FontFamily } from '@/lib/stores/useReadingStore'
 
@@ -333,7 +334,7 @@ export function ReaderContent({
   const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
   const proseClasses = getProseClasses(theme)
 
-  // Pre-process HTML for vertical mode - wrap KaTeX elements and convert heading digits
+  // Pre-process HTML for vertical mode - wrap KaTeX, normalize heading digits, and apply tate-chu-yoko
   // This avoids React reconciliation overwriting our DOM modifications
   const processedPageHtml = useMemo(() => {
     if (!isVertical) {
@@ -342,6 +343,7 @@ export function ReaderContent({
     return pageHtml.map((html) => {
       let processed = wrapKatexForVertical(html)
       processed = convertHeadingDigitsToFullWidth(processed)
+      processed = applyTateChuYokoToShortAlphanumerics(processed)
       return processed
     })
   }, [pageHtml, isVertical])

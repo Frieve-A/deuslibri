@@ -508,33 +508,63 @@ Horizontal mode also requires explicit margins to ensure consistent spacing:
 
 ### Image Layout
 
-#### Problem: Images in Paragraphs
+#### Captioned Images
 
-When Markdown images are followed by captions on the next line without a blank line:
+When the next non-empty line after a standalone Markdown image starts with `Caption: `, DeusLibri converts the image and caption into a semantic figure:
 
 ```markdown
 ![Description](./images/image.jpg)
-*Caption text*
+Caption: Figure 1: Caption text
 ```
 
-This generates HTML where `<img>` and `<em>` are in the same `<p>` tag:
+This generates HTML where the caption is represented as `<figcaption>`:
 
 ```html
-<p><img src="..."><em>Caption text</em></p>
+<figure><img src="..."><figcaption>Figure 1: Caption text</figcaption></figure>
 ```
 
-In vertical mode, this causes the caption to appear next to the image instead of below it (in reading order).
+The `Caption: ` prefix is case-sensitive and must use a capital `C` followed by a colon and a space. In both horizontal and vertical reading modes, the caption is displayed horizontally, centered below the image.
 
-#### Solution: Flex Container for Image Paragraphs
+#### Image and Figure Layout
 
 ```css
-/* Image paragraphs use flex to separate image and caption */
+/* Uncaptioned image paragraphs in vertical mode */
 .prose[style*="writing-mode: vertical-rl"] p:has(img) {
   display: flex !important;
   flex-direction: column !important;  /* In vertical-rl, column = horizontal stacking */
   align-items: center !important;
   margin-left: 1.5rem !important;
   margin-right: 1.5rem !important;
+}
+
+/* Captioned images remain horizontal internally */
+.prose figure:has(img) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.prose figure:has(img) > figcaption {
+  writing-mode: horizontal-tb;
+  text-align: center;
+}
+
+.prose[style*="writing-mode: vertical-rl"] figure:has(img) {
+  display: inline-flex !important;
+  writing-mode: horizontal-tb !important;
+  vertical-align: top;
+}
+
+/* Standalone uncaptioned images are centered in horizontal mode */
+.prose[style*="writing-mode: horizontal-tb"] p:has(> img):not(:has(> :not(img))) > img {
+  display: block;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .prose[style*="writing-mode: vertical-rl"] img {
@@ -561,9 +591,10 @@ The prose container must have `container-type: size` to enable container query u
 >
 ```
 
-**Why `flex-direction: column` works in vertical mode**:
-- In `writing-mode: vertical-rl`, the logical "column" direction maps to the physical horizontal direction
-- This causes flex items (image and caption) to be stacked left-to-right, which matches the reading progression
+**Why the figure is isolated in vertical mode**:
+- A `<figcaption>` should remain horizontal even when the surrounding prose uses `writing-mode: vertical-rl`
+- Applying `writing-mode: horizontal-tb` to the figure keeps the image and caption in normal top-to-bottom order
+- The figure is rendered as an inline block-like element in the vertical flow, while the caption stays centered below the image
 
 ### Preserving Multiple Blank Lines
 
@@ -1748,9 +1779,10 @@ export interface InteractionSettings {
 - Use only keyboard navigation
 - Makes text selection easier without triggering navigation
 
-**Last Updated**: 2025-01-13
+**Last Updated**: 2026-06-11
 **Created**: To prevent scrollLeft/display position confusion and facilitate future maintenance
 **Revision History**:
+- 2026-06-11: Documented the `Caption: ` image caption format, semantic `<figure>/<figcaption>` rendering, horizontal caption display below images in both writing modes, and horizontal centering for standalone uncaptioned images.
 - 2025-01-13: Added "Interaction Settings" section documenting customizable reader interaction controls (tap scroll, tap page turn, flick scroll, flick page turn).
 - 2025-12-20: Updated image sizing documentation to use container query units (`cqw`/`cqh`) instead of viewport units, with `container-type: size` on prose container. Added "Heading Digit Conversion for Vertical Mode" section documenting `convertHeadingDigitsToFullWidth()` function. Added "Link Handling" section documenting external links opening in new tabs and link click navigation bypass.
 - 2025-12-15: Added "KaTeX Math Rendering in Vertical Mode" section documenting the three-layer wrapper structure, HTML pre-processing with `wrapKatexForVertical()`, margin adjustment using `useLayoutEffect` without dependencies, and the `katex-rotation-complete` event for synchronizing scroll restoration.

@@ -11,6 +11,7 @@ export interface BookMetadata {
   coverImage?: string
   donationLink?: string
   purchaseLink?: string
+  unlisted?: boolean
 }
 
 export interface TocItem {
@@ -39,5 +40,6 @@ export interface BookCatalogItem {
   publishDate: string
   coverImage?: string
   donationLink?: string
+  unlisted?: boolean
   folderPath: string
 }

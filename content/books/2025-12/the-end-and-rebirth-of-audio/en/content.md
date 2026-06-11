@@ -93,7 +93,7 @@ Yet why do we believe the ear alone "does not lie"?
 Auditory illusions are even more powerful than visual ones. The Shepard Tone and the McGurk Effect are definitive proof that the brain fabricates "sounds" different from the actual audio signals input. Our act of "hearing" is not passive sensing—it is the result of active simulation.
 
 ![Diagram showing illusion—same waveform interpreted differently in the brain depending on context](./images/auditory_illusion_mechanism.jpg)
-The exact same waveform may be interpreted differently in the brain depending on time and circumstance
+Caption: The exact same waveform may be interpreted differently in the brain depending on time and circumstance
 
 ---
 
@@ -154,7 +154,7 @@ This theorem, anticipated by Harry Nyquist in 1928 and proven by Claude Shannon 
 When reconstructing a "line" from "dots," it might seem there are infinite ways to draw lines through the points. But when one condition—band-limiting—is met, there exists **only one smooth waveform in the entire universe** that passes through those points.
 
 ![Discrete points generating a unique smooth waveform](./images/sampling_theorem_reconstruction.jpg)
-Discrete points generating a unique smooth waveform
+Caption: Discrete points generating a unique smooth waveform
 
 ---
 
@@ -205,7 +205,7 @@ At $40\,\text{kHz}$ sampling, the Nyquist frequency would be $20\,\text{kHz}$. A
 The solution: $44.1\,\text{kHz}$ (Nyquist $22.05\,\text{kHz}$), creating a $2.05\,\text{kHz}$ **transition band** between $20\,\text{kHz}$ (audibility limit) and $22.05\,\text{kHz}$ (cutoff). This gap allows filters to attenuate with a gentle slope, preserving phase and amplitude within the audible range.
 
 ![Diagram of sampling frequency and aliasing](./images/nyquist_frequency_limit.png)
-Sampling frequency and aliasing
+Caption: Sampling frequency and aliasing
 
 The push for "Hi-Res (96kHz or 192kHz)" is not about smoother waveforms within the audible range. For reproduction below 20kHz, there is no mathematical difference between 44.1kHz and 192kHz. Both achieve **100%** accuracy.
 
@@ -384,7 +384,7 @@ Even equipment advertised as "native DSD editing" internally performs some kind 
 Therefore, 99% of works on the market labeled "native DSD recording" have passed through PCM (Digital eXtreme Definition, etc.) during production. In other words, what listeners hear is not "pure DSD" but **"PCM repackaged into a DSD container."**
 
 ![DSD to PCM conversion process](./images/dsd_pcm_conversion.png)
-DSD to PCM conversion process
+Caption: DSD to PCM conversion process
 
 Even more fatal is the reversal in playback quality. Earlier DACs were primarily 1-bit processing, but as of 2025, nearly all high-performance DACs (ESS, AKM, etc.) operate on **"multi-bit ΔΣ (5-6 bit, etc.)"**. This physically achieves far lower quantization noise and higher dynamic range than SACD's specification of DSD64 (1bit/2.8MHz) or DSD128.
 
@@ -656,7 +656,7 @@ Even more troublesome, this sensitivity characteristic **changes dramatically wi
 * **At low volume ($40 \sim 50\,\text{dB}$)**: Sensitivity to bass ($100\,\text{Hz}$ and below) and treble drops dramatically.
 
 ![Equal-Loudness Curves (ISO 226) graph](./images/iso226_curves.png)
-Equal-Loudness Curves (ISO 226)
+Caption: Equal-Loudness Curves (ISO 226)
 
 Studio mixing engineers typically determine balance at high volumes around $80 \sim 85\,\text{dB}$ (called reference level). What happens when a source adjusted to "perfect flat" at this volume is played in a typical home environment—around $60\,\text{dB}$ at night?
 
@@ -689,7 +689,7 @@ The important point is that not only the subject but also **the test administrat
 In this environment, reviewers who normally write thousands of words of flowery prose about "veils being lifted" and "overwhelming silence" suddenly fall silent. The moment brand labels are stripped and visual information is blocked, they can no longer tell $10,000 cables from $10 ones.
 
 ![ABX test conceptual diagram showing switch box and hidden X](./images/abx_test_diagram.jpg)
-ABX Test
+Caption: ABX Test
 
 ---
 
@@ -1374,7 +1374,7 @@ Whether the playback environment has only 2 speakers or 64, a **Rendering Proces
 Engineers no longer need to worry about "what speakers the user has." They simply specify "position" in 3D space. This is the achievement of **"Resolution Independence"** in acoustics.
 
 ![Conceptual comparison of channel-based and object-based: fixed speakers versus freely floating spheres](./images/object_based_audio_concept.jpg)
-Channel-based versus Object-based
+Caption: Channel-based versus Object-based
 
 ---
 
@@ -1489,7 +1489,7 @@ Therefore, the scientifically correct approach to correction is as follows:
 Excessive correction (Over-correction) makes sound unnatural and disrupts phase. "Averaged, gentle correction" is the optimal solution that improves perceived quality without creating physical discomfort.
 
 ![Frequency response with peaks and dips, showing gentle correction by cutting only peaks](./images/room_correction_strategy.jpg)
-Example of Room Correction
+Caption: Example of Room Correction
 
 ---
 

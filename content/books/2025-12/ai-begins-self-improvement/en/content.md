@@ -74,7 +74,7 @@ The four loops are interconnected as a **Coupling Matrix**. Each Part of this bo
 To understand 2025 is to understand that this quadruple exponential loop closed simultaneously. To predict 2026 and beyond is to identify the rate-limiting factors of each loop and the factors that strengthen or impede inter-loop coupling. This book provides the framework for such judgment.
 
 ![Figure: Coupling Matrix of the Four Exponential Loops](./images/img-01JFRK8A1B2C3D4E5F6G7H8J9K.png)
-Figure: Coupling Matrix of the Four Exponential Loops
+Caption: Figure: Coupling Matrix of the Four Exponential Loops
 
 ---
 
@@ -294,7 +294,7 @@ AlphaEvolve completed this entire pipeline within a single system. Humans interv
 This is the state defined in the introduction as "the self-improvement loop has closed." The next section quantitatively analyzes how this loop scales performance with respect to computational resource input—the relationship between number of searches and discovery performance.
 
 ![Figure: AlphaEvolve Exponential Loop (Search → Evaluate → Generate → Improve)](./images/img-01JFRKC7T8V9W0X1Y2Z3A4B5C.png)
-Figure: AlphaEvolve Exponential Loop (Search → Evaluate → Generate → Improve)
+Caption: Figure: AlphaEvolve Exponential Loop (Search → Evaluate → Generate → Improve)
 
 ---
 
@@ -333,7 +333,7 @@ To alleviate this constraint, AlphaEvolve introduces two-stage evaluation with "
 The next section analyzes the "wedges"—winning moves for 1-3 years—that researchers, companies, and nations should pursue, as well as failure modes that could break this pipeline, based on these scaling laws.
 
 ![Figure: Scaling Laws of Search Count × Discovery Performance](./images/img-01JFRKE9W0X1Y2Z3A4B5C6D7E.png)
-Figure: Scaling Laws of Search Count × Discovery Performance
+Caption: Figure: Scaling Laws of Search Count × Discovery Performance
 
 ---
 
@@ -444,7 +444,7 @@ In conventional research pipelines, hypotheses depended on researchers' intuitio
 AI Scientist-v2 removed this bottleneck. The system can verify multiple hypotheses in parallel, operates 24 hours a day, and does not tire. Having passed peer review as external validation, the preconception that "AI papers are low quality" has also been refuted by fact. The next section analyzes the scaling laws of this pipeline—the relationship between computational resource input and paper quality.
 
 ![Figure: AI Scientist Closed Loop](./images/img-01JFRKJDZ3A4B5C6D7E8F9G0H1.png)
-Figure: AI Scientist Closed Loop
+Caption: Figure: AI Scientist Closed Loop
 
 ---
 
@@ -693,7 +693,7 @@ When these three elements form a closed loop, the following mutual reinforcement
 What is decisive is that **this entire procedure can become a target of AlphaEvolve-style search**. Cluster count, stage thresholds, difficulty estimation models—these are all hyperparameters that can be optimized through automated search. The automatic discovery pipelines established in Part I are directly fed into inference pipeline design. The next section analyzes the scaling laws and winning moves of this procedure.
 
 ![Figure: GenCluster Search Architecture](./images/img-01JFRKVP2J3K4L5M6N7P8Q9R0S.png)
-Figure: GenCluster Search Architecture
+Caption: Figure: GenCluster Search Architecture
 
 #### The Curve—Scaling Laws of Search Count and Accuracy
 
@@ -1070,7 +1070,7 @@ DeepSeek-R1's price destruction (Chapter 6) made "more inference with the same b
 The "release of computational budget" foreshadowed in Part II's coupling point is realized here. The released budget is reinvested in further performance improvement following the scaling laws analyzed in the next section.
 
 ![Figure: Computational Efficiency Comparison of CoT vs Latent Reasoning](./images/img-01JFRL835Y6Z7A8B9C0D1E2F3G.png)
-Figure: Computational Efficiency Comparison of CoT vs Latent Reasoning
+Caption: Figure: Computational Efficiency Comparison of CoT vs Latent Reasoning
 
 #### The Curve—Computational Efficiency and Scaling Laws of Latent Reasoning
 
@@ -1185,7 +1185,7 @@ When these three stages form a closed loop, the following mutual reinforcement o
 What's decisive is that **this loop runs without additional training**. Conventional model improvement required collecting new data and investing computational resources for retraining. Titans/MIRAS automatically accumulates improvement just by providing normal inference service. It's a structure where operational cost also serves as improvement cost.
 
 ![Figure: Memory Update Mechanism Diagram of Titans/MIRAS](./images/img-01JFRLC79C0D1E2F3G4H5J6K7L.png)
-Figure: Memory Update Mechanism Diagram of Titans/MIRAS
+Caption: Figure: Memory Update Mechanism Diagram of Titans/MIRAS
 
 #### The Curve—Scaling Laws of Memory Capacity and Reasoning Performance
 
@@ -1297,7 +1297,7 @@ When these three stages form a closed loop, the following mutual reinforcement o
 What's decisive is that **the graph structure itself functions as "learned knowledge."** In conventional RAG, search results are computed independently each time. In HippoRAG 2, the results of past integration work accumulate in the graph, making the next integration and search more efficient. This is the same type of self-reinforcing structure as the memory update in Titans/MIRAS.
 
 ![Figure: Non-Parametric Continual Learning Flow of HippoRAG 2](./images/img-01JFRLGB3G4H5J6K7L8M9N0P1Q.png)
-Figure: Non-Parametric Continual Learning Flow of HippoRAG 2
+Caption: Figure: Non-Parametric Continual Learning Flow of HippoRAG 2
 
 #### The Curve—Scaling Laws of Knowledge Graph Scale and Reasoning Performance
 
@@ -1408,7 +1408,7 @@ Long context and other technological advances act mutually reinforcingly:
 What's decisive is that **long context functions not as a "standalone feature" but as an "infrastructure layer."** Just as the power grid supported the industrial revolution, long context is the infrastructure supporting the reasoning revolution. Infrastructure development accelerates all technologies built upon it.
 
 ![Figure: Optimization of KV Cache Selection and Computational Resource Allocation](./images/img-01JFRLLF7L8M9N0P1Q2R3S4T5V.png)
-Figure: Optimization of KV Cache Selection and Computational Resource Allocation
+Caption: Figure: Optimization of KV Cache Selection and Computational Resource Allocation
 
 #### The Curve—Scaling Laws of KV Cache Efficiency and Reasoning Performance
 
@@ -1658,7 +1658,7 @@ What's decisive is that **V-JEPA 2 and Genie 3 mutually reinforce each other**.
 Diverse environments generated by Genie 3 become training data for V-JEPA 2. Representations acquired by V-JEPA 2 can be used to evaluate Genie 3's environment quality—physically inconsistent environments are detected as prediction errors. By combining environment generation and world understanding, Part IV's "environment generation loop" approaches completion.
 
 ![Figure: V-JEPA 2 Observation-Planning-Action Connection](./images/img-01JFRLWQ6W7X8Y9Z0A1B2C3D4E.png)
-Figure: V-JEPA 2 Observation-Planning-Action Connection
+Caption: Figure: V-JEPA 2 Observation-Planning-Action Connection
 
 #### The Curve—Scaling Laws of Representation Quality and Planning Performance
 
@@ -1780,7 +1780,7 @@ Diverse 3D environments generated by Genie 3 (Chapter 11) can be input as traini
 By combining environment generation → world understanding → embodiment learning, a complete pipeline **from observation to action** can be driven with computational resources alone. This is the completed form of Part IV's "Environment Generation Destroys Data Shortage."
 
 ![Figure: GR00T N1 Synthetic Data Learning Pipeline](./images/img-01JFRM0V0A1B2C3D4E5F6G7H8J.png)
-Figure: GR00T N1 Synthetic Data Learning Pipeline
+Caption: Figure: GR00T N1 Synthetic Data Learning Pipeline
 
 ---
 
@@ -2036,7 +2036,7 @@ When these four stages form a closed loop, the following mutual reinforcement oc
 What's decisive is that **this loop doesn't depend on the number of developers**. Previously, development speed was rate-limited by "how many engineers can be hired." With coding agents, development speed is transitioning to a function of "computational resources and approval bandwidth."
 
 ![Figure: GitHub Copilot coding agent Development Flow](./images/img-01JFRMA50L1M2N3P4Q5R6S7T8V.png)
-Figure: GitHub Copilot coding agent Development Flow
+Caption: Figure: GitHub Copilot coding agent Development Flow
 
 #### The Curve—Scaling Laws of Task Complexity and PR Quality
 
@@ -2706,7 +2706,7 @@ Companies that foresaw the next CoWoS bottleneck while HBM was rate-limiting and
 NVIDIA is looking ahead in this chain and concluding long-term contracts in parallel with SK Hynix, TSMC, and optical I/O startups. **Those who can see through the chain of rate-limiting factors dominate the supply network.** The "inter-nation competition over computational capital accelerates introduction of AI into apex decision-making," foreshadowed in Part VI's coupling point, is concretized through this supply network dominance.
 
 ![Figure: Supply constraints and growth rate-limiting of HBM/Advanced Packaging/Optical I/O](./images/img-01JFRN2X5N6P7Q8R9S0T1V2W3X.png)
-Figure: Supply constraints and growth rate-limiting of HBM/Advanced Packaging/Optical I/O
+Caption: Figure: Supply constraints and growth rate-limiting of HBM/Advanced Packaging/Optical I/O
 
 #### The Curve—HBM, CoWoS, and Optical I/O Supply Constraints and Growth Rate-Limiting
 
@@ -2830,7 +2830,7 @@ What's decisive is that **this loop incorporates "comparison with human judgment
 As cases accumulate where human directors "lose to AI," authority delegation accelerates. Paradoxically, a structure has been established where human judgment errors drive authority delegation to AI.
 
 ![Figure: Three stages of governance introduction (advisory → participatory → decisive)](./images/img-01JFRN619S0T1V2W3X4Y5Z6A7B.png)
-Figure: Three stages of governance introduction (advisory → participatory → decisive)
+Caption: Figure: Three stages of governance introduction (advisory → participatory → decisive)
 
 **AI director authority expansion scales in a stair-step pattern with respect to the fulfillment level of three requirements: auditability, clarity of responsible party, and cryptographic inference. Each time a requirement exceeds a threshold, the permissible authority level discontinuously jumps.**
 
@@ -2961,7 +2961,7 @@ When this quadruple structure forms a closed loop, the following mutual reinforc
 What's decisive is that **this loop revolves around "anti-corruption," a politically hard-to-refute theme**. No one can argue "corruption should be tolerated." Opposition to Diella carries the risk of being seen as complicit in corruption. This political dynamic minimizes resistance to authority expansion.
 
 ![Figure: AI Minister Diella's operational process](./images/img-01JFRNB64Y5Z6A7B8C9D0E1F2G.png)
-Figure: AI Minister Diella's operational process
+Caption: Figure: AI Minister Diella's operational process
 
 #### The Curve—Scaling Laws of AI Minister Effect and Authority Expansion
 
@@ -3190,7 +3190,7 @@ What's decisive is that **this loop directly couples with apex decision-making i
 Cryptographic inference is one of the "additional determinant variables" defined in the introduction. It has the effect of expanding the "applicable scope" of the four exponential loops (self-improvement, environment generation, computational capital, apex decision-making), and by opening closed data domains, accelerates the rotation of all loops.
 
 ![Figure: Confidential AI method comparison (FHE/MPC/TEE/Hybrid: performance and threat models)](./images/img-01JFRNKE2G3H4J5K6L7M8N9P0Q.png)
-Figure: Confidential AI method comparison (FHE/MPC/TEE/Hybrid: performance and threat models)
+Caption: Figure: Confidential AI method comparison (FHE/MPC/TEE/Hybrid: performance and threat models)
 
 ---
 
@@ -3323,7 +3323,7 @@ When these four stages form a closed loop, the following mutual reinforcement oc
 What's decisive is that **this loop has an AI-to-AI structure**. In conventional models dependent on human auditors, audit capability improvement was linear. In AI auditing AI models, audit capability improvement itself becomes exponential. AI penetration into apex decision-making analyzed in Part VII accelerates both introduction speed and applicable scope by this AI audit self-improvement loop revolving, completing the transition from "experiment" to "standard" at once.
 
 ![Figure: Technology stack of auditing, responsibility, and tamper resistance](./images/img-01JFRNQZ7M8N9P0Q1R2S3T4V5W.png)
-Figure: Technology stack of auditing, responsibility, and tamper resistance
+Caption: Figure: Technology stack of auditing, responsibility, and tamper resistance
 
 #### The Curve—Scaling Laws of AI Automatic Audit Performance and Introduction Acceleration
 
