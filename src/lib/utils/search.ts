@@ -27,10 +27,26 @@ export function filterByTags(books: BookCatalogItem[], tags: string[]) {
   return books.filter((book) => tags.some((tag) => book.tags.includes(tag)))
 }
 
-export function getAllTags(books: BookCatalogItem[]): string[] {
-  const tagSet = new Set<string>()
+export function getAllTags(books: BookCatalogItem[], preferredLanguage?: string): string[] {
+  const tagLanguages = new Map<string, Set<string>>()
   books.forEach((book) => {
-    book.tags.forEach((tag) => tagSet.add(tag))
+    book.tags.forEach((tag) => {
+      const languages = tagLanguages.get(tag) ?? new Set<string>()
+      languages.add(book.language)
+      tagLanguages.set(tag, languages)
+    })
   })
-  return Array.from(tagSet).sort()
+
+  return Array.from(tagLanguages.keys()).sort((a, b) => {
+    const aMatchesPreferredLanguage =
+      preferredLanguage !== undefined && tagLanguages.get(a)?.has(preferredLanguage)
+    const bMatchesPreferredLanguage =
+      preferredLanguage !== undefined && tagLanguages.get(b)?.has(preferredLanguage)
+
+    if (aMatchesPreferredLanguage !== bMatchesPreferredLanguage) {
+      return aMatchesPreferredLanguage ? -1 : 1
+    }
+
+    return a.localeCompare(b, preferredLanguage)
+  })
 }

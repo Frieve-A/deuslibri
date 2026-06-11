@@ -9,8 +9,9 @@ export function AutoScrollPlayButton({ isPlaying, onToggle }: AutoScrollPlayButt
   return (
     <button
       onClick={onToggle}
-      className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-amber-600/50 dark:bg-sky-600/50 text-white shadow-lg hover:bg-amber-700/70 dark:hover:bg-sky-700/70 transition-colors flex items-center justify-center"
+      className={`fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-amber-600/50 dark:bg-sky-600/50 text-white shadow-lg hover:bg-amber-700/70 dark:hover:bg-sky-700/70 transition-colors flex items-center justify-center ui-skin-icon ${isPlaying ? 'ui-skin-active' : ''}`}
       aria-label={isPlaying ? 'Pause auto scroll' : 'Play auto scroll'}
+      aria-pressed={isPlaying}
     >
       {isPlaying ? (
         <svg

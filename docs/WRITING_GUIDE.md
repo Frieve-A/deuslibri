@@ -93,6 +93,7 @@ estimatedReadingTime: 240   # Reading time (minutes)
 isbn: ""                    # ISBN if available
 series: "Small Town Mysteries"   # Series name
 seriesNumber: 1             # Series number
+unlisted: true              # Hide from catalog and sitemap, while keeping the direct URL available
 ```
 
 ### Field Descriptions
@@ -114,6 +115,23 @@ seriesNumber: 1             # Series number
 | `isbn` | - | ISBN number | `"978-1-XXXX-XXXX-X"` |
 | `series` | - | Series name | `"Small Town Mysteries"` |
 | `seriesNumber` | - | Series number | `1` |
+| `unlisted` | - | Hide from public listings while keeping the direct book URL available | `true` |
+
+### Limited Publication (Unlisted Books)
+
+To publish a book without showing it in the public catalog, add `unlisted: true` to `metadata.yml`.
+
+```yaml
+unlisted: true
+```
+
+Unlisted books are omitted from the home page, catalog page, and generated sitemap. The book page is still generated, so anyone who knows the direct URL can read it:
+
+```text
+/book/{id}/{language}
+```
+
+This is not access control. Do not use `unlisted` for private or confidential content. The value must be the boolean `true`; the string `"true"` is not treated as enabled.
 
 ### Choosing Tags
 
@@ -153,6 +171,22 @@ Use **bold** and *italic* for emphasis.
 2. Second item
 3. Third item
 ```
+
+### Tables
+
+Use GitHub Flavored Markdown table syntax. DeusLibri avoids nested horizontal scrollbars in tables and wraps cell content to fit the reading area.
+
+```markdown
+| Item       | Description |
+| ---------- | ---- |
+| Diagnostic | What meaning changed before and after this scene? |
+| Misuse     | Assuming the story moved just because a flashy event was added. |
+| Revision   | Create a difference in character, relationship, information, worldview, or value judgment. |
+```
+
+The second table row, the delimiter row (`---` or `----------`), also controls wrapping by column. If the delimiter's hyphen width is longer than every cell in that column, DeusLibri treats the column as a short label column and suppresses wrapping. In the example above, `----------` is longer than `Item`, `Diagnostic`, `Misuse`, and `Revision`, so the first column is kept on one line where possible. The second column uses the short delimiter `----`, so longer descriptions wrap to the available width.
+
+Use a longer delimiter for short category or label columns, and a shorter delimiter for prose-heavy columns. This automatic detection applies to Markdown tables, not raw HTML `<table>` markup.
 
 ### Page Breaks
 

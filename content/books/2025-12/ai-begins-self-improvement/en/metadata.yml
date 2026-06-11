@@ -25,6 +25,7 @@ description: |
   Frieve-A 2025
 recommendText: "For those who want to structurally understand the cutting edge of AI technology and foresee technological trends from 2025 onwards."
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # Optional fields
 pageCount: 114

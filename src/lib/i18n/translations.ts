@@ -127,6 +127,11 @@ export interface TranslationMessages {
       importError: string
       note: string
     }
+    pwaInstall: {
+      title: string
+      button: string
+      installing: string
+    }
     autoScroll: {
       title: string
       enabled: string
@@ -194,6 +199,11 @@ export interface TranslationMessages {
     description: string
     summary: string
     tags: string
+    other: string
+    donation: string
+    printBook: string
+    aiUsage: string
+    aiUsageHint: string
     language: string
     publishDate: string
     close: string
@@ -240,6 +250,13 @@ export interface TranslationMessages {
     features: {
       title: string
       items: string[]
+    }
+    tips: {
+      title: string
+      pdf: {
+        title: string
+        description: string
+      }
     }
     operator: string
     operatorName: string
@@ -366,6 +383,11 @@ const en: TranslationMessages = {
       importError: 'Failed to import data. Please check the format.',
       note: 'Export your reading progress, favorites, and settings to backup or transfer to another device.',
     },
+    pwaInstall: {
+      title: 'App Installation',
+      button: 'Install',
+      installing: 'Opening install prompt...',
+    },
     autoScroll: {
       title: 'Auto Scroll',
       enabled: 'Enable Auto Scroll',
@@ -431,6 +453,12 @@ const en: TranslationMessages = {
     description: 'Description',
     summary: 'Summary',
     tags: 'Tags',
+    other: 'Other',
+    donation: 'Donation',
+    printBook: 'Print Book',
+    aiUsage: 'AI usage',
+    aiUsageHint:
+      'This book includes passages and images generated or translated by generative AI and then edited or revised by the author. The author handled prompt design, output selection, structure, additions and revisions, verification, and final editing, and takes responsibility for the book as a whole.',
     language: 'Language',
     publishDate: 'Published',
     close: 'Close',
@@ -503,6 +531,14 @@ const en: TranslationMessages = {
         'Bookmark and table of contents',
         'Auto-scroll feature for hands-free reading',
       ],
+    },
+    tips: {
+      title: 'Tips',
+      pdf: {
+        title: 'Want to read as a PDF?',
+        description:
+          'On a PC, switch to infinite scroll mode, then print or save it as a PDF with your preferred paper size.',
+      },
     },
     operator: 'Operated by',
     operatorName: 'Frieve',
@@ -629,6 +665,11 @@ const ja: TranslationMessages = {
       importError: 'データのインポートに失敗しました。形式を確認してください。',
       note: '読書の進捗、お気に入り、設定をエクスポートして、バックアップしたり、他のデバイスに転送できます。',
     },
+    pwaInstall: {
+      title: 'アプリのインストール',
+      button: 'インストール',
+      installing: 'インストール画面を開いています...',
+    },
     autoScroll: {
       title: '自動スクロール',
       enabled: '自動スクロールを有効にする',
@@ -694,6 +735,12 @@ const ja: TranslationMessages = {
     description: '説明',
     summary: '概要',
     tags: 'タグ',
+    other: 'その他',
+    donation: '寄付',
+    printBook: '紙書籍',
+    aiUsage: 'AI利用',
+    aiUsageHint:
+      '本書は、生成AIにより生成・翻訳された文章・画像を著者が編集・改稿した箇所を含みます。著者はプロンプト設計、出力の選択、構成、加筆修正、検証、最終編集を行い、書籍全体の責任を負います。',
     language: '言語',
     publishDate: '出版日',
     close: '閉じる',
@@ -766,6 +813,14 @@ const ja: TranslationMessages = {
         'ハンズフリー読書のための自動スクロール機能',
         '縦書き・横書きモード対応(日本語)',
       ],
+    },
+    tips: {
+      title: '使いこなしのヒント',
+      pdf: {
+        title: 'PDFで読みたい',
+        description:
+          'PCで無限スクロールモードに変更し、自由な用紙サイズのPDFとして印刷します。',
+      },
     },
     operator: '運営',
     operatorName: 'Frieve',

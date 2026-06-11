@@ -9,12 +9,14 @@ import {
   getFontFamilyCSS,
   wrapKatexForVertical,
   convertHeadingDigitsToFullWidth,
+  applyTateChuYokoToOrderedListMarkers,
   applyTateChuYokoToShortAlphanumerics,
 } from '@/lib/reader'
 import type { FontFamily } from '@/lib/stores/useReadingStore'
 
 type MarginSize = 'small' | 'medium' | 'large'
 type Theme = 'light' | 'dark' | 'sepia' | 'auto'
+type WritingMode = NonNullable<React.CSSProperties['writingMode']>
 
 interface ReaderContentProps {
   pageHtml: string[]
@@ -23,6 +25,7 @@ interface ReaderContentProps {
   isPagination: boolean
   fontSize: number
   fontFamily: FontFamily
+  contentLanguage: string
   lineHeight: number
   marginSize: MarginSize
   theme: Theme
@@ -39,14 +42,89 @@ interface ReaderContentProps {
   purchaseLabel?: string
 }
 
-// Convert margin size to CSS padding values for vertical mode
-function getVerticalMarginPadding(marginSize: MarginSize): string {
-  const margins = {
-    small: '0.5rem 1rem',
-    medium: '1rem 2rem',
-    large: '1.5rem 3rem',
+const READER_CONTENT_PADDING = 0
+const HORIZONTAL_PAGINATION_PADDING_CLASSES = 'px-4 py-0 sm:px-8 sm:py-0'
+const HORIZONTAL_PAGINATION_PADDING_STYLE: React.CSSProperties = {
+  paddingTop: 0,
+  paddingBottom: 0,
+}
+const LAST_PAGE_BUTTON_WIDTH = '12rem'
+
+function getHorizontalPaginationContainerClassName(horizontalMaxWidth: string): string {
+  return `${horizontalMaxWidth} mx-auto ${HORIZONTAL_PAGINATION_PADDING_CLASSES}`
+}
+
+function getReaderTextStyle(
+  fontSize: number,
+  fontFamily: string,
+  lineHeight: number,
+  writingMode: WritingMode
+): React.CSSProperties {
+  return {
+    fontSize: `${fontSize}px`,
+    fontFamily,
+    lineHeight,
+    writingMode,
   }
-  return margins[marginSize]
+}
+
+function getVerticalPaginationProseStyle(
+  fontSize: number,
+  fontFamily: string,
+  lineHeight: number
+): React.CSSProperties {
+  return {
+    ...getReaderTextStyle(fontSize, fontFamily, lineHeight, 'vertical-rl'),
+    padding: READER_CONTENT_PADDING,
+    minWidth: '100%',
+    width: 'fit-content',
+    visibility: 'hidden',
+    opacity: 0,
+    transition: 'opacity 0.15s ease-in',
+  }
+}
+
+function getVerticalScrollProseStyle(
+  fontSize: number,
+  fontFamily: string,
+  lineHeight: number
+): React.CSSProperties {
+  return {
+    ...getReaderTextStyle(fontSize, fontFamily, lineHeight, 'vertical-rl'),
+    padding: READER_CONTENT_PADDING,
+    height: '100%',
+    width: 'max-content',
+    visibility: 'hidden',
+    opacity: 0,
+    transition: 'opacity 0.15s ease-in',
+  }
+}
+
+function getHorizontalPaginationProseWrapperStyle(): React.CSSProperties {
+  return {
+    opacity: 0,
+    transition: 'opacity 0.15s ease-in',
+  }
+}
+
+function getHorizontalProseStyle(
+  fontSize: number,
+  fontFamily: string,
+  lineHeight: number
+): React.CSSProperties {
+  return getReaderTextStyle(fontSize, fontFamily, lineHeight, 'horizontal-tb')
+}
+
+function getHorizontalScrollProseStyle(
+  fontSize: number,
+  fontFamily: string,
+  lineHeight: number
+): React.CSSProperties {
+  return {
+    ...getHorizontalProseStyle(fontSize, fontFamily, lineHeight),
+    opacity: 0,
+    transition: 'opacity 0.15s ease-in',
+  }
 }
 
 // Convert margin size to max-width class for horizontal mode
@@ -223,7 +301,11 @@ function LastPageButtons({ donationLink, donateLabel, purchaseLink, purchaseLabe
   const buttonStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '0.5rem',
+    width: LAST_PAGE_BUTTON_WIDTH,
+    maxWidth: '100%',
+    boxSizing: 'border-box',
     padding: '0.75rem 1.5rem',
     borderRadius: '0.5rem',
     color: '#fff',
@@ -283,7 +365,7 @@ function LastPageButtons({ donationLink, donateLabel, purchaseLink, purchaseLabe
 function buildLastPageButtonsHtml(donationLink?: string, donateLabel?: string, purchaseLink?: string, purchaseLabel?: string): string {
   const purchaseBtn = purchaseLink && purchaseLabel ? `
     <a href="${purchaseLink}" target="_blank" rel="noopener noreferrer"
-       style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF9900; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
+       style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: ${LAST_PAGE_BUTTON_WIDTH}; max-width: 100%; box-sizing: border-box; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF9900; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
        onmouseenter="this.style.opacity='0.85'" onmouseleave="this.style.opacity='1'">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
@@ -292,7 +374,7 @@ function buildLastPageButtonsHtml(donationLink?: string, donateLabel?: string, p
     </a>` : ''
   const donateBtn = donationLink && donateLabel ? `
     <a href="${donationLink}" target="_blank" rel="noopener noreferrer"
-       style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF5E5B; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
+       style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: ${LAST_PAGE_BUTTON_WIDTH}; max-width: 100%; box-sizing: border-box; padding: 0.75rem 1.5rem; border-radius: 0.5rem; background-color: #FF5E5B; color: #fff; font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;"
        onmouseenter="this.style.opacity='0.85'" onmouseleave="this.style.opacity='1'">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -301,7 +383,7 @@ function buildLastPageButtonsHtml(donationLink?: string, donateLabel?: string, p
     </a>` : ''
   if (!purchaseBtn && !donateBtn) return ''
   return `<div style="display: inline-flex; align-items: center; justify-content: center; height: 100%; vertical-align: top; writing-mode: horizontal-tb; padding: 0 1.5rem;">
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+    <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center;">
       ${purchaseBtn}${donateBtn}
     </div>
   </div>`
@@ -314,6 +396,7 @@ export function ReaderContent({
   isPagination,
   fontSize,
   fontFamily,
+  contentLanguage,
   lineHeight,
   marginSize,
   theme,
@@ -329,12 +412,11 @@ export function ReaderContent({
   purchaseLink,
   purchaseLabel,
 }: ReaderContentProps) {
-  const fontFamilyCSS = getFontFamilyCSS(fontFamily)
-  const verticalMarginPadding = getVerticalMarginPadding(marginSize)
+  const fontFamilyCSS = getFontFamilyCSS(fontFamily, contentLanguage)
   const horizontalMaxWidth = getHorizontalMaxWidth(marginSize)
   const proseClasses = getProseClasses(theme)
 
-  // Pre-process HTML for vertical mode - wrap KaTeX, normalize heading digits, and apply tate-chu-yoko
+  // Pre-process HTML for vertical mode - wrap KaTeX, normalize heading/list digits, and apply tate-chu-yoko
   // This avoids React reconciliation overwriting our DOM modifications
   const processedPageHtml = useMemo(() => {
     if (!isVertical) {
@@ -343,6 +425,7 @@ export function ReaderContent({
     return pageHtml.map((html) => {
       let processed = wrapKatexForVertical(html)
       processed = convertHeadingDigitsToFullWidth(processed)
+      processed = applyTateChuYokoToOrderedListMarkers(processed)
       processed = applyTateChuYokoToShortAlphanumerics(processed)
       return processed
     })
@@ -512,18 +595,7 @@ export function ReaderContent({
             <div
               key={`prose-${currentPage}`}
               className={`${proseClasses} h-full inline-block overflow-x-scroll custom-scrollbar`}
-              style={{
-                fontSize: `${fontSize}px`,
-                fontFamily: fontFamilyCSS,
-                lineHeight: lineHeight,
-                padding: verticalMarginPadding,
-                writingMode: 'vertical-rl',
-                minWidth: '100%',
-                width: 'fit-content',
-                visibility: 'hidden',
-                opacity: 0,
-                transition: 'opacity 0.15s ease-in',
-              }}
+              style={getVerticalPaginationProseStyle(fontSize, fontFamilyCSS, lineHeight)}
               dangerouslySetInnerHTML={{ __html: contentWithGradients }}
             />
           </div>
@@ -570,18 +642,7 @@ export function ReaderContent({
           >
             <div
               className={`${proseClasses} max-w-none`}
-              style={{
-                fontSize: `${fontSize}px`,
-                fontFamily: fontFamilyCSS,
-                lineHeight: lineHeight,
-                padding: verticalMarginPadding,
-                writingMode: 'vertical-rl',
-                height: '100%',
-                width: 'max-content',
-                visibility: 'hidden',
-                opacity: 0,
-                transition: 'opacity 0.15s ease-in',
-              }}
+              style={getVerticalScrollProseStyle(fontSize, fontFamilyCSS, lineHeight)}
               dangerouslySetInnerHTML={{
                 __html: processedPageHtml
                   .map(
@@ -622,25 +683,20 @@ export function ReaderContent({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
           >
-            <div className={`${horizontalMaxWidth} mx-auto px-4 sm:px-8`}>
+            <div
+              className={getHorizontalPaginationContainerClassName(horizontalMaxWidth)}
+              style={HORIZONTAL_PAGINATION_PADDING_STYLE}
+            >
               {/* Start edge gradient (top - beginning of vertical scroll) */}
               <ScrollEdgeGradient position="start" direction="vertical" theme={theme} />
               <div
                 key={`prose-${currentPage}`}
                 className="pt-2 sm:pt-4 pb-4 sm:pb-8"
-                style={{
-                  opacity: 0,
-                  transition: 'opacity 0.15s ease-in',
-                }}
+                style={getHorizontalPaginationProseWrapperStyle()}
               >
                 <div
                   className={`${proseClasses} max-w-none`}
-                  style={{
-                    fontSize: `${fontSize}px`,
-                    fontFamily: fontFamilyCSS,
-                    lineHeight: lineHeight,
-                    writingMode: 'horizontal-tb',
-                  }}
+                  style={getHorizontalProseStyle(fontSize, fontFamilyCSS, lineHeight)}
                   dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
                 />
                 {currentPage === pageHtml.length - 1 && (
@@ -711,14 +767,7 @@ export function ReaderContent({
       <div className={`${horizontalMaxWidth} mx-auto p-4 sm:p-8`}>
         <div
           className={`${proseClasses} max-w-none`}
-          style={{
-            fontSize: `${fontSize}px`,
-            fontFamily: fontFamilyCSS,
-            lineHeight: lineHeight,
-            writingMode: 'horizontal-tb',
-            opacity: 0,
-            transition: 'opacity 0.15s ease-in',
-          }}
+          style={getHorizontalScrollProseStyle(fontSize, fontFamilyCSS, lineHeight)}
         >
           {pageHtml.map((html, index) => (
             <div key={index} id={`scroll-page-${index}`}>

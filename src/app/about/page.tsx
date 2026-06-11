@@ -37,6 +37,19 @@ export default function AboutPage() {
           </div>
 
           <div className="pt-6 border-t border-amber-300 dark:border-slate-700">
+            <div className="mb-6">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+                {t.about.tips.title}
+              </h2>
+              <div className="text-gray-700 dark:text-gray-300">
+                <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+                  {t.about.tips.pdf.title}
+                </h3>
+                <p className="leading-relaxed">
+                  {t.about.tips.pdf.description}
+                </p>
+              </div>
+            </div>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               {t.about.operator}:{' '}
               <a
@@ -69,7 +82,7 @@ export default function AboutPage() {
               </a>
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              DeusLibri {t.about.version} 0.21
+              DeusLibri {t.about.version} 0.31
             </p>
           </div>
         </div>

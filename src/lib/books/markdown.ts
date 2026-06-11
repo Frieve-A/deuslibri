@@ -315,6 +315,186 @@ function convertCaptionedImagesToFigures(markdown: string): string {
   return converted.join('\n')
 }
 
+const MARKDOWN_TABLE_NOWRAP_CLASS = 'markdown-table-nowrap'
+
+type MarkdownTableWrapHints = boolean[]
+
+function splitMarkdownTableRow(line: string): string[] {
+  let row = line.trim()
+  if (row.startsWith('|')) {
+    row = row.slice(1)
+  }
+  if (row.endsWith('|')) {
+    row = row.slice(0, -1)
+  }
+
+  const cells: string[] = []
+  let cell = ''
+  let escaped = false
+  let inCode = false
+
+  for (const character of row) {
+    if (escaped) {
+      cell += character
+      escaped = false
+      continue
+    }
+
+    if (character === '\\') {
+      cell += character
+      escaped = true
+      continue
+    }
+
+    if (character === '`') {
+      inCode = !inCode
+      cell += character
+      continue
+    }
+
+    if (character === '|' && !inCode) {
+      cells.push(cell.trim())
+      cell = ''
+      continue
+    }
+
+    cell += character
+  }
+
+  cells.push(cell.trim())
+  return cells
+}
+
+function isMarkdownTableDelimiterLine(line: string): boolean {
+  const cells = splitMarkdownTableRow(line)
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, '')))
+}
+
+function getMarkdownDelimiterWidth(cell: string): number {
+  return Array.from(cell).filter((character) => character === '-').length
+}
+
+function stripMarkdownCellSyntax(cell: string): string {
+  return cell
+    .replace(/\\\|/g, '|')
+    .replace(/<[^>]+>/g, '')
+    .replace(/!\[([^\]\n]*)\]\([^)]+\)/g, '$1')
+    .replace(/\[([^\]\n]+)\]\([^)]+\)/g, '$1')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
+    .trim()
+}
+
+function getCharacterDisplayWidth(character: string): number {
+  const codePoint = character.codePointAt(0) ?? 0
+
+  if (
+    (codePoint >= 0x1100 && codePoint <= 0x115f) ||
+    (codePoint >= 0x2e80 && codePoint <= 0xa4cf) ||
+    (codePoint >= 0xac00 && codePoint <= 0xd7a3) ||
+    (codePoint >= 0xf900 && codePoint <= 0xfaff) ||
+    (codePoint >= 0xfe10 && codePoint <= 0xfe6f) ||
+    (codePoint >= 0xff00 && codePoint <= 0xff60) ||
+    (codePoint >= 0xffe0 && codePoint <= 0xffe6)
+  ) {
+    return 2
+  }
+
+  return 1
+}
+
+function getMarkdownCellDisplayWidth(cell: string): number {
+  return Array.from(stripMarkdownCellSyntax(cell)).reduce(
+    (width, character) => width + getCharacterDisplayWidth(character),
+    0
+  )
+}
+
+function getMarkdownTableWrapHints(markdown: string): MarkdownTableWrapHints[] {
+  const lines = markdown.split(/\r?\n/)
+  const tableHints: MarkdownTableWrapHints[] = []
+
+  for (let lineIndex = 0; lineIndex < lines.length - 1; lineIndex += 1) {
+    if (!lines[lineIndex].includes('|') || !isMarkdownTableDelimiterLine(lines[lineIndex + 1])) {
+      continue
+    }
+
+    const headerCells = splitMarkdownTableRow(lines[lineIndex])
+    const delimiterCells = splitMarkdownTableRow(lines[lineIndex + 1])
+    const columnCount = Math.max(headerCells.length, delimiterCells.length)
+    const contentRows = [headerCells]
+    let tableEndIndex = lineIndex + 2
+
+    while (tableEndIndex < lines.length && lines[tableEndIndex].trim() !== '' && lines[tableEndIndex].includes('|')) {
+      if (isMarkdownTableDelimiterLine(lines[tableEndIndex])) {
+        break
+      }
+      contentRows.push(splitMarkdownTableRow(lines[tableEndIndex]))
+      tableEndIndex += 1
+    }
+
+    tableHints.push(
+      Array.from({ length: columnCount }, (_value, columnIndex) => {
+        const delimiterWidth = getMarkdownDelimiterWidth(delimiterCells[columnIndex] ?? '')
+        if (delimiterWidth === 0) {
+          return false
+        }
+
+        return contentRows.every((row) => delimiterWidth > getMarkdownCellDisplayWidth(row[columnIndex] ?? ''))
+      })
+    )
+
+    lineIndex = tableEndIndex - 1
+  }
+
+  return tableHints
+}
+
+function addClassToHtmlOpeningTag(openingTag: string, className: string): string {
+  const classAttribute = openingTag.match(/\sclass=(["'])(.*?)\1/)
+  if (!classAttribute) {
+    return openingTag.replace(/>$/, ` class="${className}">`)
+  }
+
+  const existingClasses = classAttribute[2].split(/\s+/)
+  if (existingClasses.includes(className)) {
+    return openingTag
+  }
+
+  return openingTag.replace(classAttribute[0], ` class=${classAttribute[1]}${classAttribute[2]} ${className}${classAttribute[1]}`)
+}
+
+function applyMarkdownTableWrapHints(html: string, tableHints: MarkdownTableWrapHints[]): string {
+  let tableIndex = 0
+
+  return html.replace(/<table\b[\s\S]*?<\/table>/g, (tableHtml) => {
+    if (!/<thead\b/.test(tableHtml)) {
+      return tableHtml
+    }
+
+    const columnHints = tableHints[tableIndex]
+    tableIndex += 1
+
+    if (!columnHints?.some(Boolean)) {
+      return tableHtml
+    }
+
+    return tableHtml.replace(/<tr\b[^>]*>[\s\S]*?<\/tr>/g, (rowHtml) => {
+      let columnIndex = 0
+      return rowHtml.replace(/<(th|td)\b[^>]*>/g, (openingTag) => {
+        const shouldPreventWrap = columnHints[columnIndex] === true
+        columnIndex += 1
+        return shouldPreventWrap
+          ? addClassToHtmlOpeningTag(openingTag, MARKDOWN_TABLE_NOWRAP_CLASS)
+          : openingTag
+      })
+    })
+  })
+}
+
 interface MarkdownToHtmlOptions {
   bookFolderPath?: string
   /** Disable math rendering (LaTeX will be shown as plain text) */
@@ -353,6 +533,7 @@ export async function markdownToHtml(markdown: string, options?: string | Markdo
   // Pre-process: Convert a standalone markdown image followed by the next
   // non-empty "Caption: " line into a semantic figure/figcaption pair.
   processedMarkdown = convertCaptionedImagesToFigures(processedMarkdown)
+  const tableWrapHints = getMarkdownTableWrapHints(processedMarkdown)
 
   // Pre-process: Convert multiple consecutive blank lines to spacer markers
   // Standard markdown ignores extra blank lines, but we want to preserve them
@@ -390,6 +571,8 @@ export async function markdownToHtml(markdown: string, options?: string | Markdo
     /<p>:::SPACER:::<\/p>/g,
     '<div class="spacer" aria-hidden="true"></div>'
   )
+
+  html = applyMarkdownTableWrapHints(html, tableWrapHints)
 
   // Fix relative image paths if bookFolderPath is provided
   if (bookFolderPath) {

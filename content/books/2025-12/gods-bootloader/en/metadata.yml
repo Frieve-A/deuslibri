@@ -26,6 +26,7 @@ description: |
   Frieve-A 2025
 recommendText: "For those who wish to think deeply about the Singularity, superintelligence, and humanity's future. A fusion of science fiction imagination and philosophical inquiry."
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # Optional fields
 pageCount: 112

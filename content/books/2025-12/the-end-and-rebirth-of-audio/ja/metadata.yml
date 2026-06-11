@@ -24,6 +24,7 @@ description: |
   Frieve-A 2025
 recommendText: "オーディオの真実を科学的に理解したい方、ハイエンドオーディオの神話に疑問を持つ方へ。"
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # オプション項目
 pageCount: 79

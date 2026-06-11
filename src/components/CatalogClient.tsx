@@ -34,7 +34,7 @@ export default function CatalogClient({ books }: CatalogClientProps) {
     setSelectedBook(null)
   }
 
-  const allTags = useMemo(() => getAllTags(books), [books])
+  const allTags = useMemo(() => getAllTags(books, effectiveLanguage), [books, effectiveLanguage])
 
   const filteredBooks = useMemo(() => {
     let result = books
@@ -109,8 +109,8 @@ export default function CatalogClient({ books }: CatalogClientProps) {
             onClick={() => setViewMode('all')}
             className={`px-4 py-2 rounded ${
               viewMode === 'all'
-                ? 'bg-amber-700 dark:bg-sky-600 text-white'
-                : 'bg-amber-100 dark:bg-slate-700 text-amber-900 dark:text-white hover:bg-amber-200 dark:hover:bg-slate-600'
+                ? 'bg-amber-700 dark:bg-sky-600 text-white ui-skin-primary'
+                : 'bg-amber-100 dark:bg-slate-700 text-amber-900 dark:text-white hover:bg-amber-200 dark:hover:bg-slate-600 ui-skin-button'
             }`}
           >
             {t.catalog.allBooks} ({books.length})
@@ -119,8 +119,8 @@ export default function CatalogClient({ books }: CatalogClientProps) {
             onClick={() => setViewMode('favorites')}
             className={`px-4 py-2 rounded ${
               viewMode === 'favorites'
-                ? 'bg-amber-700 dark:bg-sky-600 text-white'
-                : 'bg-amber-100 dark:bg-slate-700 text-amber-900 dark:text-white hover:bg-amber-200 dark:hover:bg-slate-600'
+                ? 'bg-amber-700 dark:bg-sky-600 text-white ui-skin-primary'
+                : 'bg-amber-100 dark:bg-slate-700 text-amber-900 dark:text-white hover:bg-amber-200 dark:hover:bg-slate-600 ui-skin-button'
             }`}
           >
             {t.catalog.favorites} ({favorites.length})
@@ -129,8 +129,8 @@ export default function CatalogClient({ books }: CatalogClientProps) {
             onClick={() => setViewMode('recent')}
             className={`px-4 py-2 rounded ${
               viewMode === 'recent'
-                ? 'bg-amber-700 dark:bg-sky-600 text-white'
-                : 'bg-amber-100 dark:bg-slate-700 text-amber-900 dark:text-white hover:bg-amber-200 dark:hover:bg-slate-600'
+                ? 'bg-amber-700 dark:bg-sky-600 text-white ui-skin-primary'
+                : 'bg-amber-100 dark:bg-slate-700 text-amber-900 dark:text-white hover:bg-amber-200 dark:hover:bg-slate-600 ui-skin-button'
             }`}
           >
             {t.catalog.recentlyRead} ({recentlyRead.length})

@@ -19,7 +19,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-amber-50 dark:bg-slate-800 border-b border-amber-200 dark:border-slate-700">
+    <header className="bg-amber-50 dark:bg-slate-800 border-b border-amber-200 dark:border-slate-700 ui-skin-chrome">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="flex flex-col sm:flex-row items-center justify-between py-3 sm:h-16 gap-3 sm:gap-0">
           <Link href="/" className="flex items-center gap-3">

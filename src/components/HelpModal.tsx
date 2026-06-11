@@ -20,17 +20,17 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="bg-amber-50 dark:bg-slate-900 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+          className="bg-amber-50 dark:bg-slate-900 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto ui-skin-panel"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex justify-between items-center p-4 border-b border-amber-200 dark:border-slate-700 sticky top-0 bg-amber-50 dark:bg-slate-900">
+          <div className="flex justify-between items-center p-4 border-b border-amber-200 dark:border-slate-700 sticky top-0 bg-amber-50 dark:bg-slate-900 ui-skin-chrome">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               {t.help.title}
             </h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-amber-100 dark:hover:bg-slate-800 rounded text-gray-700 dark:text-gray-300"
+              className="p-2 hover:bg-amber-100 dark:hover:bg-slate-800 rounded text-gray-700 dark:text-gray-300 ui-skin-icon"
               aria-label={t.help.close}
             >
               <svg
@@ -145,7 +145,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <div className="p-4 border-t border-amber-200 dark:border-slate-700">
             <button
               onClick={onClose}
-              className="w-full px-4 py-2 bg-amber-700 dark:bg-sky-600 text-white rounded hover:bg-amber-800 dark:hover:bg-sky-700 transition"
+              className="w-full px-4 py-2 bg-amber-700 dark:bg-sky-600 text-white rounded hover:bg-amber-800 dark:hover:bg-sky-700 transition ui-skin-primary"
             >
               {t.help.close}
             </button>

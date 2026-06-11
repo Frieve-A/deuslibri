@@ -47,7 +47,7 @@ export default function TableOfContents({
     <>
       {/* TOC Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-amber-50 dark:bg-slate-900 border-r border-amber-200 dark:border-slate-700 shadow-xl z-30 transform transition-transform duration-300 overflow-y-auto ${
+        className={`fixed top-0 left-0 h-full w-80 bg-amber-50 dark:bg-slate-900 border-r border-amber-200 dark:border-slate-700 shadow-xl z-30 transform transition-transform duration-300 overflow-y-auto ui-skin-chrome ui-skin-scrollbar ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -57,7 +57,7 @@ export default function TableOfContents({
             <div className="flex items-center gap-1">
               <Link
                 href={settingsUrl}
-                className="flex items-center gap-2 px-3 py-2 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors ui-skin-button"
                 onClick={onToggle}
               >
                 <svg
@@ -83,7 +83,7 @@ export default function TableOfContents({
               </Link>
               <button
                 onClick={() => setIsHelpOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors ui-skin-icon"
                 aria-label={t.help.button}
               >
                 <svg
@@ -103,7 +103,7 @@ export default function TableOfContents({
             </div>
             <button
               onClick={onToggle}
-              className="p-2 hover:bg-amber-100 dark:hover:bg-slate-800 rounded text-gray-700 dark:text-gray-300"
+              className="p-2 hover:bg-amber-100 dark:hover:bg-slate-800 rounded text-gray-700 dark:text-gray-300 ui-skin-icon"
               aria-label="Close table of contents"
             >
               <svg
@@ -134,8 +134,8 @@ export default function TableOfContents({
                 onClick={() => setShowBookmarks(false)}
                 className={`flex-1 px-3 py-2 rounded text-sm ${
                   !showBookmarks
-                    ? 'bg-amber-700 dark:bg-sky-600 text-white'
-                    : 'bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-gray-300'
+                    ? 'bg-amber-700 dark:bg-sky-600 text-white ui-skin-primary'
+                    : 'bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-gray-300 ui-skin-button'
                 }`}
               >
                 {t.reader.toc}
@@ -144,8 +144,8 @@ export default function TableOfContents({
                 onClick={() => setShowBookmarks(true)}
                 className={`flex-1 px-3 py-2 rounded text-sm ${
                   showBookmarks
-                    ? 'bg-amber-700 dark:bg-sky-600 text-white'
-                    : 'bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-gray-300'
+                    ? 'bg-amber-700 dark:bg-sky-600 text-white ui-skin-primary'
+                    : 'bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-gray-300 ui-skin-button'
                 }`}
               >
                 {t.reader.bookmarks} ({bookmarks.length})
@@ -169,7 +169,7 @@ export default function TableOfContents({
                         onPageChange(item.pageIndex)
                         onToggle()
                       }}
-                      className={`w-full text-left px-3 py-2 rounded text-sm hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors ${
+                      className={`w-full text-left px-3 py-2 rounded text-sm hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors ui-skin-menu-item ${
                         item.pageIndex === currentPage
                           ? 'bg-amber-200 dark:bg-slate-800 text-amber-900 dark:text-sky-400 font-medium'
                           : 'text-gray-700 dark:text-gray-300'
@@ -194,7 +194,7 @@ export default function TableOfContents({
                         onPageChange(bookmark.pageIndex)
                         onToggle()
                       }}
-                      className={`w-full text-left px-3 py-2 rounded text-sm hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors ${
+                      className={`w-full text-left px-3 py-2 rounded text-sm hover:bg-amber-100 dark:hover:bg-slate-800 transition-colors ui-skin-menu-item ${
                         bookmark.pageIndex === currentPage
                           ? 'bg-amber-200 dark:bg-slate-800 text-amber-900 dark:text-sky-400 font-medium'
                           : 'text-gray-700 dark:text-gray-300'

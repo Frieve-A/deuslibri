@@ -66,13 +66,13 @@ export default function HomeClient({ books }: HomeClientProps) {
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/catalog"
-              className="inline-block px-8 py-4 bg-amber-700 dark:bg-sky-600 text-white text-lg rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition shadow-lg"
+              className="inline-flex w-48 items-center justify-center px-8 py-4 bg-amber-700 dark:bg-sky-600 text-white text-lg rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition shadow-lg ui-skin-primary"
             >
               {t.home.browseCatalog}
             </Link>
             <button
               onClick={() => setIsHelpOpen(true)}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600"
+              className="inline-flex w-48 items-center justify-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600 ui-skin-button"
             >
               <svg
                 className="w-5 h-5"
@@ -91,7 +91,7 @@ export default function HomeClient({ books }: HomeClientProps) {
             </button>
             <Link
               href="/settings"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600"
+              className="inline-flex w-48 items-center justify-center gap-2 px-8 py-4 bg-amber-50 dark:bg-slate-800 text-amber-900 dark:text-white text-lg rounded-lg hover:bg-amber-100 dark:hover:bg-slate-700 transition shadow-lg border border-amber-300 dark:border-slate-600 ui-skin-button"
             >
               <svg
                 className="w-5 h-5"
@@ -133,7 +133,7 @@ export default function HomeClient({ books }: HomeClientProps) {
                   <Link
                     key={`${book.id}-${book.language}`}
                     href={`/book/${book.id}/${book.language}`}
-                    className="block bg-amber-50 dark:bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-amber-200 dark:border-slate-700 hover:shadow-xl transition-shadow"
+                    className="block bg-amber-50 dark:bg-slate-800 rounded-lg overflow-hidden shadow-lg border border-amber-200 dark:border-slate-700 hover:shadow-xl transition-shadow ui-skin-panel"
                   >
                     {/* Desktop: Horizontal layout / Mobile: Vertical layout */}
                     <div className="flex flex-col sm:flex-row">
@@ -180,7 +180,7 @@ export default function HomeClient({ books }: HomeClientProps) {
             {t.home.featuresTitle}
           </h2>
           <div className="grid lg:grid-cols-3 gap-8">
-            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
+            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700 ui-skin-panel">
               <div className="text-4xl mb-4">📚</div>
               <h3 className="text-xl font-semibold mb-2">{t.home.features.freeBooks.title}</h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -188,7 +188,7 @@ export default function HomeClient({ books }: HomeClientProps) {
               </p>
             </div>
 
-            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
+            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700 ui-skin-panel">
               <div className="text-4xl mb-4">💾</div>
               <h3 className="text-xl font-semibold mb-2">{t.home.features.saveProgress.title}</h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -196,7 +196,7 @@ export default function HomeClient({ books }: HomeClientProps) {
               </p>
             </div>
 
-            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700">
+            <div className="bg-amber-50 dark:bg-slate-800 p-6 rounded-lg shadow border border-amber-200 dark:border-slate-700 ui-skin-panel">
               <div className="text-4xl mb-4">🎨</div>
               <h3 className="text-xl font-semibold mb-2">{t.home.features.customizable.title}</h3>
               <p className="text-gray-600 dark:text-gray-400">

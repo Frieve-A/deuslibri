@@ -29,6 +29,7 @@ description: |
   Frieve-A 2026
 recommendText: "For those who want to understand the social transformation brought by the fusion of AI and robotics, and those who want to foresee technological trends from 2026 onward."
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # Optional fields
 pageCount: 50

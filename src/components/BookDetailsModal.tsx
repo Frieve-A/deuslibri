@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { BookCatalogItem } from '@/types/book'
 import { useI18n } from '@/lib/i18n'
 import { getContentImagePath } from '@/lib/utils/basePath'
@@ -14,6 +14,7 @@ interface BookDetailsModalProps {
 
 export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsModalProps) {
   const { t } = useI18n()
+  const [isAiUsageHintOpen, setIsAiUsageHintOpen] = useState(false)
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -35,6 +36,10 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
     }
   }, [isOpen, handleKeyDown])
 
+  useEffect(() => {
+    setIsAiUsageHintOpen(false)
+  }, [isOpen, book?.id, book?.language])
+
   if (!isOpen || !book) return null
 
   const coverImagePath = book.coverImage
@@ -43,6 +48,8 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
 
   const languageName =
     LANGUAGE_NAMES[book.language as SupportedLanguage] || book.language
+  const hasAiUsage = book.aiUsage === true || book.aiUsage === 'ai_generated'
+  const hasOther = Boolean(book.donationLink || book.purchaseLink || hasAiUsage)
 
   return (
     <div
@@ -50,17 +57,17 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ui-skin-panel"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-amber-200 dark:border-slate-700 p-4 flex justify-between items-center">
+        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-amber-200 dark:border-slate-700 p-4 flex justify-between items-center ui-skin-chrome">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             {t.bookDetails.title}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors ui-skin-icon"
             aria-label={t.bookDetails.close}
           >
             <svg
@@ -81,6 +88,18 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
 
         {/* Content */}
         <div className="p-6">
+          {/* Title */}
+          <div className="mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {book.title}
+            </h3>
+            {book.subtitle && (
+              <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">
+                {book.subtitle}
+              </p>
+            )}
+          </div>
+
           <div className="flex flex-col md:flex-row gap-6">
             {/* Cover Image */}
             {coverImagePath && (
@@ -95,18 +114,6 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
 
             {/* Details */}
             <div className="flex-1 space-y-4">
-              {/* Title */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {book.title}
-                </h3>
-                {book.subtitle && (
-                  <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">
-                    {book.subtitle}
-                  </p>
-                )}
-              </div>
-
               {/* Author */}
               <div>
                 <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -131,6 +138,64 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
                 <p className="text-gray-900 dark:text-white">{book.publishDate}</p>
               </div>
 
+              {/* Other */}
+              {hasOther && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {t.bookDetails.other}
+                  </span>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {book.donationLink && (
+                      <a
+                        href={book.donationLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm px-2 py-1 bg-amber-200 dark:bg-sky-900 text-amber-800 dark:text-sky-200 rounded ui-skin-pill hover:bg-amber-300 dark:hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-sky-400"
+                      >
+                        {t.bookDetails.donation}
+                      </a>
+                    )}
+                    {book.purchaseLink && (
+                      <a
+                        href={book.purchaseLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm px-2 py-1 bg-amber-200 dark:bg-sky-900 text-amber-800 dark:text-sky-200 rounded ui-skin-pill hover:bg-amber-300 dark:hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-sky-400"
+                      >
+                        {t.bookDetails.printBook}
+                      </a>
+                    )}
+                    {hasAiUsage && (
+                      <div
+                        className="relative inline-flex"
+                        onMouseEnter={() => setIsAiUsageHintOpen(true)}
+                        onMouseLeave={() => setIsAiUsageHintOpen(false)}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setIsAiUsageHintOpen(true)}
+                          onFocus={() => setIsAiUsageHintOpen(true)}
+                          onBlur={() => setIsAiUsageHintOpen(false)}
+                          aria-describedby={isAiUsageHintOpen ? 'ai-usage-hint' : undefined}
+                          className="text-sm px-2 py-1 bg-amber-200 dark:bg-sky-900 text-amber-800 dark:text-sky-200 rounded ui-skin-pill cursor-help focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-sky-400"
+                        >
+                          {t.bookDetails.aiUsage}
+                        </button>
+                        {isAiUsageHintOpen && (
+                          <div
+                            id="ai-usage-hint"
+                            role="tooltip"
+                            className="absolute left-0 top-full z-20 mt-2 w-72 max-w-[80vw] rounded-md border border-amber-200 bg-white p-3 text-xs leading-relaxed text-gray-700 shadow-lg dark:border-slate-600 dark:bg-slate-900 dark:text-gray-200"
+                          >
+                            {t.bookDetails.aiUsageHint}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Tags */}
               {book.tags.length > 0 && (
                 <div>
@@ -141,7 +206,7 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
                     {book.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-sm px-2 py-1 bg-amber-200 dark:bg-sky-900 text-amber-800 dark:text-sky-200 rounded"
+                        className="text-sm px-2 py-1 bg-amber-200 dark:bg-sky-900 text-amber-800 dark:text-sky-200 rounded ui-skin-pill"
                       >
                         {tag}
                       </span>
@@ -176,7 +241,7 @@ export default function BookDetailsModal({ book, isOpen, onClose }: BookDetailsM
           <div className="mt-6 flex justify-center">
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-amber-700 dark:bg-sky-600 text-white rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition-colors font-medium"
+              className="px-6 py-3 bg-amber-700 dark:bg-sky-600 text-white rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition-colors font-medium ui-skin-primary"
             >
               {t.bookDetails.close}
             </button>

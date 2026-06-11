@@ -1,3 +1,5 @@
+export type AiUsage = true | 'ai_generated'
+
 export interface BookMetadata {
   id: string
   title: string
@@ -12,6 +14,7 @@ export interface BookMetadata {
   donationLink?: string
   purchaseLink?: string
   unlisted?: boolean
+  aiUsage?: AiUsage
 }
 
 export interface TocItem {
@@ -40,6 +43,8 @@ export interface BookCatalogItem {
   publishDate: string
   coverImage?: string
   donationLink?: string
+  purchaseLink?: string
   unlisted?: boolean
+  aiUsage?: AiUsage
   folderPath: string
 }

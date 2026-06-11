@@ -29,6 +29,7 @@ description: |
   Frieve-A 2026
 recommendText: "AIとロボティクスの融合がもたらす社会変革を理解したい方、2026年以降の技術動向を見通したい方へ。"
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # オプション項目
 pageCount: 50

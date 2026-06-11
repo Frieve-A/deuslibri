@@ -24,6 +24,7 @@ description: |
   Frieve-A 2025
 recommendText: "For those who want to scientifically understand the truth about audio, and those who question the myths of high-end audio."
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # Optional fields
 pageCount: 79

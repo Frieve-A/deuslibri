@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import ThemeProvider from '@/components/ThemeProvider'
+import { PwaInstallProvider } from '@/components/PwaInstallProvider'
 import { getBasePath } from '@/lib/utils/basePath'
 import 'katex/dist/katex.min.css'
 import './globals.css'
@@ -95,7 +96,9 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <PwaInstallProvider>{children}</PwaInstallProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

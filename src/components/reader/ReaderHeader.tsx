@@ -105,15 +105,16 @@ export function ReaderHeader({
   }
 
   return (
-    <header className="border-b border-amber-200 dark:border-gray-700 p-4 bg-amber-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
+    <header className="border-b border-amber-200 dark:border-gray-700 p-4 bg-amber-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm ui-skin-chrome">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Hamburger Menu Button - available in both pagination and scroll modes */}
           {(toc.length > 0 || bookmarks.length > 0) && (
             <button
               onClick={() => setIsTocOpen(!isTocOpen)}
-              className="p-2 bg-amber-700 dark:bg-sky-600 text-white rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition-all flex-shrink-0"
+              className={`p-2 bg-amber-700 dark:bg-sky-600 text-white rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition-all flex-shrink-0 ui-skin-primary ${isTocOpen ? 'ui-skin-active' : ''}`}
               aria-label="Toggle table of contents"
+              aria-pressed={isTocOpen}
             >
               <svg
                 className="w-5 h-5"
@@ -149,16 +150,18 @@ export function ReaderHeader({
         <div className="flex gap-2 ml-4">
           <button
             onClick={toggleFavorite}
-            className="text-2xl hover:scale-110 transition-transform"
+            className="text-2xl hover:scale-110 transition-transform ui-skin-quiet-emoji"
             aria-label="Toggle favorite"
+            aria-pressed={favorite}
           >
             {favorite ? '❤️' : '🤍'}
           </button>
           {isPagination && (
             <button
               onClick={toggleBookmark}
-              className="text-2xl hover:scale-110 transition-transform"
+              className="text-2xl hover:scale-110 transition-transform ui-skin-quiet-emoji"
               aria-label="Toggle bookmark"
+              aria-pressed={isBookmarked}
             >
               {isBookmarked ? '🔖' : '📑'}
             </button>
@@ -169,7 +172,7 @@ export function ReaderHeader({
             <div className="relative">
               <button
                 onClick={() => handleShareClick('twitter')}
-                className="p-2 bg-black text-white rounded hover:bg-gray-800 transition-colors flex items-center justify-center"
+                className="p-2 bg-black text-white rounded hover:bg-gray-800 transition-colors flex items-center justify-center ui-skin-brand-x"
                 aria-label={t.reader.tweet}
               >
                 <svg
@@ -183,17 +186,17 @@ export function ReaderHeader({
               </button>
               {/* Twitter Dropdown Menu */}
               {shareMenuOpen === 'twitter' && (
-                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 ui-skin-menu">
                   <button
                     onClick={() => handleShareOption('twitter', 'book')}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ui-skin-menu-item"
                   >
                     {t.reader.shareThisBook}
                   </button>
                   {isPagination && (
                     <button
                       onClick={() => handleShareOption('twitter', 'page')}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ui-skin-menu-item"
                     >
                       {t.reader.shareThisPage}
                     </button>
@@ -205,7 +208,7 @@ export function ReaderHeader({
             <div className="relative">
               <button
                 onClick={() => handleShareClick('facebook')}
-                className="p-2 bg-[#1877F2] text-white rounded hover:bg-[#166FE5] transition-colors flex items-center justify-center"
+                className="p-2 bg-[#1877F2] text-white rounded hover:bg-[#166FE5] transition-colors flex items-center justify-center ui-skin-brand-facebook"
                 aria-label={t.reader.share}
               >
                 <svg
@@ -219,17 +222,17 @@ export function ReaderHeader({
               </button>
               {/* Facebook Dropdown Menu */}
               {shareMenuOpen === 'facebook' && (
-                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 ui-skin-menu">
                   <button
                     onClick={() => handleShareOption('facebook', 'book')}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ui-skin-menu-item"
                   >
                     {t.reader.shareThisBook}
                   </button>
                   {isPagination && (
                     <button
                       onClick={() => handleShareOption('facebook', 'page')}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ui-skin-menu-item"
                     >
                       {t.reader.shareThisPage}
                     </button>
@@ -240,7 +243,7 @@ export function ReaderHeader({
           </div>
           <button
             onClick={() => router.push('/catalog')}
-            className="p-2 bg-amber-100 dark:bg-gray-700 text-amber-900 dark:text-gray-200 rounded hover:bg-amber-200 dark:hover:bg-gray-600 transition-colors"
+            className="p-2 bg-amber-100 dark:bg-gray-700 text-amber-900 dark:text-gray-200 rounded hover:bg-amber-200 dark:hover:bg-gray-600 transition-colors ui-skin-icon"
             aria-label={t.common.back}
           >
             <svg

@@ -81,6 +81,10 @@ function loadMetadata(folderPath: string): BookMetadata | null {
       donationLink: metadata.donationLink || undefined,
       purchaseLink: metadata.purchaseLink || undefined,
       unlisted: metadata.unlisted === true,
+      aiUsage:
+        metadata.aiUsage === true || metadata.aiUsage === 'ai_generated'
+          ? metadata.aiUsage
+          : undefined,
     }
   } catch (error) {
     console.error(`Error loading metadata from ${metadataPath}:`, error)

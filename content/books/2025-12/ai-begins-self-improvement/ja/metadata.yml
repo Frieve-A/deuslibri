@@ -25,6 +25,7 @@ description: |
   Frieve-A 2025
 recommendText: "AI技術の最前線を構造的に理解したい方、2025年以降の技術動向を見通したい方へ。"
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # オプション項目
 pageCount: 114

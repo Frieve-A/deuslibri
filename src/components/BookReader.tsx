@@ -252,6 +252,9 @@ export default function BookReader({ book, disableMath = false, disableImages = 
     language: book.language,
     publishDate: book.publishDate,
     coverImage: book.coverImage,
+    donationLink: book.donationLink,
+    purchaseLink: book.purchaseLink,
+    aiUsage: book.aiUsage,
     folderPath: book.folderPath,
   }
 
@@ -374,6 +377,7 @@ export default function BookReader({ book, disableMath = false, disableImages = 
           isPagination={isPagination}
           fontSize={settings.fontSize}
           fontFamily={settings.fontFamily}
+          contentLanguage={book.language}
           lineHeight={settings.lineHeight ?? 1.8}
           marginSize={settings.marginSize ?? 'medium'}
           theme={settings.theme}

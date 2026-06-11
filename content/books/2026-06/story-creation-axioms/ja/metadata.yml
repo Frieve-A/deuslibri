@@ -7,7 +7,6 @@ subtitle: "千年残る物語を生むための構造原理"
 author: "Frieve-A"
 publishDate: "2026-06-11"
 language: "ja"
-unlisted: true
 tags:
   - "創作"
   - "物語論"
@@ -26,6 +25,7 @@ description: |
   Frieve-A 2026
 recommendText: "小説、脚本、ゲームシナリオなど、物語の構造を深く設計したい書き手へ。"
 coverImage: "./images/cover.png"
+aiUsage: ai_generated
 
 # オプション項目
 pageCount: 65

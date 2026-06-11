@@ -26,6 +26,7 @@ description: |
   Frieve-A 2025
 recommendText: "シンギュラリティ、超知能、人類の未来について深く考えたい方へ。SF的想像力と哲学的思索が融合した一冊。"
 coverImage: "./images/cover.jpg"
+aiUsage: ai_generated
 
 # オプション項目
 pageCount: 112
