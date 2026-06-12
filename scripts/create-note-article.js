@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Convert markdown math formulas and tables to note.com format
+ * Create a note.com article draft from markdown.
  *
  * Converts:
  * - Block math: $$formula$$ -> $${formula}$$
@@ -12,13 +12,17 @@
  * - Block math ($$...$$) -> PNG images (optional, disabled by default)
  *
  * Usage:
- * node convert-math-to-note.js <input-file> [--convert-tables] [--export-tables-as-images] [--export-math-as-images] [--convert-tables-to-list]
+ * node create-note-article.js <input-file> [--convert-tables] [--export-tables-as-images] [--export-math-as-images] [--convert-tables-to-list] [--table-image-max-chars 34]
  */
 
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const katex = require('katex');
+
+const DEFAULT_TABLE_IMAGE_MAX_CHARS = 34;
+const MIN_TABLE_IMAGE_COLUMN_CHARS = 2;
+const NATURAL_TABLE_IMAGE_COLUMN_CHARS = 20;
 
 function convertTableToKaTeX(tableLines) {
   // Remove empty lines
@@ -102,6 +106,174 @@ function convertTableToList(tableLines) {
 
   // Join rows with blank lines
   return listItems.join('\n\n');
+}
+
+function countChars(text) {
+  return Array.from(text).reduce((width, char) => {
+    const codePoint = char.codePointAt(0);
+    if (codePoint === undefined) return width;
+
+    if (codePoint <= 0x007e || (codePoint >= 0xff61 && codePoint <= 0xff9f)) {
+      return width + 0.5;
+    }
+
+    return width + 1;
+  }, 0);
+}
+
+function stripMarkdownForWidth(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/`(.*?)`/g, '$1')
+    .replace(/\$([^\$]+?)\$/g, '$1');
+}
+
+function getCellWidth(cell) {
+  return countChars(stripMarkdownForWidth(cell).trim());
+}
+
+function getPreferredCellWidth(cell) {
+  const normalized = stripMarkdownForWidth(cell).replace(/\s+/g, ' ').trim();
+  if (!normalized) return MIN_TABLE_IMAGE_COLUMN_CHARS;
+
+  return Math.max(
+    ...normalized.split(' ').map(word => countChars(word)),
+    MIN_TABLE_IMAGE_COLUMN_CHARS
+  );
+}
+
+function getColumnWidths(rows, maxTableChars = DEFAULT_TABLE_IMAGE_MAX_CHARS) {
+  const columnCount = Math.max(...rows.map(row => row.length));
+  const borderChars = columnCount + 1;
+  const availableChars = Math.max(columnCount, maxTableChars - borderChars);
+  const maxContentWidths = Array.from({ length: columnCount }, (_, colIndex) => {
+    return Math.max(
+      ...rows.map(row => getCellWidth(row[colIndex] || '')),
+      MIN_TABLE_IMAGE_COLUMN_CHARS
+    );
+  });
+  const preferredWidths = Array.from({ length: columnCount }, (_, colIndex) => {
+    return Math.min(
+      Math.max(...rows.map(row => getPreferredCellWidth(row[colIndex] || ''))),
+      NATURAL_TABLE_IMAGE_COLUMN_CHARS
+    );
+  });
+
+  const naturalWidth = maxContentWidths.reduce((sum, width) => sum + width, 0);
+  if (naturalWidth <= availableChars) {
+    return maxContentWidths;
+  }
+
+  const widths = preferredWidths.map(width => Math.max(width, MIN_TABLE_IMAGE_COLUMN_CHARS));
+  let widthTotal = widths.reduce((sum, width) => sum + width, 0);
+
+  while (widthTotal > availableChars) {
+    let widestColumn = -1;
+    let widestWidth = MIN_TABLE_IMAGE_COLUMN_CHARS;
+
+    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+      if (widths[colIndex] > widestWidth) {
+        widestColumn = colIndex;
+        widestWidth = widths[colIndex];
+      }
+    }
+
+    if (widestColumn === -1) {
+      break;
+    }
+
+    widths[widestColumn]--;
+    widthTotal--;
+  }
+
+  let remaining = Math.max(0, availableChars - widthTotal);
+
+  while (remaining > 0) {
+    let bestColumn = -1;
+    let bestDeficit = 0;
+
+    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+      const deficit = maxContentWidths[colIndex] - widths[colIndex];
+      if (deficit > bestDeficit) {
+        bestDeficit = deficit;
+        bestColumn = colIndex;
+      }
+    }
+
+    if (bestColumn === -1) {
+      break;
+    }
+
+    widths[bestColumn]++;
+    remaining--;
+  }
+
+  return widths;
+}
+
+function wrapCellText(cell, maxChars) {
+  const normalized = cell.replace(/\s+/g, ' ').trim();
+  if (!normalized) return [''];
+
+  const words = normalized.split(' ');
+  if (words.length > 1) {
+    const lines = [];
+    let currentLine = '';
+
+    for (const word of words) {
+      const wordParts = [];
+      let currentPart = '';
+
+      for (const char of Array.from(word)) {
+        if (getCellWidth(currentPart) >= maxChars) {
+          wordParts.push(currentPart);
+          currentPart = '';
+        }
+
+        currentPart += char;
+      }
+
+      if (currentPart) {
+        wordParts.push(currentPart);
+      }
+
+      for (const wordPart of wordParts) {
+        const nextLine = currentLine ? `${currentLine} ${wordPart}` : wordPart;
+
+        if (currentLine && getCellWidth(nextLine) > maxChars) {
+          lines.push(currentLine);
+          currentLine = wordPart;
+        } else {
+          currentLine = nextLine;
+        }
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    return lines;
+  }
+
+  const lines = [];
+  let currentLine = '';
+
+  for (const char of Array.from(normalized)) {
+    if (countChars(currentLine) >= maxChars) {
+      lines.push(currentLine.trimEnd());
+      currentLine = '';
+    }
+
+    currentLine += char;
+  }
+
+  if (currentLine) {
+    lines.push(currentLine.trimEnd());
+  }
+
+  return lines;
 }
 
 async function exportMathAsImage(formula, outputPath, mathIndex, browser) {
@@ -192,9 +364,10 @@ async function exportMathAsImage(formula, outputPath, mathIndex, browser) {
   }
 }
 
-async function exportTableAsImage(tableLines, outputPath, tableIndex) {
+async function exportTableAsImage(tableLines, outputPath, tableIndex, maxTableChars = DEFAULT_TABLE_IMAGE_MAX_CHARS) {
   const rows = parseMarkdownTable(tableLines);
   if (!rows) return;
+  const columnWidths = getColumnWidths(rows, maxTableChars);
 
   // Function to convert markdown and math to HTML
   const convertCellToHtml = (cell) => {
@@ -230,6 +403,12 @@ async function exportTableAsImage(tableLines, outputPath, tableIndex) {
     return html;
   };
 
+  const renderCellHtml = (cell, colIndex) => {
+    return wrapCellText(cell, columnWidths[colIndex])
+      .map(line => convertCellToHtml(line))
+      .join('<br>');
+  };
+
   // Get KaTeX CSS
   const katexCss = fs.readFileSync(require.resolve('katex/dist/katex.min.css'), 'utf-8');
 
@@ -251,13 +430,19 @@ async function exportTableAsImage(tableLines, outputPath, tableIndex) {
       border-collapse: collapse;
       background: white;
       font-size: 16px;
+      table-layout: auto;
     }
     th, td {
       border: 1px solid #000;
-      padding: 8px 12px;
+      padding: 6px 8px;
       text-align: left;
       color: #000;
       background: white;
+      line-height: 1.55;
+      vertical-align: top;
+      white-space: nowrap;
+      overflow-wrap: normal;
+      word-break: normal;
     }
     th {
       background: white;
@@ -287,10 +472,13 @@ async function exportTableAsImage(tableLines, outputPath, tableIndex) {
 </head>
 <body>
   <table>
+    <colgroup>
+      ${columnWidths.map(width => `<col style="width: ${width}em;">`).join('\n      ')}
+    </colgroup>
     <thead>
       <tr>
-        ${rows[0].map(cell => {
-          const html = convertCellToHtml(cell);
+        ${columnWidths.map((_width, colIndex) => {
+          const html = renderCellHtml(rows[0][colIndex] || '', colIndex);
           return `<th>${html}</th>`;
         }).join('\n        ')}
       </tr>
@@ -298,8 +486,8 @@ async function exportTableAsImage(tableLines, outputPath, tableIndex) {
     <tbody>
       ${rows.slice(1).map(row => `
       <tr>
-        ${row.map(cell => {
-          const html = convertCellToHtml(cell);
+        ${columnWidths.map((_width, colIndex) => {
+          const html = renderCellHtml(row[colIndex] || '', colIndex);
           return `<td>${html}</td>`;
         }).join('\n        ')}
       </tr>`).join('\n      ')}
@@ -352,7 +540,7 @@ async function exportTableAsImage(tableLines, outputPath, tableIndex) {
   }
 }
 
-function convertMathToNoteFormat(content, convertTables = false, convertTablesToList = false) {
+function createNoteArticleContent(content, convertTables = false, convertTablesToList = false) {
   let result = content;
 
   // First, protect and convert markdown tables to KaTeX with placeholders (if enabled)
@@ -431,7 +619,7 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error('Usage: node convert-math-to-note.js <input-file> [--convert-tables] [--convert-tables-to-list] [--export-tables-as-images] [--export-math-as-images] [-o output-file]');
+    console.error('Usage: node create-note-article.js <input-file> [--convert-tables] [--convert-tables-to-list] [--export-tables-as-images] [--export-math-as-images] [--table-image-max-chars 34] [-o output-file]');
     console.error('');
     console.error('This will create a new file with "_note" suffix.');
     console.error('Example: content.md -> content_note.md');
@@ -441,6 +629,7 @@ async function main() {
     console.error('  --convert-tables-to-list   Convert markdown tables to plain text list format (default: disabled)');
     console.error('  --export-tables-as-images  Export markdown tables as PNG images to tables/ folder (default: disabled)');
     console.error('  --export-math-as-images    Export block math ($$...$$) as PNG images to math/ folder (default: disabled)');
+    console.error('  --table-image-max-chars N  Maximum table image width in characters, counting vertical borders (default: 34)');
     console.error('  -o <output-file>           Specify custom output file name (optional)');
     process.exit(1);
   }
@@ -450,6 +639,20 @@ async function main() {
   const convertTablesToList = args.includes('--convert-tables-to-list');
   const exportTablesAsImages = args.includes('--export-tables-as-images');
   const exportMathAsImages = args.includes('--export-math-as-images');
+  let tableImageMaxChars = DEFAULT_TABLE_IMAGE_MAX_CHARS;
+
+  const tableImageMaxCharsFlagIndex = args.indexOf('--table-image-max-chars');
+  if (tableImageMaxCharsFlagIndex !== -1) {
+    const rawValue = args[tableImageMaxCharsFlagIndex + 1];
+    const parsedValue = Number.parseInt(rawValue, 10);
+
+    if (!Number.isInteger(parsedValue) || parsedValue < 8) {
+      console.error('Error: --table-image-max-chars must be an integer of 8 or greater.');
+      process.exit(1);
+    }
+
+    tableImageMaxChars = parsedValue;
+  }
 
   // Check for custom output file
   let customOutputFile = null;
@@ -478,6 +681,7 @@ async function main() {
   }
   if (exportTablesAsImages) {
     console.log('Table image export: ENABLED');
+    console.log(`Table image max width: ${tableImageMaxChars} characters including vertical borders`);
   } else {
     console.log('Table image export: DISABLED (use --export-tables-as-images to enable)');
   }
@@ -486,7 +690,7 @@ async function main() {
   } else {
     console.log('Math image export: DISABLED (use --export-math-as-images to enable)');
   }
-  const converted = convertMathToNoteFormat(content, convertTables, convertTablesToList);
+  const converted = createNoteArticleContent(content, convertTables, convertTablesToList);
 
   // Determine output file name
   let outputFile;
@@ -546,7 +750,7 @@ async function main() {
     // Export each table
     for (let idx = 0; idx < tables.length; idx++) {
       const imagePath = path.join(tablesDir, `table_${idx + 1}.png`);
-      await exportTableAsImage(tables[idx], imagePath, idx);
+      await exportTableAsImage(tables[idx], imagePath, idx, tableImageMaxChars);
     }
 
     console.log(`Exported ${tables.length} table(s) to ${tablesDir}`);

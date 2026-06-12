@@ -94,6 +94,7 @@ isbn: ""                    # ISBN if available
 series: "Small Town Mysteries"   # Series name
 seriesNumber: 1             # Series number
 unlisted: true              # Hide from catalog and sitemap, while keeping the direct URL available
+aiUsage: ai_generated       # Show an AI usage disclosure badge
 ```
 
 ### Field Descriptions
@@ -116,6 +117,7 @@ unlisted: true              # Hide from catalog and sitemap, while keeping the d
 | `series` | - | Series name | `"Small Town Mysteries"` |
 | `seriesNumber` | - | Series number | `1` |
 | `unlisted` | - | Hide from public listings while keeping the direct book URL available | `true` |
+| `aiUsage` | - | Show an AI usage disclosure badge in book details | `ai_generated` |
 
 ### Limited Publication (Unlisted Books)
 
@@ -132,6 +134,18 @@ Unlisted books are omitted from the home page, catalog page, and generated sitem
 ```
 
 This is not access control. Do not use `unlisted` for private or confidential content. The value must be the boolean `true`; the string `"true"` is not treated as enabled.
+
+### AI Usage Disclosure
+
+If a book includes passages or images generated or translated by generative AI and then edited by the author, add `aiUsage: ai_generated` to `metadata.yml`.
+
+```yaml
+aiUsage: ai_generated
+```
+
+This displays an AI usage badge in the book details modal. The badge explains that the author handled prompt design, output selection, structure, revisions, verification, and final editing, and takes responsibility for the book as a whole.
+
+Accepted values are the boolean `true` or the string `ai_generated`. Prefer `ai_generated` for new books because it is more explicit.
 
 ### Choosing Tags
 
@@ -265,8 +279,6 @@ Content...
 
 Content...
 
----
-page-break
 ---
 
 # Chapter 2: Title
@@ -492,11 +504,13 @@ Chapter 2 content
 
 ---
 
-## Sample Book
+## Existing Book Examples
 
-A sample book is available for reference:
+Use the current books as references:
 
-- [A Starry Night Tale](../../content/books/2025-12/sample-book/ja/) - Fantasy short story (Japanese)
+- [Axioms of Story Creation](../content/books/2026-06/story-creation-axioms/)
+- [Physical AI: Ground Truth](../content/books/2026-01/physical-ai/)
+- [The End and Rebirth of Audio](../content/books/2025-12/the-end-and-rebirth-of-audio/)
 
 ---
 
@@ -516,4 +530,4 @@ Share your stories with readers worldwide through DeusLibri.
 
 ---
 
-Last updated: 2026-06-11
+Last updated: 2026-06-12

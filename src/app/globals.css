@@ -855,6 +855,7 @@ html {
 /* Typography: Table styling with borders */
 /* ======================================= */
 .prose table {
+  font-size: 1em;
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
@@ -891,6 +892,7 @@ html {
 
 .prose th,
 .prose td {
+  font-size: inherit;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: normal;

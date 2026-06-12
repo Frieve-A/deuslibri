@@ -34,7 +34,7 @@ If you're implementing DeusLibri or contributing to the codebase:
 If you're writing books for DeusLibri:
 - Start with [Writing Guide](./WRITING_GUIDE.md)
 - Learn the file structure and metadata format
-- Review the sample book for reference
+- Review existing books under [`content/books`](../content/books/) for reference
 
 ## Documentation Structure
 
@@ -62,4 +62,4 @@ Documentation improvements are always welcome! To contribute:
 
 ---
 
-Last updated: 2025-12-05
+Last updated: 2026-06-12
