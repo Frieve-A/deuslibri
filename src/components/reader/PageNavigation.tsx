@@ -27,7 +27,7 @@ export function PageNavigation({
   t,
 }: PageNavigationProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-amber-50 dark:bg-slate-800 border-t border-amber-200 dark:border-gray-700 shadow-lg z-10 ui-skin-chrome">
+    <div data-reader-footer className="fixed bottom-0 left-0 right-0 bg-amber-50 dark:bg-slate-800 border-t border-amber-200 dark:border-gray-700 shadow-lg z-10 ui-skin-chrome">
       <div className="max-w-6xl mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <button

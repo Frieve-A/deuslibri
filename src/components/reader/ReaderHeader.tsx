@@ -5,6 +5,7 @@ import { TocItem } from '@/types/book'
 import { Bookmark } from '@/lib/stores/useReadingStore'
 import { TranslationMessages } from '@/lib/i18n'
 import { useRouter, usePathname } from 'next/navigation'
+import { SpeechControls, type SpeechControlsProps } from './SpeechControls'
 
 interface ReaderHeaderProps {
   book: {
@@ -25,6 +26,8 @@ interface ReaderHeaderProps {
   currentPage: number
   t: TranslationMessages
   onTitleClick?: () => void
+  speechControls?: SpeechControlsProps
+  onLeave?: () => void
 }
 
 export function ReaderHeader({
@@ -41,6 +44,8 @@ export function ReaderHeader({
   currentPage,
   t,
   onTitleClick,
+  speechControls,
+  onLeave,
 }: ReaderHeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -112,8 +117,9 @@ export function ReaderHeader({
           {(toc.length > 0 || bookmarks.length > 0) && (
             <button
               onClick={() => setIsTocOpen(!isTocOpen)}
-              className={`p-2 bg-amber-700 dark:bg-sky-600 text-white rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition-all flex-shrink-0 ui-skin-primary ${isTocOpen ? 'ui-skin-active' : ''}`}
-              aria-label="Toggle table of contents"
+              className={`h-10 w-10 shrink-0 inline-flex items-center justify-center bg-amber-700 dark:bg-sky-600 text-white rounded-lg hover:bg-amber-800 dark:hover:bg-sky-700 transition-all flex-shrink-0 ui-skin-primary ${isTocOpen ? 'ui-skin-active' : ''}`}
+              aria-label={t.reader.tableOfContents}
+              title={t.reader.tableOfContents}
               aria-pressed={isTocOpen}
             >
               <svg
@@ -147,11 +153,13 @@ export function ReaderHeader({
             </p>
           </div>
         </div>
-        <div className="flex gap-2 ml-4">
+        <div className="flex items-center gap-2 ml-4 shrink-0">
+          {speechControls && <SpeechControls {...speechControls} compact />}
           <button
             onClick={toggleFavorite}
-            className="text-2xl hover:scale-110 transition-transform ui-skin-quiet-emoji"
-            aria-label="Toggle favorite"
+            className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-lg text-2xl transition-colors ui-skin-icon ui-skin-quiet-emoji"
+            aria-label={favorite ? t.reader.removeFavorite : t.reader.addFavorite}
+            title={favorite ? t.reader.removeFavorite : t.reader.addFavorite}
             aria-pressed={favorite}
           >
             {favorite ? '❤️' : '🤍'}
@@ -159,21 +167,23 @@ export function ReaderHeader({
           {isPagination && (
             <button
               onClick={toggleBookmark}
-              className="text-2xl hover:scale-110 transition-transform ui-skin-quiet-emoji"
-              aria-label="Toggle bookmark"
+              className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-lg text-2xl transition-colors ui-skin-icon ui-skin-quiet-emoji"
+              aria-label={isBookmarked ? t.reader.removeBookmark : t.reader.addBookmark}
+              title={isBookmarked ? t.reader.removeBookmark : t.reader.addBookmark}
               aria-pressed={isBookmarked}
             >
               {isBookmarked ? '🔖' : '📑'}
             </button>
           )}
           {/* Share buttons with dropdown menus */}
-          <div className="hidden sm:flex gap-2" ref={shareMenuRef}>
+          <div className="hidden sm:flex items-center gap-2" ref={shareMenuRef}>
             {/* X (Twitter) Share Button */}
             <div className="relative">
               <button
                 onClick={() => handleShareClick('twitter')}
-                className="p-2 bg-black text-white rounded hover:bg-gray-800 transition-colors flex items-center justify-center ui-skin-brand-x"
-                aria-label={t.reader.tweet}
+                className="h-10 w-10 shrink-0 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center ui-skin-brand-x"
+                aria-label={t.reader.shareOnX}
+                title={t.reader.shareOnX}
               >
                 <svg
                   className="w-4 h-4"
@@ -208,8 +218,9 @@ export function ReaderHeader({
             <div className="relative">
               <button
                 onClick={() => handleShareClick('facebook')}
-                className="p-2 bg-[#1877F2] text-white rounded hover:bg-[#166FE5] transition-colors flex items-center justify-center ui-skin-brand-facebook"
-                aria-label={t.reader.share}
+                className="h-10 w-10 shrink-0 bg-[#1877F2] text-white rounded-lg hover:bg-[#166FE5] transition-colors flex items-center justify-center ui-skin-brand-facebook"
+                aria-label={t.reader.shareOnFacebook}
+                title={t.reader.shareOnFacebook}
               >
                 <svg
                   className="w-4 h-4"
@@ -242,9 +253,10 @@ export function ReaderHeader({
             </div>
           </div>
           <button
-            onClick={() => router.push('/catalog')}
-            className="p-2 bg-amber-100 dark:bg-gray-700 text-amber-900 dark:text-gray-200 rounded hover:bg-amber-200 dark:hover:bg-gray-600 transition-colors ui-skin-icon"
-            aria-label={t.common.back}
+            onClick={() => { onLeave?.(); router.push('/catalog') }}
+            className="h-10 w-10 shrink-0 inline-flex items-center justify-center bg-amber-100 dark:bg-gray-700 text-amber-900 dark:text-gray-200 rounded-lg hover:bg-amber-200 dark:hover:bg-gray-600 transition-colors ui-skin-icon"
+            aria-label={t.reader.closeBook}
+            title={t.reader.closeBook}
           >
             <svg
               className="w-5 h-5"

@@ -1045,3 +1045,18 @@ html {
 :where(.dark, .dark *) .gradient-dark {
   display: inline-block !important;
 }
+
+/* Speech markers only paint existing inline boxes; text layout stays unchanged. */
+[data-speech-active="true"] {
+  background-color: rgba(251, 191, 36, 0.32);
+  border-radius: 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+:where(.dark, .dark *) [data-speech-active="true"] {
+  background-color: rgba(56, 189, 248, 0.3);
+}
+img[data-speech-active="true"] {
+  outline: 3px solid #d97706;
+  outline-offset: 2px;
+}

@@ -3,7 +3,8 @@ import { SCROLL_AMOUNT_RATIO } from '@/lib/reader'
 
 interface UsePageNavigationOptions {
   currentPage: number
-  setCurrentPage: (page: number) => void
+  onNavigate: (page: number, source: 'user', direction?: 'next' | 'prev') => void
+  onPositionChange: () => void
   totalPages: number
   displayMode: 'pagination' | 'scroll'
   contentRef: RefObject<HTMLDivElement | null>
@@ -18,7 +19,8 @@ interface UsePageNavigationReturn {
 
 export function usePageNavigation({
   currentPage,
-  setCurrentPage,
+  onNavigate,
+  onPositionChange,
   totalPages,
   displayMode,
   contentRef,
@@ -29,7 +31,7 @@ export function usePageNavigation({
   const goToNextPage = useCallback(() => {
     if (currentPage < totalPages - 1) {
       navigationDirectionRef.current = 'next'
-      setCurrentPage(currentPage + 1)
+      onNavigate(currentPage + 1, 'user', 'next')
       // Scroll to top when changing pages
       window.scrollTo({ top: 0, behavior: 'smooth' })
       // Also reset content container scroll for horizontal pagination mode
@@ -37,25 +39,30 @@ export function usePageNavigation({
         contentRef.current.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
-  }, [currentPage, totalPages, setCurrentPage, contentRef])
+  }, [currentPage, totalPages, onNavigate, contentRef])
 
   const goToPrevPage = useCallback(() => {
     if (currentPage > 0) {
       navigationDirectionRef.current = 'prev'
-      setCurrentPage(currentPage - 1)
+      onNavigate(currentPage - 1, 'user', 'prev')
       // Scroll position is handled by useVerticalLayout hook
       // which sets appropriate position based on navigation direction
       // (縦書き: 左端へ, 横書き: 下端へ)
     }
-  }, [currentPage, setCurrentPage])
+  }, [currentPage, onNavigate])
 
   // Keyboard navigation with scroll support
   // Same logic as tap/click: scroll within page first, then navigate to next/prev page
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target
+      if (target instanceof Element && target.closest('input, select, textarea, button, summary, [contenteditable="true"]')) return
       // 矢印キーの場合はブラウザのデフォルトスクロールを防止
       if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
         e.preventDefault()
+        onPositionChange()
+      } else {
+        return
       }
 
       const element = contentRef.current
@@ -151,7 +158,7 @@ export function usePageNavigation({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [displayMode, contentRef, isVertical, goToNextPage, goToPrevPage])
+  }, [displayMode, contentRef, isVertical, goToNextPage, goToPrevPage, onPositionChange])
 
   return {
     goToNextPage,

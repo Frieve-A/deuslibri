@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, RefObject, Dispatch, SetStateAction, useCallback } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useState, useEffect, useRef, RefObject, useCallback } from 'react'
+import { usePathname } from 'next/navigation'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import { SCROLL_SAVE_DELAY } from '@/lib/reader'
+import { getVisibleReaderPage, resolveReaderScrollTarget } from '@/lib/reader/visiblePage'
 
 interface UseBookProgressOptions {
   bookId: string
@@ -12,11 +13,13 @@ interface UseBookProgressOptions {
   contentRef: RefObject<HTMLDivElement | null>
   isSmoothScrollingRef: RefObject<boolean>
   totalPages: number
+  onNavigate: (page: number, source: 'restore') => void
+  onScrollStart: (page: number) => void
 }
 
 interface UseBookProgressReturn {
   currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
+  commitPage: (page: number, scrollPosition?: number) => void
   currentPageRef: RefObject<number>
   bookIdRef: RefObject<string>
   bookLanguageRef: RefObject<string>
@@ -31,8 +34,14 @@ export function useBookProgress({
   contentRef,
   isSmoothScrollingRef,
   totalPages,
+  onNavigate,
+  onScrollStart,
 }: UseBookProgressOptions): UseBookProgressReturn {
   const [currentPage, setCurrentPage] = useState(0)
+  const onNavigateRef = useRef(onNavigate)
+  onNavigateRef.current = onNavigate
+  const onScrollStartRef = useRef(onScrollStart)
+  onScrollStartRef.current = onScrollStart
   const hasRestoredScrollRef = useRef(false)
   const hasInitializedFromUrlRef = useRef(false)
   const initialPageFromUrlRef = useRef<number | null>(null)
@@ -49,7 +58,6 @@ export function useBookProgress({
 
   // Next.js navigation hooks for URL parameter sync
   // Note: We avoid useSearchParams() to support static export
-  const router = useRouter()
   const pathname = usePathname()
 
   // Helper to get search params from window.location (client-side only)
@@ -63,6 +71,19 @@ export function useBookProgress({
   const bookLanguageRef = useRef(language)
   const currentPageRef = useRef(currentPage)
   const isVerticalRef = useRef(isVertical)
+  const commitPage = useCallback((page: number, scrollPosition?: number) => {
+    const boundedPage = Math.max(0, Math.min(totalPages - 1, page))
+    currentPageRef.current = boundedPage
+    setCurrentPage(boundedPage)
+    useReadingStore.getState().setProgress(bookId, language, boundedPage, scrollPosition)
+  }, [bookId, language, totalPages])
+
+  useEffect(() => {
+    hasRestoredScrollRef.current = false
+    hasInitializedFromUrlRef.current = false
+    initialPageFromUrlRef.current = null
+    initializingToPageRef.current = null
+  }, [bookId, language])
 
   // Keep refs up to date
   useEffect(() => {
@@ -89,7 +110,7 @@ export function useBookProgress({
         if (isPagination) {
           // Store target page to prevent URL update effect from running with stale currentPage
           initializingToPageRef.current = pageNumber - 1
-          setCurrentPage(pageNumber - 1)
+          onNavigateRef.current(pageNumber - 1, 'restore')
           return
         } else {
           // Infinite scroll mode: save page number to scroll to later
@@ -103,7 +124,10 @@ export function useBookProgress({
     // If no valid URL parameter, fall back to saved progress
     const progress = useReadingStore.getState().getProgress(bookId, language)
     if (progress) {
-      setCurrentPage(progress.currentPage)
+      initializingToPageRef.current = Math.max(0, Math.min(totalPages - 1, progress.currentPage))
+      onNavigateRef.current(initializingToPageRef.current, 'restore')
+    } else {
+      onNavigateRef.current(0, 'restore')
     }
   }, [bookId, language, getSearchParams, isPagination, totalPages, loading])
 
@@ -129,6 +153,7 @@ export function useBookProgress({
       // If page was specified in URL, scroll to that page's start position (takes priority)
       const targetPage = initialPageFromUrlRef.current
       if (targetPage !== null) {
+        onNavigateRef.current(targetPage, 'restore')
         hasRestoredScrollRef.current = true
         initialPageFromUrlRef.current = null
 
@@ -169,6 +194,11 @@ export function useBookProgress({
           window.dispatchEvent(new CustomEvent('scroll-restoration-complete'))
         }
 
+        // Persist the completed URL restore: native scroll saving is suppressed here.
+        if (pageElement) {
+          const position = isVertical ? contentRef.current?.scrollLeft : window.scrollY
+          if (position !== undefined) commitPage(targetPage, position)
+        }
         // Reset flag after a short delay to allow scroll event to complete
         setTimeout(() => {
           if (isSmoothScrollingRef.current !== undefined) {
@@ -181,6 +211,7 @@ export function useBookProgress({
       // If no URL page parameter, fall back to saved scroll position
       const progress = useReadingStore.getState().getProgress(bookId, language)
       if (progress?.scrollPosition !== undefined) {
+        onNavigateRef.current(progress.currentPage, 'restore')
         hasRestoredScrollRef.current = true
         // Suppress scroll saving during restoration
         if (isSmoothScrollingRef.current !== undefined) {
@@ -260,7 +291,7 @@ export function useBookProgress({
       const timer = setTimeout(executeScroll, 100)
       return () => clearTimeout(timer)
     }
-  }, [loading, isPagination, isVertical, bookId, language, contentRef, isSmoothScrollingRef])
+  }, [loading, isPagination, isVertical, bookId, language, contentRef, isSmoothScrollingRef, commitPage])
 
   // Save progress when page changes (pagination mode) and update URL parameter
   useEffect(() => {
@@ -294,7 +325,9 @@ export function useBookProgress({
         const params = new URLSearchParams(searchParams.toString())
         params.set('page', newPageNumber.toString())
         // Use replace to avoid creating history entries for every page turn
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+        // Page progress is local reader state; a router navigation refetches the
+        // book and replaces the speech plan while its next utterance is playing.
+        window.history.replaceState(window.history.state, '', `${pathname}?${params.toString()}`)
       }
     } else {
       // In scroll mode, remove the page parameter from URL if it exists
@@ -313,11 +346,12 @@ export function useBookProgress({
         }, 250)
       }
     }
-  }, [currentPage, bookId, language, loading, isPagination, getSearchParams, router, pathname, contentRef])
+  }, [currentPage, bookId, language, loading, isPagination, getSearchParams, pathname, contentRef])
 
-  // Save scroll position periodically for scroll mode
+  // A native scroll cancels current playback synchronously. Saving its settled
+  // position is a separate operation and must not cancel a later speech session.
   useEffect(() => {
-    if (loading || isPagination) return
+    if (loading) return
 
     let scrollTimeout: NodeJS.Timeout | null = null
 
@@ -326,6 +360,9 @@ export function useBookProgress({
       if (isSmoothScrollingRef.current) {
         return
       }
+
+      onScrollStartRef.current(isPagination ? currentPageRef.current : getVisibleReaderPage(contentRef.current, isVertical))
+      if (isPagination) return
 
       // Debounce scroll saving
       if (scrollTimeout) {
@@ -345,38 +382,22 @@ export function useBookProgress({
           // Horizontal scroll mode: save vertical scroll position
           scrollPosition = window.scrollY
         }
-        // Use refs to get the latest values without re-creating the listener
-        useReadingStore.getState().setProgress(
-          bookIdRef.current,
-          bookLanguageRef.current,
-          currentPageRef.current,
-          scrollPosition
-        )
+        const visiblePage = getVisibleReaderPage(contentRef.current, isVerticalRef.current)
+        commitPage(visiblePage, scrollPosition)
       }, SCROLL_SAVE_DELAY)
     }
 
-    // Listen to appropriate scroll event based on mode
-    if (isVertical) {
-      const container = contentRef.current
-      if (container) {
-        container.addEventListener('scroll', handleScroll)
-        return () => {
-          container.removeEventListener('scroll', handleScroll)
-          if (scrollTimeout) clearTimeout(scrollTimeout)
-        }
-      }
-    } else {
-      window.addEventListener('scroll', handleScroll)
-      return () => {
-        window.removeEventListener('scroll', handleScroll)
-        if (scrollTimeout) clearTimeout(scrollTimeout)
-      }
+    const target = resolveReaderScrollTarget(contentRef.current, isVertical, isPagination)?.element
+    target?.addEventListener('scroll', handleScroll)
+    return () => {
+      target?.removeEventListener('scroll', handleScroll)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
     }
-  }, [loading, isPagination, isVertical, contentRef, isSmoothScrollingRef])
+  }, [loading, isPagination, isVertical, contentRef, isSmoothScrollingRef, commitPage, currentPage])
 
   return {
     currentPage,
-    setCurrentPage,
+    commitPage,
     currentPageRef,
     bookIdRef,
     bookLanguageRef,

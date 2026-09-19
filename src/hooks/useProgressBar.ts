@@ -1,10 +1,10 @@
-import { useRef, useEffect, useCallback, RefObject, Dispatch, SetStateAction } from 'react'
+import { useRef, useEffect, useCallback, RefObject } from 'react'
 
 interface UseProgressBarOptions {
   totalPages: number
   isVertical: boolean
   loading: boolean
-  setCurrentPage: Dispatch<SetStateAction<number>>
+  onNavigate: (page: number, source: 'user') => void
 }
 
 interface UseProgressBarReturn {
@@ -16,7 +16,7 @@ export function useProgressBar({
   totalPages,
   isVertical,
   loading,
-  setCurrentPage,
+  onNavigate,
 }: UseProgressBarOptions): UseProgressBarReturn {
   const progressBarRef = useRef<HTMLDivElement>(null)
   const isDraggingProgressRef = useRef<boolean>(false)
@@ -41,12 +41,12 @@ export function useProgressBar({
       e.preventDefault()
       isDraggingProgressRef.current = true
       const newPage = calculatePageFromPosition(e.clientX)
-      setCurrentPage(newPage)
+      onNavigate(newPage, 'user')
 
       const handleMouseMove = (moveEvent: MouseEvent) => {
         if (isDraggingProgressRef.current) {
           const newPage = calculatePageFromPosition(moveEvent.clientX)
-          setCurrentPage(newPage)
+          onNavigate(newPage, 'user')
         }
       }
 
@@ -59,7 +59,7 @@ export function useProgressBar({
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
     },
-    [calculatePageFromPosition, setCurrentPage]
+    [calculatePageFromPosition, onNavigate]
   )
 
   // Progress bar touch handlers using native events to allow preventDefault on passive listeners
@@ -73,7 +73,7 @@ export function useProgressBar({
       isDraggingProgressRef.current = true
       const touch = e.touches[0]
       const newPage = calculatePageFromPosition(touch.clientX)
-      setCurrentPage(newPage)
+      onNavigate(newPage, 'user')
     }
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -82,7 +82,7 @@ export function useProgressBar({
         e.stopPropagation()
         const touch = e.touches[0]
         const newPage = calculatePageFromPosition(touch.clientX)
-        setCurrentPage(newPage)
+        onNavigate(newPage, 'user')
       }
     }
 
@@ -99,7 +99,7 @@ export function useProgressBar({
       progressBar.removeEventListener('touchmove', handleTouchMove)
       progressBar.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [totalPages, isVertical, loading, calculatePageFromPosition, setCurrentPage])
+  }, [totalPages, isVertical, loading, calculatePageFromPosition, onNavigate])
 
   return {
     progressBarRef,

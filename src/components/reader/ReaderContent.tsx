@@ -525,6 +525,21 @@ export function ReaderContent({
     return () => clearTimeout(timer)
   }, [isVertical, isPagination, contentRef, currentPage, pageHtml])
 
+  // Keep this hook before every mode-specific return so changing display mode is safe.
+  useEffect(() => {
+    if (isVertical || isPagination) return
+    const showContent = () => {
+      const proseElement = contentRef.current?.querySelector('.prose') as HTMLElement | null
+      if (proseElement) proseElement.style.opacity = '1'
+    }
+    window.addEventListener('scroll-restoration-complete', showContent, { once: true })
+    const fallbackTimer = setTimeout(showContent, 300)
+    return () => {
+      window.removeEventListener('scroll-restoration-complete', showContent)
+      clearTimeout(fallbackTimer)
+    }
+  }, [isVertical, isPagination, contentRef, pageHtml])
+
   // Calculate which page indices should show ads based on accumulated text size
   // Ads appear after accumulating AD_THRESHOLD_BYTES (10000 bytes) of text
   // Japanese characters count as 2 bytes, so 5000 Japanese chars = 10000 bytes
@@ -725,33 +740,6 @@ export function ReaderContent({
   }
 
   /* Horizontal scroll mode */
-  // Effect to show content after scroll restoration completes
-  useEffect(() => {
-    // Only for horizontal scroll mode (non-pagination)
-    if (isVertical || isPagination) {
-      return
-    }
-
-    const showContent = () => {
-      if (!contentRef.current) return
-      const proseElement = contentRef.current.querySelector('.prose') as HTMLElement
-      if (proseElement) {
-        proseElement.style.opacity = '1'
-      }
-    }
-
-    // Listen for scroll-restoration-complete event from useBookProgress
-    window.addEventListener('scroll-restoration-complete', showContent, { once: true })
-
-    // Fallback: show content after timeout in case event doesn't fire
-    const fallbackTimer = setTimeout(showContent, 300)
-
-    return () => {
-      window.removeEventListener('scroll-restoration-complete', showContent)
-      clearTimeout(fallbackTimer)
-    }
-  }, [isVertical, isPagination, contentRef, pageHtml])
-
   return (
     <div
       key="horizontal-content"

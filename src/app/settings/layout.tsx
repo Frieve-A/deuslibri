@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getDefaultOgImages } from '@/lib/metadata'
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -8,11 +9,13 @@ export const metadata: Metadata = {
     title: 'Settings | DeusLibri',
     description: 'Customize your reading experience on DeusLibri',
     type: 'website',
+    images: getDefaultOgImages(),
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Settings | DeusLibri',
     description: 'Customize your reading experience on DeusLibri',
+    images: getDefaultOgImages(),
   },
 }
 

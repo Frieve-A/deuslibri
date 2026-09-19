@@ -1,11 +1,19 @@
 'use client'
 
-import { useReadingStore, type AutoScrollSettings, type FontFamily, type InteractionSettings } from '@/lib/stores/useReadingStore'
+import {
+  SPEECH_RATE_MAX,
+  SPEECH_RATE_MIN,
+  useReadingStore,
+  type AutoScrollSettings,
+  type FontFamily,
+  type InteractionSettings,
+} from '@/lib/stores/useReadingStore'
 import { useState, useEffect, Suspense, type CSSProperties, type ReactNode } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useI18n, SUPPORTED_LANGUAGES, LANGUAGE_NAMES, type SupportedLanguage } from '@/lib/i18n'
 import Header from '@/components/Header'
 import { usePwaInstallPrompt } from '@/components/PwaInstallProvider'
+import { SpeechVoiceSettings } from '@/components/reader/SpeechVoiceSettings'
 
 type RangeStyle = CSSProperties & {
   '--range-progress': string
@@ -685,6 +693,65 @@ function SettingsContent() {
                   {t.settings.writingMode.note}
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* Read Aloud Settings */}
+          <section className="border border-amber-200 dark:border-gray-700 rounded-lg p-6 bg-amber-50 dark:bg-slate-800 shadow-sm ui-skin-panel">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t.settings.speech.title}</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="speechRate" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  {t.settings.speech.rate.label}: {settings.speech.rate.toFixed(1)}×
+                </label>
+                <input
+                  id="speechRate"
+                  type="range"
+                  min={SPEECH_RATE_MIN}
+                  max={SPEECH_RATE_MAX}
+                  step="0.1"
+                  value={settings.speech.rate}
+                  style={getRangeStyle(settings.speech.rate, SPEECH_RATE_MIN, SPEECH_RATE_MAX)}
+                  onChange={(e) => updateSettings({
+                    speech: { ...settings.speech, rate: Number(e.target.value) },
+                  })}
+                  className="w-full ui-skin-range"
+                />
+                <div className="flex justify-between text-xs text-gray-500 ui-skin-range-scale">
+                  <span>{t.settings.speech.rate.slow}</span>
+                  <span>{t.settings.speech.rate.fast}</span>
+                </div>
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  {t.settings.speech.rate.help}
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="speechContinueAcrossPages"
+                    checked={settings.speech.continueAcrossPages}
+                    onChange={(e) => updateSettings({
+                      speech: { ...settings.speech, continueAcrossPages: e.target.checked },
+                    })}
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 ui-skin-checkbox"
+                  />
+                  <label htmlFor="speechContinueAcrossPages" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.settings.speech.continueAcrossPages}
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1 ml-8">
+                  {t.settings.speech.continueAcrossPagesNote}
+                </p>
+              </div>
+
+              <SpeechVoiceSettings
+                t={t}
+                settings={settings.speech}
+                onChange={(speech) => updateSettings({ speech })}
+              />
             </div>
           </section>
 

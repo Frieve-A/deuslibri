@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { AutoScrollSettings } from '@/lib/stores/useReadingStore'
+import { resolveReaderScrollTarget, type ReaderScrollTarget } from '@/lib/reader/visiblePage'
 
 interface UseAutoScrollOptions {
   autoScrollSettings: AutoScrollSettings | undefined
@@ -16,6 +17,7 @@ interface UseAutoScrollReturn {
   isPlaying: boolean
   togglePlayPause: () => void
   onUserInteraction: () => void
+  stop: () => void
 }
 
 export function useAutoScroll({
@@ -33,6 +35,8 @@ export function useAutoScroll({
   const scrollIntervalRef = useRef<number | null>(null)
   const delayTimeoutRef = useRef<number | null>(null)
   const pageTurnTimeoutRef = useRef<number | null>(null)
+  const pageRestartTimeoutRef = useRef<number | null>(null)
+  const externallyStoppedRef = useRef(false)
   const currentPageRef = useRef(currentPage)
   // Accumulator for sub-pixel scrolling (browsers round scrollTop/scrollLeft to integers)
   const scrollAccumulatorRef = useRef(0)
@@ -56,67 +60,8 @@ export function useAutoScroll({
     userInteractionBehavior: 'pause',
   }
 
-  // Check if content can be scrolled (with tolerance for rounding)
-  const canScroll = useCallback((): boolean => {
-    const container = contentRef.current
-    if (!container) return false
-
-    // Add tolerance of 2px for floating point / rounding issues
-    const tolerance = 2
-
-    if (isVertical) {
-      // Vertical mode (vertical-rl): content flows from right to left
-      // The container scrolls horizontally, but scrollWidth may equal clientWidth
-      // if CSS minWidth: 100% is set. Check the inner content's actual width instead.
-      const innerContent = container.firstElementChild as HTMLElement | null
-      if (innerContent) {
-        const contentWidth = innerContent.scrollWidth
-        return contentWidth > container.clientWidth + tolerance
-      }
-      return container.scrollWidth > container.clientWidth + tolerance
-    } else {
-      // Horizontal mode: check vertical scroll
-      return container.scrollHeight > container.clientHeight + tolerance
-    }
-  }, [contentRef, isVertical])
-
-  // Check if scroll has reached the end
-  const isScrollAtEnd = useCallback((): boolean => {
-    const container = contentRef.current
-    if (!container) return true
-
-    // Tolerance for detecting end of scroll
-    const tolerance = 2
-
-    if (isVertical) {
-      // Vertical mode (vertical-rl): reading direction is right to left
-      // CRITICAL: For vertical mode, the actual scrolling element is the inner prose element
-      const prose = container.firstElementChild as HTMLElement | null
-      if (!prose) return true
-
-      const contentWidth = prose.scrollWidth
-      const visibleWidth = container.clientWidth
-      const maxScroll = contentWidth - visibleWidth
-      if (maxScroll <= tolerance) return true // Not scrollable
-
-      // In vertical-rl, scrollLeft = 0 means RIGHT edge, scrollLeft = -maxScroll means LEFT edge
-      // At the end (leftmost content visible), scrollLeft should be close to -maxScroll
-      const scrollLeft = prose.scrollLeft
-      const isAtLeftEdge = scrollLeft <= -(maxScroll - tolerance)
-      return isAtLeftEdge
-    } else {
-      // Horizontal mode: reading direction is top to bottom
-      const maxScroll = container.scrollHeight - container.clientHeight
-      if (maxScroll <= tolerance) return true // Not scrollable
-      return container.scrollTop >= maxScroll - tolerance
-    }
-  }, [contentRef, isVertical])
-
   // Perform one scroll step
-  const performScroll = useCallback(() => {
-    const container = contentRef.current
-    if (!container) return
-
+  const performScroll = useCallback((target: ReaderScrollTarget) => {
     // Speed is 1-100, map to actual pixels per frame (at ~60fps)
     // Use exponential scale for better control across the range
     // Speed 1 = 0.02px/frame (~1.2px/sec), Speed 50 = ~0.6px/frame (~36px/sec), Speed 100 = 15px/frame (~900px/sec)
@@ -133,23 +78,9 @@ export function useAutoScroll({
       const scrollAmount = Math.floor(scrollAccumulatorRef.current)
       scrollAccumulatorRef.current -= scrollAmount
 
-      if (isVertical) {
-        // Vertical mode (vertical-rl): scroll to continue reading
-        // CRITICAL: For vertical mode, the actual scrolling element is the inner prose element
-        const prose = container.firstElementChild as HTMLElement | null
-        if (!prose) return
-
-        // In vertical-rl, scrollLeft = 0 means rightmost (reading start)
-        // scrollLeft = -maxScroll means leftmost (reading end)
-        // To scroll in reading direction, we need scrollLeft to become MORE NEGATIVE
-        const newScrollLeft = prose.scrollLeft - scrollAmount
-        prose.scrollTo({ left: newScrollLeft, behavior: 'instant' })
-      } else {
-        // Horizontal mode: scroll down
-        container.scrollTop += scrollAmount
-      }
+      target.scrollTo(Math.min(target.maxPosition, target.position + scrollAmount))
     }
-  }, [contentRef, isVertical, settings.speed])
+  }, [settings.speed])
 
   // Clear all timers
   const clearAllTimers = useCallback(() => {
@@ -165,7 +96,19 @@ export function useAutoScroll({
       window.clearTimeout(pageTurnTimeoutRef.current)
       pageTurnTimeoutRef.current = null
     }
+    if (pageRestartTimeoutRef.current !== null) {
+      window.clearTimeout(pageRestartTimeoutRef.current)
+      pageRestartTimeoutRef.current = null
+    }
   }, [])
+
+  // Synchronous exclusion: the speech user gesture cancels every pending motion.
+  const stop = useCallback(() => {
+    externallyStoppedRef.current = true
+    isPlayingRef.current = false
+    clearAllTimers()
+    setIsPlaying(false)
+  }, [clearAllTimers])
 
   // Start scrolling with animation frame
   const startScrolling = useCallback(() => {
@@ -173,13 +116,11 @@ export function useAutoScroll({
 
     const scroll = () => {
       // Use ref to get current value instead of closure
-      if (!isPlayingRef.current) return
+      if (!isPlayingRef.current || externallyStoppedRef.current) return
 
-      const scrollable = canScroll()
-      const atEnd = isScrollAtEnd()
-
-      if (scrollable && !atEnd) {
-        performScroll()
+      const target = resolveReaderScrollTarget(contentRef.current, isVertical, isPagination)
+      if (target && target.maxPosition > 2 && target.position < target.maxPosition - 2) {
+        performScroll(target)
         scrollIntervalRef.current = requestAnimationFrame(scroll)
       } else {
         // Either can't scroll or reached the end
@@ -201,7 +142,7 @@ export function useAutoScroll({
     }
 
     scrollIntervalRef.current = requestAnimationFrame(scroll)
-  }, [canScroll, isScrollAtEnd, performScroll, settings.autoPageTurn, settings.autoPageTurnDelay, isPagination, totalPages, goToNextPage])
+  }, [contentRef, isVertical, performScroll, settings.autoPageTurn, settings.autoPageTurnDelay, isPagination, totalPages, goToNextPage])
 
   // Start with delay
   const startWithDelay = useCallback(() => {
@@ -223,12 +164,14 @@ export function useAutoScroll({
 
   // Toggle play/pause
   const togglePlayPause = useCallback(() => {
-    setIsPlaying(prev => !prev)
+    externallyStoppedRef.current = false
+    isPlayingRef.current = !isPlayingRef.current
+    setIsPlaying(isPlayingRef.current)
   }, [])
 
   // Handle user interaction
   const onUserInteraction = useCallback(() => {
-    if (!settings.enabled || !isPlayingRef.current) return
+    if (!settings.enabled || !isPlayingRef.current || externallyStoppedRef.current) return
 
     if (settings.userInteractionBehavior === 'pause') {
       // Pause on user interaction
@@ -242,7 +185,7 @@ export function useAutoScroll({
 
   // Auto-start when enabled is turned on
   useEffect(() => {
-    if (settings.enabled) {
+    if (settings.enabled && !externallyStoppedRef.current) {
       setIsPlaying(true)
     } else {
       setIsPlaying(false)
@@ -251,7 +194,7 @@ export function useAutoScroll({
 
   // Main effect: start/stop scrolling based on isPlaying
   useEffect(() => {
-    if (!settings.enabled) {
+    if (!settings.enabled || externallyStoppedRef.current) {
       clearAllTimers()
       return
     }
@@ -275,14 +218,15 @@ export function useAutoScroll({
 
   // Reset and restart when page changes (only if playing)
   useEffect(() => {
-    if (isPlayingRef.current && settings.enabled && !isTocOpen) {
+    if (isPlayingRef.current && settings.enabled && !isTocOpen && !externallyStoppedRef.current) {
       // Clear only page turn timer, let scroll restart naturally
       if (pageTurnTimeoutRef.current) {
         window.clearTimeout(pageTurnTimeoutRef.current)
         pageTurnTimeoutRef.current = null
       }
       // Small delay to let the new page content render
-      const timer = window.setTimeout(() => {
+      pageRestartTimeoutRef.current = window.setTimeout(() => {
+        pageRestartTimeoutRef.current = null
         if (isPlayingRef.current) {
           // Clear and restart scrolling for the new page
           if (scrollIntervalRef.current) {
@@ -292,7 +236,10 @@ export function useAutoScroll({
           startWithDelay()
         }
       }, 100)
-      return () => window.clearTimeout(timer)
+      return () => {
+        if (pageRestartTimeoutRef.current !== null) window.clearTimeout(pageRestartTimeoutRef.current)
+        pageRestartTimeoutRef.current = null
+      }
     }
   }, [currentPage, settings.enabled, isTocOpen, startWithDelay])
 
@@ -300,5 +247,6 @@ export function useAutoScroll({
     isPlaying,
     togglePlayPause,
     onUserInteraction,
+    stop,
   }
 }

@@ -1,5 +1,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import {
+  DEFAULT_SPEECH_SETTINGS,
+  SPEECH_RATE_MAX,
+  SPEECH_RATE_MIN,
+  normalizeSpeechSettings,
+  type SpeechSettings as ReaderSpeechSettings,
+} from '@/lib/reader/speech/types'
+
+export { DEFAULT_SPEECH_SETTINGS, SPEECH_RATE_MAX, SPEECH_RATE_MIN, normalizeSpeechSettings }
 
 export interface ReadingProgress {
   bookId: string
@@ -43,6 +52,18 @@ export interface InteractionSettings {
   enableFlickPageTurn: boolean // Flick to turn page
 }
 
+export type SpeechVoiceSelectionMode = 'listed' | 'ua-default'
+
+export interface SpeechVoiceSelection {
+  mode: SpeechVoiceSelectionMode
+  voiceURI?: string
+  name?: string
+  lang: string
+  localService?: boolean
+}
+
+export type SpeechSettings = ReaderSpeechSettings
+
 export interface ReadingSettings {
   writingMode: 'horizontal' | 'vertical' // vertical only for Japanese
   displayMode: 'pagination' | 'scroll'
@@ -54,6 +75,7 @@ export interface ReadingSettings {
   brightness: number // 0 - 100
   autoScroll: AutoScrollSettings
   interaction: InteractionSettings
+  speech: SpeechSettings
 }
 
 interface ReadingState {
@@ -88,6 +110,60 @@ interface ReadingState {
   importData: (data: string) => void
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const mergeSpeechSettings = (base: SpeechSettings, candidate: unknown): SpeechSettings => {
+  const normalizedBase = normalizeSpeechSettings(base)
+  if (!isRecord(candidate)) return normalizedBase
+
+  const normalizedCandidate = normalizeSpeechSettings({
+    voiceByLanguage: candidate.voiceByLanguage,
+    allowRemoteVoiceByLanguage: candidate.allowRemoteVoiceByLanguage,
+  })
+
+  return normalizeSpeechSettings({
+    rate: typeof candidate.rate === 'number' && Number.isFinite(candidate.rate)
+      ? candidate.rate : normalizedBase.rate,
+    continueAcrossPages: typeof candidate.continueAcrossPages === 'boolean'
+      ? candidate.continueAcrossPages : normalizedBase.continueAcrossPages,
+    voiceByLanguage: {
+      ...normalizedBase.voiceByLanguage,
+      ...normalizedCandidate.voiceByLanguage,
+    },
+    allowRemoteVoiceByLanguage: {
+      ...normalizedBase.allowRemoteVoiceByLanguage,
+      ...normalizedCandidate.allowRemoteVoiceByLanguage,
+    },
+  })
+}
+
+const mergeReadingSettings = (base: ReadingSettings, candidate: unknown): ReadingSettings => {
+  if (!isRecord(candidate)) return base
+
+  return {
+    ...base,
+    ...candidate,
+    autoScroll: {
+      ...base.autoScroll,
+      ...(isRecord(candidate.autoScroll) ? candidate.autoScroll : {}),
+    },
+    interaction: {
+      ...base.interaction,
+      ...(isRecord(candidate.interaction) ? candidate.interaction : {}),
+    },
+    speech: mergeSpeechSettings(base.speech, candidate.speech),
+  } as ReadingSettings
+}
+
+const restoreReadingSettings = (base: ReadingSettings, candidate: unknown): ReadingSettings => ({
+  ...mergeReadingSettings(base, candidate),
+  speech: mergeSpeechSettings(
+    DEFAULT_SPEECH_SETTINGS,
+    isRecord(candidate) ? candidate.speech : undefined
+  ),
+})
+
 export const useReadingStore = create<ReadingState>()(
   persist(
     (set, get) => ({
@@ -119,6 +195,7 @@ export const useReadingStore = create<ReadingState>()(
           enableFlickScroll: true,
           enableFlickPageTurn: true,
         },
+        speech: DEFAULT_SPEECH_SETTINGS,
       },
 
       // Progress methods
@@ -237,7 +314,7 @@ export const useReadingStore = create<ReadingState>()(
       // Settings methods
       updateSettings: (newSettings) => {
         set((state) => ({
-          settings: { ...state.settings, ...newSettings },
+          settings: mergeReadingSettings(state.settings, newSettings),
         }))
       },
 
@@ -261,7 +338,7 @@ export const useReadingStore = create<ReadingState>()(
             favorites: parsed.favorites || [],
             recentlyRead: parsed.recentlyRead || [],
             bookmarks: parsed.bookmarks || [],
-            settings: parsed.settings || get().settings,
+            settings: restoreReadingSettings(get().settings, parsed.settings),
           })
         } catch (error) {
           console.error('Failed to import data:', error)
@@ -275,20 +352,7 @@ export const useReadingStore = create<ReadingState>()(
         const persisted = persistedState as Partial<ReadingState>
 
         // Deep merge settings to ensure new properties get defaults
-        const mergedSettings = {
-          ...currentState.settings,
-          ...persisted.settings,
-          // Deep merge autoScroll settings specifically
-          autoScroll: {
-            ...currentState.settings.autoScroll,
-            ...(persisted.settings?.autoScroll || {}),
-          },
-          // Deep merge interaction settings specifically
-          interaction: {
-            ...currentState.settings.interaction,
-            ...(persisted.settings?.interaction || {}),
-          },
-        }
+        const mergedSettings = mergeReadingSettings(currentState.settings, persisted.settings)
 
         return {
           ...currentState,

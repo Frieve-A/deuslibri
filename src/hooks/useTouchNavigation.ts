@@ -1,4 +1,4 @@
-import { useRef, RefObject, useCallback } from 'react'
+import { useRef, RefObject, useCallback, useEffect } from 'react'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import {
   EDGE_THRESHOLD,
@@ -16,9 +16,7 @@ interface UseTouchNavigationOptions {
   isPagination: boolean
   contentRef: RefObject<HTMLDivElement | null>
   isSmoothScrollingRef: RefObject<boolean>
-  bookIdRef: RefObject<string>
-  bookLanguageRef: RefObject<string>
-  currentPageRef: RefObject<number>
+  onPositionSettled: () => void
   goToNextPage: () => void
   goToPrevPage: () => void
 }
@@ -35,9 +33,7 @@ export function useTouchNavigation({
   isPagination,
   contentRef,
   isSmoothScrollingRef,
-  bookIdRef,
-  bookLanguageRef,
-  currentPageRef,
+  onPositionSettled,
   goToNextPage,
   goToPrevPage,
 }: UseTouchNavigationOptions): UseTouchNavigationReturn {
@@ -51,6 +47,11 @@ export function useTouchNavigation({
 
   // Touch long-press detection for text selection
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const scrollSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => {
+    if (longPressTimerRef.current !== null) clearTimeout(longPressTimerRef.current)
+    if (scrollSaveTimer.current !== null) clearTimeout(scrollSaveTimer.current)
+  }, [])
   const isLongPressRef = useRef<boolean>(false)
   const touchStartTimeRef = useRef<number>(0)
   const touchedInsideSelectionRef = useRef<boolean>(false)
@@ -436,16 +437,11 @@ export function useTouchNavigation({
         }
 
         // Reset flag after scroll animation completes and save final position
-        setTimeout(() => {
+        if (scrollSaveTimer.current !== null) clearTimeout(scrollSaveTimer.current)
+        scrollSaveTimer.current = setTimeout(() => {
+          scrollSaveTimer.current = null
           ;(isSmoothScrollingRef as { current: boolean }).current = false
-          // Manually save position after smooth scroll completes
-          const finalPos = element.scrollLeft
-          useReadingStore.getState().setProgress(
-            bookIdRef.current,
-            bookLanguageRef.current,
-            currentPageRef.current,
-            finalPos
-          )
+          onPositionSettled()
         }, SMOOTH_SCROLL_DURATION)
       }
     } else if (isTap && !isVertical && !isPagination && tapScrollEnabled) {
@@ -467,16 +463,11 @@ export function useTouchNavigation({
       }
 
       // Reset flag after scroll animation completes and save final position
-      setTimeout(() => {
+      if (scrollSaveTimer.current !== null) clearTimeout(scrollSaveTimer.current)
+      scrollSaveTimer.current = setTimeout(() => {
+        scrollSaveTimer.current = null
         ;(isSmoothScrollingRef as { current: boolean }).current = false
-        // Manually save position after smooth scroll completes
-        const finalPos = window.scrollY
-        useReadingStore.getState().setProgress(
-          bookIdRef.current,
-          bookLanguageRef.current,
-          currentPageRef.current,
-          finalPos
-        )
+        onPositionSettled()
       }, SMOOTH_SCROLL_DURATION)
     } else if (Math.abs(swipeDistanceX) > MIN_SWIPE_DISTANCE || Math.abs(swipeDistanceY) > MIN_SWIPE_DISTANCE) {
       // Check if flick interactions are enabled
@@ -565,9 +556,7 @@ export function useTouchNavigation({
     isPagination,
     contentRef,
     isSmoothScrollingRef,
-    bookIdRef,
-    bookLanguageRef,
-    currentPageRef,
+    onPositionSettled,
     goToNextPage,
     goToPrevPage,
   ])

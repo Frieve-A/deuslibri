@@ -1,4 +1,4 @@
-import { useRef, RefObject, useCallback } from 'react'
+import { useRef, RefObject, useCallback, useEffect } from 'react'
 import { useReadingStore } from '@/lib/stores/useReadingStore'
 import {
   CLICK_THRESHOLD,
@@ -13,9 +13,7 @@ interface UseMouseNavigationOptions {
   isPagination: boolean
   contentRef: RefObject<HTMLDivElement | null>
   isSmoothScrollingRef: RefObject<boolean>
-  bookIdRef: RefObject<string>
-  bookLanguageRef: RefObject<string>
-  currentPageRef: RefObject<number>
+  onPositionSettled: () => void
   touchHandledRef: RefObject<boolean>
   goToNextPage: () => void
   goToPrevPage: () => void
@@ -32,9 +30,7 @@ export function useMouseNavigation({
   isPagination,
   contentRef,
   isSmoothScrollingRef,
-  bookIdRef,
-  bookLanguageRef,
-  currentPageRef,
+  onPositionSettled,
   touchHandledRef,
   goToNextPage,
   goToPrevPage,
@@ -48,6 +44,10 @@ export function useMouseNavigation({
   const mouseDownTargetRef = useRef<EventTarget | null>(null)
   const clickedInsideSelectionRef = useRef<boolean>(false)
   const clickedOnLinkRef = useRef<boolean>(false)
+  const scrollSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => {
+    if (scrollSaveTimer.current !== null) clearTimeout(scrollSaveTimer.current)
+  }, [])
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -305,16 +305,11 @@ export function useMouseNavigation({
         }
 
         // Reset flag after scroll animation completes and save final position
-        setTimeout(() => {
+        if (scrollSaveTimer.current !== null) clearTimeout(scrollSaveTimer.current)
+        scrollSaveTimer.current = setTimeout(() => {
+          scrollSaveTimer.current = null
           ;(isSmoothScrollingRef as { current: boolean }).current = false
-          // Manually save position after smooth scroll completes
-          const finalPos = element.scrollLeft
-          useReadingStore.getState().setProgress(
-            bookIdRef.current,
-            bookLanguageRef.current,
-            currentPageRef.current,
-            finalPos
-          )
+          onPositionSettled()
         }, SMOOTH_SCROLL_DURATION)
       } else if (tapScrollEnabled) {
         // Horizontal scroll mode click navigation
@@ -335,16 +330,11 @@ export function useMouseNavigation({
         }
 
         // Reset flag after scroll animation completes and save final position
-        setTimeout(() => {
+        if (scrollSaveTimer.current !== null) clearTimeout(scrollSaveTimer.current)
+        scrollSaveTimer.current = setTimeout(() => {
+          scrollSaveTimer.current = null
           ;(isSmoothScrollingRef as { current: boolean }).current = false
-          // Manually save position after smooth scroll completes
-          const finalPos = window.scrollY
-          useReadingStore.getState().setProgress(
-            bookIdRef.current,
-            bookLanguageRef.current,
-            currentPageRef.current,
-            finalPos
-          )
+          onPositionSettled()
         }, SMOOTH_SCROLL_DURATION)
       }
     },
@@ -353,9 +343,7 @@ export function useMouseNavigation({
       isPagination,
       contentRef,
       isSmoothScrollingRef,
-      bookIdRef,
-      bookLanguageRef,
-      currentPageRef,
+      onPositionSettled,
       touchHandledRef,
       goToNextPage,
       goToPrevPage,

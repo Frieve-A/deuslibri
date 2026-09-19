@@ -4,6 +4,7 @@ import Script from 'next/script'
 import ThemeProvider from '@/components/ThemeProvider'
 import { PwaInstallProvider } from '@/components/PwaInstallProvider'
 import { getBasePath } from '@/lib/utils/basePath'
+import { getDefaultOgImages } from '@/lib/metadata'
 import 'katex/dist/katex.min.css'
 import './globals.css'
 
@@ -44,11 +45,13 @@ export const metadata: Metadata = {
     description: 'A beautiful digital library for reading books online',
     type: 'website',
     locale: 'en_US',
+    images: getDefaultOgImages(),
   },
   twitter: {
     card: 'summary_large_image',
     title: 'DeusLibri - Free Digital Library',
     description: 'A beautiful digital library for reading books online',
+    images: getDefaultOgImages(),
   },
   robots: {
     index: true,

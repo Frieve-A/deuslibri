@@ -159,6 +159,17 @@ export interface TranslationMessages {
         autoResume: string
       }
     }
+    speech: {
+      title: string
+      rate: {
+        label: string
+        slow: string
+        fast: string
+        help: string
+      }
+      continueAcrossPages: string
+      continueAcrossPagesNote: string
+    }
     interaction: {
       title: string
       enableTapScroll: string
@@ -177,6 +188,11 @@ export interface TranslationMessages {
     bookmarks: string
     toc: string
     page: string
+    addFavorite: string
+    removeFavorite: string
+    closeBook: string
+    shareOnX: string
+    shareOnFacebook: string
     addBookmark: string
     removeBookmark: string
     share: string
@@ -190,6 +206,34 @@ export interface TranslationMessages {
     next: string
     donateToAuthor: string
     purchaseBook: string
+    speech: {
+      play: string
+      pause: string
+      resume: string
+      stop: string
+      settings: string
+      rate: string
+      voice: string
+      defaultVoice: string
+      localVoice: string
+      remoteVoice: string
+      allowRemoteVoice: string
+      remoteVoiceNotice: string
+      continueAcrossPages: string
+      unsupported: string
+      loadingVoices: string
+      noMatchingVoice: string
+      voiceSetupHelp: string
+      voiceListUnavailable: string
+      tryDefaultVoice: string
+      defaultVoiceNotice: string
+      fallbackVoice: string
+      started: string
+      paused: string
+      stopped: string
+      completed: string
+      error: string
+    }
   }
   // Book details modal
   bookDetails: {
@@ -415,6 +459,17 @@ const en: TranslationMessages = {
         autoResume: 'Auto Resume',
       },
     },
+    speech: {
+      title: 'Read Aloud',
+      rate: {
+        label: 'Reading Speed',
+        slow: 'Slower',
+        fast: 'Faster',
+        help: 'Actual speed and supported rates vary by voice. If playback is silent or does not advance, return to 1.0× and start again.',
+      },
+      continueAcrossPages: 'Continue to the next page',
+      continueAcrossPagesNote: 'When a page finishes, continue reading from the next page.',
+    },
     interaction: {
       title: 'Interaction Settings',
       enableTapScroll: 'Enable click/tap to scroll',
@@ -432,6 +487,11 @@ const en: TranslationMessages = {
     bookmarks: 'Bookmarks',
     toc: 'TOC',
     page: 'Page',
+    addFavorite: 'Add to favorites',
+    removeFavorite: 'Remove from favorites',
+    closeBook: 'Close book',
+    shareOnX: 'Share on X',
+    shareOnFacebook: 'Share on Facebook',
     addBookmark: 'Add Bookmark',
     removeBookmark: 'Remove Bookmark',
     share: 'Share',
@@ -445,6 +505,34 @@ const en: TranslationMessages = {
     next: 'Next',
     donateToAuthor: 'Support the Author',
     purchaseBook: 'Purchase Book',
+    speech: {
+      play: 'Start read aloud',
+      pause: 'Pause read aloud',
+      resume: 'Resume read aloud',
+      stop: 'Stop read aloud',
+      settings: 'Read aloud settings',
+      rate: 'Reading speed',
+      voice: 'Voice',
+      defaultVoice: 'Browser default voice',
+      localVoice: 'Device voice (browser reported)',
+      remoteVoice: 'Remote voice',
+      allowRemoteVoice: 'Allow this remote voice',
+      remoteVoiceNotice: 'This voice may send text to a browser or operating-system service. DeusLibri does not control where it is processed or retained.',
+      continueAcrossPages: 'Continue to the next page',
+      unsupported: 'Read aloud is not supported by this browser.',
+      loadingVoices: 'Loading available voices…',
+      noMatchingVoice: 'Add a compatible device voice, or choose a voice in these settings.',
+      voiceSetupHelp: 'Add a voice in your Apple device, Android, or Windows speech settings, then return here. The browser may not list every installed voice.',
+      voiceListUnavailable: 'The browser could not provide a voice list.',
+      tryDefaultVoice: 'Try browser default voice',
+      defaultVoiceNotice: 'The processing location of the browser default voice is unknown. Text may be sent to a browser or operating-system service.',
+      fallbackVoice: 'Your saved voice is unavailable. An available device voice is being used instead.',
+      started: 'Read aloud started.',
+      paused: 'Read aloud paused.',
+      stopped: 'Read aloud stopped.',
+      completed: 'Read aloud completed.',
+      error: 'Read aloud stopped because the voice could not continue.',
+    },
   },
   bookDetails: {
     title: 'Book Details',
@@ -697,6 +785,17 @@ const ja: TranslationMessages = {
         autoResume: '自動再開',
       },
     },
+    speech: {
+      title: '読み上げ',
+      rate: {
+        label: '読み上げ速度',
+        slow: '遅い',
+        fast: '速い',
+        help: '実際の速度や対応する倍率は音声によって異なります。無音になったり読み上げが進まない場合は、1.0×に戻して再生し直してください。',
+      },
+      continueAcrossPages: '次のページへ続けて読む',
+      continueAcrossPagesNote: 'ページを読み終えると、次のページの先頭から読み上げます。',
+    },
     interaction: {
       title: '操作設定',
       enableTapScroll: 'クリック/タップでスクロールを有効にする',
@@ -714,6 +813,11 @@ const ja: TranslationMessages = {
     bookmarks: 'ブックマーク',
     toc: '目次',
     page: 'ページ',
+    addFavorite: 'お気に入りに追加',
+    removeFavorite: 'お気に入りから削除',
+    closeBook: '本を閉じる',
+    shareOnX: 'Xでシェア',
+    shareOnFacebook: 'Facebookでシェア',
     addBookmark: 'ブックマークを追加',
     removeBookmark: 'ブックマークを削除',
     share: '共有',
@@ -727,6 +831,34 @@ const ja: TranslationMessages = {
     next: '次へ',
     donateToAuthor: '著者に寄付する',
     purchaseBook: '紙書籍を購入する',
+    speech: {
+      play: '読み上げを開始',
+      pause: '読み上げを一時停止',
+      resume: '読み上げを再開',
+      stop: '読み上げを停止',
+      settings: '読み上げ設定',
+      rate: '読み上げ速度',
+      voice: '音声',
+      defaultVoice: 'ブラウザ既定の音声',
+      localVoice: '端末音声（ブラウザ報告）',
+      remoteVoice: 'リモート音声',
+      allowRemoteVoice: 'このリモート音声を許可する',
+      remoteVoiceNotice: 'この音声では本文がブラウザまたはOSのサービスへ渡る可能性があります。DeusLibriは処理場所や保持を制御できません。',
+      continueAcrossPages: '次のページへ続けて読む',
+      unsupported: 'このブラウザは読み上げに対応していません。',
+      loadingVoices: '利用可能な音声を読み込み中…',
+      noMatchingVoice: '対応する端末音声を追加するか、この設定で音声を選んでください。',
+      voiceSetupHelp: 'Apple系端末、Android、Windowsの音声設定から音声を追加してから、この画面に戻ってください。追加した音声がブラウザ一覧に表示されるとは限りません。',
+      voiceListUnavailable: 'ブラウザから音声一覧を取得できませんでした。',
+      tryDefaultVoice: 'ブラウザ既定の音声を試す',
+      defaultVoiceNotice: 'ブラウザ既定音声の処理場所は不明です。本文がブラウザまたはOSのサービスへ渡る可能性があります。',
+      fallbackVoice: '保存した音声は利用できないため、利用可能な端末音声を代わりに使用しています。',
+      started: '読み上げを開始しました。',
+      paused: '読み上げを一時停止しました。',
+      stopped: '読み上げを停止しました。',
+      completed: '読み上げが完了しました。',
+      error: '音声を続けられないため、読み上げを停止しました。',
+    },
   },
   bookDetails: {
     title: '書籍詳細',
