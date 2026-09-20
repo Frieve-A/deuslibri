@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import ThemeProvider from '@/components/ThemeProvider'
+import DocumentRoot from '@/components/DocumentRoot'
 import { PwaInstallProvider } from '@/components/PwaInstallProvider'
 import { getBasePath } from '@/lib/utils/basePath'
 import { getDefaultOgImages } from '@/lib/metadata'
@@ -76,7 +77,7 @@ export default function RootLayout({
   const gaId = 'G-FW9YWVLT8E'
 
   return (
-    <html lang="en">
+    <DocumentRoot>
       <head>
         {/* Google Analytics */}
         <Script
@@ -103,6 +104,6 @@ export default function RootLayout({
           <PwaInstallProvider>{children}</PwaInstallProvider>
         </ThemeProvider>
       </body>
-    </html>
+    </DocumentRoot>
   )
 }

@@ -50,6 +50,17 @@ const HORIZONTAL_PAGINATION_PADDING_STYLE: React.CSSProperties = {
 }
 const LAST_PAGE_BUTTON_WIDTH = '12rem'
 
+// React 19 compares the innerHTML prop object by identity. Keep it stable when
+// the source is unchanged so reader state updates preserve text nodes, selection,
+// and any browser translation instead of replacing the entire subtree.
+function ReaderHtml({
+  html,
+  ...props
+}: Pick<React.ComponentProps<'div'>, 'className' | 'style'> & { html: string }) {
+  const markup = useMemo(() => ({ __html: html }), [html])
+  return <div {...props} dangerouslySetInnerHTML={markup} />
+}
+
 function getHorizontalPaginationContainerClassName(horizontalMaxWidth: string): string {
   return `${horizontalMaxWidth} mx-auto ${HORIZONTAL_PAGINATION_PADDING_CLASSES}`
 }
@@ -592,6 +603,7 @@ export function ReaderContent({
           <div
             key="vertical-content"
             ref={contentRef}
+            lang={contentLanguage}
             className="h-full overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -607,11 +619,11 @@ export function ReaderContent({
               containerType: 'size' /* Enable container query units for image sizing */,
             }}
           >
-            <div
+            <ReaderHtml
               key={`prose-${currentPage}`}
               className={`${proseClasses} h-full inline-block overflow-x-scroll custom-scrollbar`}
               style={getVerticalPaginationProseStyle(fontSize, fontFamilyCSS, lineHeight)}
-              dangerouslySetInnerHTML={{ __html: contentWithGradients }}
+              html={contentWithGradients}
             />
           </div>
         </div>
@@ -643,6 +655,7 @@ export function ReaderContent({
           <div
             key="vertical-scroll-content"
             ref={contentRef}
+            lang={contentLanguage}
             className="h-full overflow-x-scroll overflow-y-hidden custom-scrollbar"
             style={{
               touchAction: 'pan-x' /* Enable horizontal touch scroll */,
@@ -655,11 +668,11 @@ export function ReaderContent({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
           >
-            <div
+            <ReaderHtml
               className={`${proseClasses} max-w-none`}
               style={getVerticalScrollProseStyle(fontSize, fontFamilyCSS, lineHeight)}
-              dangerouslySetInnerHTML={{
-                __html: processedPageHtml
+              html={
+                processedPageHtml
                   .map(
                     (html, index) => {
                       const isLast = index === processedPageHtml.length - 1
@@ -671,8 +684,8 @@ export function ReaderContent({
                       }`
                     }
                   )
-                  .join(''),
-              }}
+                  .join('')
+              }
             />
           </div>
         </div>
@@ -689,6 +702,7 @@ export function ReaderContent({
           <div
             key="horizontal-content"
             ref={contentRef}
+            lang={contentLanguage}
             className="h-full overflow-y-auto overflow-x-hidden custom-scrollbar"
             style={{ overscrollBehavior: 'contain' }}
             onTouchStart={handleTouchStart}
@@ -709,10 +723,10 @@ export function ReaderContent({
                 className="pt-2 sm:pt-4 pb-4 sm:pb-8"
                 style={getHorizontalPaginationProseWrapperStyle()}
               >
-                <div
+                <ReaderHtml
                   className={`${proseClasses} max-w-none`}
                   style={getHorizontalProseStyle(fontSize, fontFamilyCSS, lineHeight)}
-                  dangerouslySetInnerHTML={{ __html: pageHtml[currentPage] }}
+                  html={pageHtml[currentPage]}
                 />
                 {currentPage === pageHtml.length - 1 && (
                   <LastPageButtons donationLink={donationLink} donateLabel={donateLabel} purchaseLink={purchaseLink} purchaseLabel={purchaseLabel} />
@@ -744,6 +758,7 @@ export function ReaderContent({
     <div
       key="horizontal-content"
       ref={contentRef}
+      lang={contentLanguage}
       className="pb-24"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -759,7 +774,7 @@ export function ReaderContent({
         >
           {pageHtml.map((html, index) => (
             <div key={index} id={`scroll-page-${index}`}>
-              <div dangerouslySetInnerHTML={{ __html: html }} className="mb-8" />
+              <ReaderHtml html={html} className="mb-8" />
               {/* Ad before page divider for pages that exceed the character threshold - TEMPORARILY DISABLED
               {adPageIndices.has(index) && index < pageHtml.length - 1 && (
                 <div className="my-4">
